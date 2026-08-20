@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.surit.admin.model.mapper.ManagementMapper"> 
+	<update id="approveFixer">
+		UPDATE FIXER_PROFILE SET FIXER_APPROVAL = 'APPROVED', 
+        		FIXER_APPROVED_AT = SYSDATE
+		WHERE FIXER_ID = #{fixerId}
+	</update>
+	
+	<update id="rejectFixer"> <!-- TODO: 반려사유 추가해야됨 -->
+		UPDATE FIXER_PROFILE SET FIXER_APPROVAL = 'REJECTED', 
+        		FIXER_APPROVED_AT = SYSDATE
+		WHERE FIXER_ID = #{fixerId}
+	</update>
+
+
+</mapper>
+
+
+
