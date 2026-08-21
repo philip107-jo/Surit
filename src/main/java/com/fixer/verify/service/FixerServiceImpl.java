@@ -73,7 +73,6 @@ public class FixerServiceImpl implements FixerService {
 
 		// ---------- 2) 재신청이면 기존 데이터 정리 ----------
 		// DB 행을 지우기 전에 파일 경로를 미리 확보해둔다.
-		// 지우고 나면 어떤 파일을 삭제해야 할지 알 수 없게 되니까.
 		List<FixerLicenseDTO> oldLicenses = new ArrayList<>();
 
 		if (!isNew) {
@@ -109,14 +108,10 @@ public class FixerServiceImpl implements FixerService {
 		int savedCount = saveLicenses(fixerId, request);
 
 		if (savedCount == 0) {
-			// LICENSE_FILE 이 NOT NULL 이고, 증빙 없는 인증은 의미가 없다.
-			// 여기서 던지면 @Transactional 이 위의 INSERT 들을 전부 되돌린다.
 			throw new IllegalStateException("자격증 증빙파일을 최소 1개 올려주세요.");
 		}
 
 		// ---------- 7) 옛 파일 삭제 (반드시 맨 마지막) ----------
-		// DB 작업이 전부 끝난 뒤에 지운다. 중간에 예외가 나면 DB는 롤백되지만
-		// 이미 지워버린 파일은 되살릴 방법이 없기 때문.
 		for (FixerLicenseDTO old : oldLicenses) {
 			fileUploadUtil.delete(old.getLicenseFile(), licenseUploadDir);
 		}
@@ -135,39 +130,58 @@ public class FixerServiceImpl implements FixerService {
 			return 0;
 		}
 
-		int count = 0;
+		// 이번 요청에서 디스크에 만든 파일들. 실패하면 이걸 보고 치운다
+		List<String> savedPaths = new ArrayList<>();
 
-		for (int i = 0; i < files.size(); i++) {
+		try {
+			int count = 0;
 
-			SavedFile saved = fileUploadUtil.save(files.get(i), licenseUploadDir, licenseWebPrefix);
+			for (int i = 0; i < files.size(); i++) {
 
-			if (saved == null) {
-				continue;                      // 파일을 안 올린 칸
+				MultipartFile file = files.get(i);
+
+				// 안 올린 칸은 건너뜀. 디스크는 건드리지 않는다
+				if (file == null || file.isEmpty()) {
+					continue;
+				}
+
+				// ---- 검증을 파일 저장보다 먼저 끝낸다 ----
+				String name = pick(names, i);
+				if (name == null || name.isBlank()) {
+					throw new IllegalStateException((i + 1) + "번째 자격증의 자격증명을 입력해주세요.");
+				}
+
+				LocalDate issuedAt = toDate(pick(dates, i));
+
+				// ---- 검증 통과 후 저장 ----
+				SavedFile saved = fileUploadUtil.save(file, licenseUploadDir, licenseWebPrefix);
+				savedPaths.add(saved.getPath());
+
+				FixerLicenseDTO license = new FixerLicenseDTO();
+				license.setFixerId(fixerId);
+				license.setLicenseName(name.trim());
+				license.setLicenseNo(blankToNull(pick(nos, i)));
+				license.setLicenseFile(saved.getPath());
+				license.setIssuedAt(issuedAt);
+
+				mapper.insertFixerLicense(license);
+				count++;
 			}
 
-			String name = pick(names, i);
-			if (name == null || name.isBlank()) {
-				throw new IllegalStateException((i + 1) + "번째 자격증의 자격증명을 입력해주세요.");
+			return count;
+
+		} catch (RuntimeException | IOException e) {
+			// @Transactional 이 DB 는 되돌려주지만 파일은 안 되돌린다.
+			for (String path : savedPaths) {
+				fileUploadUtil.delete(path, licenseUploadDir);
 			}
-
-			FixerLicenseDTO license = new FixerLicenseDTO();
-			license.setFixerId(fixerId);
-			license.setLicenseName(name.trim());
-			license.setLicenseNo(blankToNull(pick(nos, i)));
-			license.setLicenseFile(saved.getPath());
-			license.setIssuedAt(toDate(pick(dates, i)));
-
-			mapper.insertFixerLicense(license);
-			count++;
+			throw e;
 		}
-
-		return count;
 	}
 
 
 	// ---------- 작은 도우미들 ----------
 
-	/** 리스트에서 i번째를 안전하게 꺼낸다 (없으면 null) */
 	private String pick(List<String> list, int i) {
 		return (list != null && i < list.size()) ? list.get(i) : null;
 	}
@@ -196,8 +210,6 @@ public class FixerServiceImpl implements FixerService {
 		if (r.getCategoryIds() == null || r.getCategoryIds().isEmpty()) {
 			throw new IllegalStateException("수리 가능 분야를 최소 1개 선택해주세요.");
 		}
-		// DB 컬럼 길이를 넘으면 ORA-12899 라는 알아보기 힘든 에러가 난다.
-		// 사용자에게는 읽을 수 있는 말로 먼저 알려준다.
 		if (r.getFixerIntro() != null && r.getFixerIntro().length() > 500) {
 			throw new IllegalStateException("자기소개는 500자를 넘을 수 없습니다.");
 		}
@@ -206,11 +218,3 @@ public class FixerServiceImpl implements FixerService {
 		}
 	}
 }
-
-/*
- * 여기가 원래 코드에서 가장 크게 고친 부분이야. 
- * 이전 버전은 "옛 파일 삭제"가 자격증 for 루프 안에 들어가 있었어. 
- * 그러면 자격증을 3개 올릴 때 같은 파일을 3번 지우려 들고, 
- * 반대로 파일을 하나도 안 올리면 루프에 아예 안 들어가서 옛 파일이 영원히 안 지워져. 
- * 지금은 루프 밖 맨 마지막으로 뺐어.
- */
