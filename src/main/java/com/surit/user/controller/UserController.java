@@ -44,10 +44,9 @@ public class UserController {
 	
 	@PostMapping("/sign")
 	public String sign(@ModelAttribute UserDTO user,
-			@RequestParam(required=false) MultipartFile profileImage,
+		
 			RedirectAttributes redirectAttr) {
 		System.out.println(user);
-		System.out.println(profileImage);
 		
 		try {
 		service.sign(user);
