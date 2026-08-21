@@ -2,9 +2,6 @@ package com.surit.admin.model.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.surit.admin.model.dto.FixerProfileDTO;
-import com.surit.user.dto.UserDTO;
-
 @Mapper
 public interface MemberManagementMapper {
 
@@ -15,5 +12,5 @@ public interface MemberManagementMapper {
 	int approveFixer(FixerProfileDTO fixerProfile);
 	
 	// 계정 차단 -> 데이터 변경 (account_status)
-	int blockFixerAccount (UserDTO user);
+	int blockFixerAccount (UserDTO user); 
 }
