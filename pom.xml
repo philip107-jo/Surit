@@ -8,10 +8,10 @@
 		<version>4.1.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.surit</groupId>
+	<groupId>com.kh</groupId>
 	<artifactId>community</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Surit</name>
+	<name>03_community</name>
 	<description/>
 	<url/>
 	<licenses>
@@ -60,6 +60,42 @@
 			<artifactId>spring-boot-starter-webmvc-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
+		<!-- JSP를 사용하기 위한 내장 톰캣으로 jasper -->
+		<!-- Source: https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-jasper -->
+		<dependency>
+		    <groupId>org.apache.tomcat.embed</groupId>
+		    <artifactId>tomcat-embed-jasper</artifactId>
+		</dependency>
+		
+		<!-- Oracle JDBC 드라이버 -->
+		<!-- Source: https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc11 -->
+		<dependency>
+		    <groupId>com.oracle.database.jdbc</groupId>
+		    <artifactId>ojdbc11</artifactId>
+		</dependency>
+		
+		<!-- JSTL -->
+		<!-- Source: https://mvnrepository.com/artifact/jakarta.servlet.jsp.jstl/jakarta.servlet.jsp.jstl-api -->
+		<dependency>
+		    <groupId>jakarta.servlet.jsp.jstl</groupId>
+		    <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+		</dependency>
+		<!-- Source: https://mvnrepository.com/artifact/org.glassfish.web/jakarta.servlet.jsp.jstl -->
+		<dependency>
+		    <groupId>org.glassfish.web</groupId>
+		    <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+		</dependency>
+		
+	    <!-- MyBatis Spring Boot Starter -->
+	    <!-- Source: https://mvnrepository.com/artifact/org.mybatis.spring.boot/mybatis-spring-boot-starter -->
+		<dependency>
+		    <groupId>org.mybatis.spring.boot</groupId>
+		    <artifactId>mybatis-spring-boot-starter</artifactId>
+		    <version>4.0.1</version>
+		    <scope>compile</scope>
+		</dependency>
+		
 	</dependencies>
 
 	<build>
