@@ -13,18 +13,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class SuritApplicationTests {
+	@Autowired
+	DataSource dataSource;
 
-    @Autowired
-    DataSource dataSource;
+	@Test
+	void testConnection() throws SQLException {
+		try (Connection conn = dataSource.getConnection()) {
+			System.out.println("연결 성공: " + conn.getMetaData().getURL());
+			assertFalse(conn.isClosed());
+		}
 
-    @Test
-    void testConnection() throws SQLException {
-
-        try (Connection conn = dataSource.getConnection()) {
-
-            System.out.println("연결 성공: " + conn.getMetaData().getURL());
-
-            assertFalse(conn.isClosed());
-        }
-    }
+	}
 }
