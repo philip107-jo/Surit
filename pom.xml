@@ -8,10 +8,10 @@
 		<version>4.1.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.surit</groupId>
+	<groupId>com.kh</groupId>
 	<artifactId>community</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Surit</name>
+	<name>03_community</name>
 	<description/>
 	<url/>
 	<licenses>
