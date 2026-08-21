@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fixer.verify.model.mapper.FixerMapper">
+
+	<!-- ================= 조회 ================= -->
+
+	<select id="selectCategoryList" resultType="CategoryDTO">
+		SELECT CATEGORY_ID, CATEGORY_NO, CATEGORY_ITEM
+		  FROM CATEGORY
+		 ORDER BY CATEGORY_NO
+	</select>
+
+	<select id="selectFixerProfile" parameterType="string" resultType="FixerProfileDTO">
+		SELECT FIXER_ID, FIXER_NO, FIXER_APPROVAL, FIXER_APPROVED_AT,
+		       FIXER_REJECT_REASON, FIXER_INTRO, FIXER_CAREER
+		  FROM FIXER_PROFILE
+		 WHERE FIXER_ID = #{fixerId}
+	</select>
+
+	<select id="selectLicensesByFixerId" parameterType="string" resultType="FixerLicenseDTO">
+		SELECT LICENSE_ID, FIXER_ID, LICENSE_NAME, LICENSE_NO,
+		       LICENSE_FILE, ISSUED_AT, UPLOADED_AT
+		  FROM FIXER_LICENSE
+		 WHERE FIXER_ID = #{fixerId}
+		 ORDER BY LICENSE_ID
+	</select>
+
+	<!-- ================= 등록 / 수정 ================= -->
+
+	<!-- 신규 신청 : FIXER_NO 는 시퀀스로, 상태는 무조건 PENDING -->
+	<insert id="insertFixerProfile" parameterType="FixerProfileDTO">
+		INSERT INTO FIXER_PROFILE (
+			FIXER_ID, FIXER_NO, FIXER_APPROVAL, FIXER_INTRO, FIXER_CAREER
+		) VALUES (
+			#{fixerId}, SEQ_FIXER_NO.NEXTVAL, 'PENDING', #{fixerIntro}, #{fixerCareer}
+		)
+	</insert>
+
+	<!-- 재신청 : REJECTED → PENDING 으로 되돌리며 관련 컬럼 함께 초기화
+	     FIXER_NO 는 건드리지 않는다. 한 번 받은 기사번호는 계속 유지 -->
+	<update id="updateFixerProfile" parameterType="FixerProfileDTO">
+		UPDATE FIXER_PROFILE
+		   SET FIXER_INTRO         = #{fixerIntro},
+		       FIXER_CAREER        = #{fixerCareer},
+		       FIXER_APPROVAL      = 'PENDING',
+		       FIXER_REJECT_REASON = NULL,
+		       FIXER_APPROVED_AT   = NULL
+		 WHERE FIXER_ID = #{fixerId}
+	</update>
+
+	<insert id="insertFixerLicense" parameterType="FixerLicenseDTO">
+		INSERT INTO FIXER_LICENSE (
+			LICENSE_ID, FIXER_ID, LICENSE_NAME, LICENSE_NO, LICENSE_FILE, ISSUED_AT
+		) VALUES (
+			SEQ_FIXER_LICENSE.NEXTVAL, #{fixerId}, #{licenseName},
+			#{licenseNo}, #{licenseFile}, #{issuedAt}
+		)
+	</insert>
+
+	<insert id="insertFixerRegion">
+		INSERT INTO FIXER_REGION (FIXER_REGION_ID, FIXER_ID, REGION_NAME)
+		VALUES (SEQ_FIXER_REGION.NEXTVAL, #{fixerId}, #{regionName})
+	</insert>
+
+	<insert id="insertFixerCategory">
+		INSERT INTO FIXER_CATEGORY (FIXER_CATEGORY_ID, FIXER_ID, CATEGORY_ID)
+		VALUES (SEQ_FIXER_CATEGORY.NEXTVAL, #{fixerId}, #{categoryId})
+	</insert>
+
+	<!-- ================= 삭제 ================= -->
+
+	<delete id="deleteLicensesByFixerId" parameterType="string">
+		DELETE FROM FIXER_LICENSE WHERE FIXER_ID = #{fixerId}
+	</delete>
+
+	<delete id="deleteRegionsByFixerId" parameterType="string">
+		DELETE FROM FIXER_REGION WHERE FIXER_ID = #{fixerId}
+	</delete>
+
+	<delete id="deleteCategoriesByFixerId" parameterType="string">
+		DELETE FROM FIXER_CATEGORY WHERE FIXER_ID = #{fixerId}
+	</delete>
+
+</mapper>
