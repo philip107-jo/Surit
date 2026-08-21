@@ -2,7 +2,7 @@ package com.surit.admin.model.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.surit.admin.model.dto.FixerProfileDTO;
+import com.fixer.verify.model.dto.FixerProfileDTO;
 import com.surit.user.dto.UserDTO;
 
 @Mapper
