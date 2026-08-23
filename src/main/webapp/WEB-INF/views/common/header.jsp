@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>커뮤니티</title>
+    <title>수릿 Surit</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/pages.css">
 </head>
@@ -18,12 +18,12 @@
             <div class="logo__mark">
                 <svg viewBox="0 0 24 24"><path d="M8 12h8M8 8h8M8 16h5"/></svg>
             </div>
-            <span class="logo__text">커뮤니티</span>
+            <span class="logo__text">수릿</span>
         </a>
 
         <c:if test="${ not empty sessionScope.loginMember }">
             <nav class="gnb">
-                <a href="#" class="is-active">게시판</a>
+                <a href="/request">수리접수</a>
             </nav>
         </c:if>
 
@@ -35,11 +35,11 @@
                             <span class="avatar avatar--sm">
                                 <svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 20a8 8 0 0 1 16 0"/></svg>
                             </span>
-                       
-                         
+                            <span class="profile__who">${ sessionScope.loginMember.name }님</span>
+                            <svg class="caret" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
                         </button>
                         <div class="profile__menu" id="profile-menu">
-                            <div class="profile__name">${ sessionScope.loginMember.nickname }님</div>
+                            <div class="profile__name">${ sessionScope.loginMember.name }님</div>
                             <hr>
                             <a href="/user/mypage">
                                 <svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 20a8 8 0 0 1 16 0"/></svg>
@@ -63,4 +63,4 @@
 </header>
 
 
-<main class="container">
+<main>

@@ -14,21 +14,14 @@ import lombok.ToString;
 @ToString
 	
 public class UserDTO {
+	private int userNo;
 	private String userId;
-	private String userPwd;
-	private String userName;
-	private String userPnumber;
-	private String userEmail;
+	private String email;
+	private String password;
+	private String name;
+	private String phone;
 	private String userRole;
-	private String accountStatus;
-	private int isWithdrawn;
-	private Timestamp withdrawnAt;
-	private Timestamp userCreatedAt;
+	private String status;
+	private Timestamp createdAt;
 	
-	 private int addressId;
-	 private String addressName;
-	 private String zipcode;
-	 private String addressBasic;
-	 private String addressDetail;
-	 private int isDefault; 
 }

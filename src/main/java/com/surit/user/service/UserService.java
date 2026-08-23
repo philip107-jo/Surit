@@ -13,7 +13,7 @@ public interface UserService {
 	boolean isUserIdCheck(String userId);
 	
 	// 로그인
-	UserDTO login(String userId, String userPwd);
+	UserDTO login(String userId, String password);
 	
 	// 회원 탈퇴
 	void withdraw(String userId);
