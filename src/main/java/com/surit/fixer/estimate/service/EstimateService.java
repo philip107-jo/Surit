@@ -4,18 +4,16 @@ import java.util.List;
 
 import com.surit.fixer.estimate.model.dto.EstimateDTO;
 import com.surit.fixer.estimate.model.dto.EstimateForm;
+import com.surit.fixer.request.model.dto.RepairRequestDTO;
 
 public interface EstimateService {
 
-	/** 견적 작성 화면에 필요한 기존 견적 (없으면 null) */
-	EstimateDTO getMyEstimate(Long repairNo, String fixerId);
+	/** 견적 작성 화면에 띄울 접수 정보 (볼 수 없는 접수면 예외) */
+	RepairRequestDTO getTargetRequest(int fixerNo, long requestId);
 
-	/** 내 견적 목록 */
-	List<EstimateDTO> getMyEstimates(String fixerId);
+	/** 견적 제출 */
+	void submit(int fixerNo, EstimateForm form);
 
-	/** 견적 제시 (없으면 등록, 있으면 수정) */
-	void submit(String fixerId, EstimateForm form);
-
-	/** 견적 철회 */
-	void withdraw(String fixerId, Long estimatesId);
+	/** 내가 낸 견적 목록 */
+	List<EstimateDTO> getMyEstimates(int fixerNo);
 }

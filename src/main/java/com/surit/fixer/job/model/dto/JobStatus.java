@@ -1,40 +1,22 @@
 package com.surit.fixer.job.model.dto;
 
-public enum JobStatus {
+/**
+ * REPAIR_REQUESTS.STATUS_CODE 값 (COMMON_CODE 의 STATUS 그룹).
+ *
+ * 문자열을 여기저기 그대로 적으면 'REQ_03' 을 'REQ_3' 으로 잘못 쓴 걸
+ * 컴파일러가 못 잡아준다. 상수로 모아두면 오타는 컴파일 에러가 된다.
+ */
+public final class JobStatus {
 
-	WAITING("접수 대기"),
-	MATCHED("매칭됨"),
-	IN_PROGRESS("수리중"),
-	COMPLETED("완료"),
-	CANCELED("취소");
+	/** 접수대기 */
+	public static final String WAITING   = "REQ_01";
+	/** 견적중 */
+	public static final String ESTIMATING = "REQ_02";
+	/** 매칭/결제완료 → 기사가 실제로 작업할 단계 */
+	public static final String MATCHED   = "REQ_03";
+	/** 수리완료 */
+	public static final String DONE      = "REQ_04";
 
-	private final String label;
-
-	JobStatus(String label) {
-		this.label = label;
-	}
-
-	public String getCode()  { return name(); }
-	public String getLabel() { return label; }
-
-	public static String labelOf(String code) {
-		for (JobStatus s : values()) {
-			if (s.name().equals(code)) {
-				return s.label;
-			}
-		}
-		return code;
-	}
-
-	/** from 에서 to 로 넘어가도 되는가 */
-	public static boolean canMove(String from, String to) {
-
-		if ("MATCHED".equals(from)) {
-			return "IN_PROGRESS".equals(to) || "CANCELED".equals(to);
-		}
-		if ("IN_PROGRESS".equals(from)) {
-			return "COMPLETED".equals(to) || "CANCELED".equals(to);
-		}
-		return false;   // COMPLETED / CANCELED 에서는 기사가 못 바꿈
-	}
+	/** 상수만 모아둔 클래스라 인스턴스를 만들 이유가 없다 */
+	private JobStatus() {}
 }

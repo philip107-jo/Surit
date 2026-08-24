@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.surit.fixer.common.FixerGuard;
 import com.surit.fixer.job.model.dto.JobDTO;
-import com.surit.fixer.job.model.dto.JobStatus;
 import com.surit.fixer.job.model.mapper.JobMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -17,91 +16,52 @@ import lombok.RequiredArgsConstructor;
 public class JobServiceImpl implements JobService {
 
 	private final JobMapper  mapper;
-	private final FixerGuard guard;
-
-
-	@Override
-	@Transactional(readOnly = true)
-	public List<JobDTO> getMyJobs(String fixerId) {
-
-		guard.requireApprovedFixer(fixerId);
-
-		List<JobDTO> jobs = mapper.selectMyJobs(fixerId);
-		for (JobDTO job : jobs) {
-			job.setStatusLabel(JobStatus.labelOf(job.getReceiptStatus()));
-		}
-		return jobs;
-	}
-
+	private final FixerGuard fixerGuard;
 
 	@Override
 	@Transactional(readOnly = true)
-	public JobDTO getMyJob(Long repairNo, String fixerId) {
+	public List<JobDTO> getMyJobs(int fixerNo, String statusCode) {
 
-		guard.requireApprovedFixer(fixerId);
+		fixerGuard.requireApprovedFixer(fixerNo);
 
-		JobDTO job = mapper.selectMyJob(repairNo, fixerId);
-		if (job == null) {
-			throw new IllegalStateException("조회할 수 없는 작업입니다.");
-		}
-		job.setStatusLabel(JobStatus.labelOf(job.getReceiptStatus()));
-
-		return job;
+		return mapper.selectMyJobs(fixerNo, trimToNull(statusCode));
 	}
 
-
 	@Override
-	@Transactional(rollbackFor = Exception.class)
-	public void moveStatus(String fixerId, Long repairNo, String toStatus) {
+	@Transactional(readOnly = true)
+	public JobDTO getMyJob(int fixerNo, long requestId) {
 
-		guard.requireApprovedFixer(fixerId);
+		fixerGuard.requireApprovedFixer(fixerNo);
 
-		JobDTO job = mapper.selectMyJob(repairNo, fixerId);
+		JobDTO job = mapper.selectMyJob(fixerNo, requestId);
+
 		if (job == null) {
 			throw new IllegalStateException("내 작업이 아닙니다.");
 		}
-
-		String from = job.getReceiptStatus();
-
-		if (!JobStatus.canMove(from, toStatus)) {
-			throw new IllegalStateException(
-					JobStatus.labelOf(from) + " 상태에서는 "
-					+ JobStatus.labelOf(toStatus) + " 로 바꿀 수 없습니다.");
-		}
-
-		int updated = mapper.updateJobStatus(repairNo, fixerId, from, toStatus);
-
-		if (updated == 0) {
-			// 조회한 뒤 UPDATE 하기 전에 다른 곳에서 상태가 바뀐 경우
-			throw new IllegalStateException("상태가 이미 변경되었습니다. 새로고침 후 다시 시도해주세요.");
-		}
+		return job;
 	}
-
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public void cancel(String fixerId, Long repairNo, String reason) {
+	public void complete(int fixerNo, long requestId) {
 
-		guard.requireApprovedFixer(fixerId);
+		fixerGuard.requireApprovedFixer(fixerNo);
 
-		if (reason == null || reason.isBlank()) {
-			throw new IllegalStateException("취소 사유를 입력해주세요.");
-		}
-		if (reason.length() > 500) {
-			throw new IllegalStateException("취소 사유는 500자를 넘을 수 없습니다.");
-		}
-
-		int updated = mapper.cancelJob(repairNo, fixerId, reason.trim());
+		// 여기서 조회해서 if 로 검사하지 않는다.
+		// 조회한 뒤 UPDATE 하기 전에 상태가 바뀔 수 있기 때문(TOCTOU).
+		// 조건은 전부 UPDATE 의 WHERE 에 들어있고, 결과 건수로 판단한다.
+		int updated = mapper.completeJob(fixerNo, requestId);
 
 		if (updated == 0) {
-			throw new IllegalStateException("취소할 수 없는 작업입니다. (이미 완료되었거나 내 작업이 아님)");
+			throw new IllegalStateException(
+					"완료 처리할 수 없습니다. 내 작업이 아니거나 이미 완료된 건입니다.");
 		}
 	}
+
+	private String trimToNull(String s) {
+		if (s == null || s.isBlank()) {
+			return null;
+		}
+		return s.trim();
+	}
 }
-/*
- * 검사를 두 번 하는 게 이상해 보일 거야 — canMove 로 자바에서 한 번, SQL 의 WHERE ... = #{fromStatus} 로 또 한 번.
-이유가 있어. 자바 검사는 사람이 읽을 수 있는 에러 메시지를 만들기 위한 거고 ("완료 상태에서는 수리중으로 바꿀 수 없습니다"),
- SQL 검사는 조회와 수정 사이의 틈을 막기 위한 거야.
- 그 사이에 고객이 취소해버리면 자바 검사는 통과했는데 실제로는 안 바뀌어야 하거든.
- updated == 0 이 그걸 잡아줘.
- */

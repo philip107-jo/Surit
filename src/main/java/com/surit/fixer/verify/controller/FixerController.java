@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.surit.fixer.common.TempLogin;
 import com.surit.fixer.verify.model.dto.FixerVerifyRequest;
 import com.surit.fixer.verify.service.FixerService;
+import com.surit.user.SessionConst;
+import com.surit.user.dto.UserDTO;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -25,10 +27,16 @@ public class FixerController {
 
 	/** 기사 인증 신청 화면 */
 	@GetMapping("/verify")
-	public String verifyForm(Model model) {
+	public String verifyForm(HttpSession session, Model model) {
+
+		UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
+		if (loginMember == null) {
+			return "redirect:/user/login?redirectURL=/fixer/verify";
+		}
 
 		model.addAttribute("categoryList", service.getCategoryList());
-		model.addAttribute("profile", service.getMyProfile(TempLogin.USER_ID));
+		model.addAttribute("regionList",   service.getRegionList());
+		model.addAttribute("profile",      service.getMyProfile(loginMember.getUserNo()));
 
 		return "fixer/verify";
 	}
@@ -36,10 +44,16 @@ public class FixerController {
 	/** 기사 인증 신청 처리 */
 	@PostMapping("/verify")
 	public String verify(@ModelAttribute FixerVerifyRequest request,
+	                     HttpSession session,
 	                     RedirectAttributes ra) {
 
+		UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
+		if (loginMember == null) {
+			return "redirect:/user/login?redirectURL=/fixer/verify";
+		}
+
 		try {
-			service.applyVerify(TempLogin.USER_ID, request);
+			service.applyVerify(loginMember.getUserNo(), request);
 			ra.addFlashAttribute("message", "인증 신청이 완료되었습니다. 심사까지 1~2일 걸립니다.");
 
 		} catch (IllegalStateException e) {

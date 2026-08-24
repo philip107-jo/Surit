@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.surit.fixer.common.TempLogin;
 import com.surit.fixer.job.service.JobService;
+import com.surit.user.SessionConst;
+import com.surit.user.dto.UserDTO;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -21,68 +23,77 @@ public class JobController {
 
 	private final JobService service;
 
+	/** F-17 내 작업 목록 */
 	@GetMapping
-	public String list(Model model) {
+	public String list(@RequestParam(value = "statusCode", required = false) String statusCode,
+	                   HttpSession session,
+	                   Model model,
+	                   RedirectAttributes ra) {
+
+		UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
+		if (loginMember == null) {
+			return "redirect:/user/login?redirectURL=/fixer/jobs";
+		}
 
 		try {
-			model.addAttribute("jobList", service.getMyJobs(TempLogin.FIXER_ID));
+			model.addAttribute("jobList",    service.getMyJobs(loginMember.getUserNo(), statusCode));
+			model.addAttribute("statusCode", statusCode);
+
 		} catch (IllegalStateException e) {
-			model.addAttribute("message", e.getMessage());
+			ra.addFlashAttribute("message", e.getMessage());
+			return "redirect:/fixer/verify";
 		}
 
 		return "fixer/jobs";
 	}
 
-	@GetMapping("/{repairNo}")
-	public String detail(@PathVariable("repairNo") Long repairNo,
+	/** 작업 상세 */
+	@GetMapping("/{requestId}")
+	public String detail(@PathVariable("requestId") long requestId,
+	                     HttpSession session,
 	                     Model model,
 	                     RedirectAttributes ra) {
 
+		UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
+		if (loginMember == null) {
+			return "redirect:/user/login?redirectURL=/fixer/jobs/" + requestId;
+		}
+
 		try {
-			model.addAttribute("job", service.getMyJob(repairNo, TempLogin.FIXER_ID));
-			return "fixer/jobDetail";
+			model.addAttribute("job", service.getMyJob(loginMember.getUserNo(), requestId));
 
 		} catch (IllegalStateException e) {
 			ra.addFlashAttribute("message", e.getMessage());
 			return "redirect:/fixer/jobs";
 		}
+
+		return "fixer/jobDetail";
 	}
 
-	@PostMapping("/{repairNo}/start")
-	public String start(@PathVariable("repairNo") Long repairNo, RedirectAttributes ra) {
-		return move(repairNo, "IN_PROGRESS", "작업을 시작했습니다.", ra);
-	}
+	/**
+	 * 수리 완료 처리.
+	 *
+	 * 상태를 바꾸는 일은 GET 으로 만들지 않는다.
+	 * GET 으로 두면 링크를 클릭하거나 크롤러가 긁기만 해도 상태가 바뀐다.
+	 */
+	@PostMapping("/{requestId}/complete")
+	public String complete(@PathVariable("requestId") long requestId,
+	                       HttpSession session,
+	                       RedirectAttributes ra) {
 
-	@PostMapping("/{repairNo}/complete")
-	public String complete(@PathVariable("repairNo") Long repairNo, RedirectAttributes ra) {
-		return move(repairNo, "COMPLETED", "작업을 완료했습니다.", ra);
-	}
-
-	@PostMapping("/{repairNo}/cancel")
-	public String cancel(@PathVariable("repairNo") Long repairNo,
-	                     @RequestParam("reason") String reason,
-	                     RedirectAttributes ra) {
+		UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
+		if (loginMember == null) {
+			return "redirect:/user/login?redirectURL=/fixer/jobs";
+		}
 
 		try {
-			service.cancel(TempLogin.FIXER_ID, repairNo, reason);
-			ra.addFlashAttribute("message", "작업을 취소했습니다.");
+			service.complete(loginMember.getUserNo(), requestId);
+			ra.addFlashAttribute("message", "수리 완료로 변경했습니다.");
+
 		} catch (IllegalStateException e) {
 			ra.addFlashAttribute("message", e.getMessage());
 		}
 
-		return "redirect:/fixer/jobs/" + repairNo;
-	}
-
-	/** start / complete 가 공통으로 쓰는 부분 */
-	private String move(Long repairNo, String toStatus, String okMessage, RedirectAttributes ra) {
-
-		try {
-			service.moveStatus(TempLogin.FIXER_ID, repairNo, toStatus);
-			ra.addFlashAttribute("message", okMessage);
-		} catch (IllegalStateException e) {
-			ra.addFlashAttribute("message", e.getMessage());
-		}
-
-		return "redirect:/fixer/jobs/" + repairNo;
+		return "redirect:/fixer/jobs/" + requestId;
 	}
 }

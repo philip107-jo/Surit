@@ -1,21 +1,19 @@
 package com.surit.fixer.verify.model.dto;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+/** FIXER_LICENSE 한 행 */
 @Getter @Setter @NoArgsConstructor @ToString
 public class FixerLicenseDTO {
 
-	private Long          licenseId;
-	private String        fixerId;
-	private String        licenseName;   // NOT NULL
-	private String        licenseNo;
-	private String        licenseFile;   // NOT NULL — 서버에 저장된 경로
-	private LocalDate     issuedAt;      // DATE     → LocalDate
-	private LocalDateTime uploadedAt;    // TIMESTAMP → LocalDateTime
+	private Long      licenseId;    // LICENSE_ID (IDENTITY)
+	private Integer   userNo;       // USER_NO
+	private String    licenseName;  // LICENSE_NAME (NOT NULL)
+	private String    uploadUrl;    // UPLOAD_URL (파일 경로, NULL 허용)
+	private LocalDate issuedAt;     // ISSUED_AT (DATE)
 }
