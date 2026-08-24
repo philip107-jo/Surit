@@ -6,13 +6,12 @@ import com.surit.fixer.job.model.dto.JobDTO;
 
 public interface JobService {
 
-	List<JobDTO> getMyJobs(String fixerId);
+	/** 내 작업 목록 (statusCode 가 null 이면 전체) */
+	List<JobDTO> getMyJobs(int fixerNo, String statusCode);
 
-	JobDTO getMyJob(Long repairNo, String fixerId);
+	/** 내 작업 상세 (내 작업이 아니면 예외) */
+	JobDTO getMyJob(int fixerNo, long requestId);
 
-	/** 상태 전이 (작업 시작 / 완료) */
-	void moveStatus(String fixerId, Long repairNo, String toStatus);
-
-	/** 작업 취소 */
-	void cancel(String fixerId, Long repairNo, String reason);
+	/** 수리 완료 처리 */
+	void complete(int fixerNo, long requestId);
 }

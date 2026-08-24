@@ -16,22 +16,24 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FixerGuard {
 
-	private static final String APPROVED = "APPROVED";
+	public static final String PENDING  = "PENDING";
+	public static final String APPROVED = "APPROVED";
+	public static final String REJECTED = "REJECTED";
 
 	private final FixerMapper fixerMapper;
 
 	/** 승인된 기사가 아니면 예외를 던진다 */
-	public void requireApprovedFixer(String fixerId) {
+	public void requireApprovedFixer(int userNo) {
 
-		FixerProfileDTO profile = fixerMapper.selectFixerProfile(fixerId);
+		FixerProfileDTO profile = fixerMapper.selectFixerProfile(userNo);
 
 		if (profile == null) {
 			throw new IllegalStateException("기사 인증 신청을 먼저 해주세요.");
 		}
-		if (!APPROVED.equals(profile.getFixerApproval())) {
+		if (!APPROVED.equals(profile.getApprovalStatus())) {
 			throw new IllegalStateException(
 					"기사 인증이 완료된 후 이용할 수 있습니다. (현재 상태: "
-					+ profile.getFixerApproval() + ")");
+					+ profile.getApprovalStatus() + ")");
 		}
 
 		// 정지(SANCTION) 검사 같은 게 생기면 여기 한 줄만 추가하면

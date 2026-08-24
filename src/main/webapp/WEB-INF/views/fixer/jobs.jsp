@@ -1,47 +1,78 @@
 <%@ page language="java" contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
 	<meta charset="UTF-8">
 	<title>내 작업 관리</title>
 	<style>
-		table { border-collapse: collapse; }
-		th, td { border:1px solid #ccc; padding:6px 10px; }
-		th { background:#f2f2f2; }
-		.MATCHED     { color:#06c; font-weight:bold; }
-		.IN_PROGRESS { color:#e60; font-weight:bold; }
-		.COMPLETED   { color:#080; }
-		.CANCELED    { color:#888; text-decoration:line-through; }
-		.urgent { color:#d00; font-weight:bold; }
+		table { border-collapse: collapse; width: 100%; }
+		th, td { border: 1px solid #ccc; padding: 6px 8px; font-size: 14px; }
+		th { background: #f5f5f5; }
+		.ing  { color: #d60; font-weight: bold; }
+		.done { color: #888; }
 	</style>
 </head>
 <body>
 
 <h2>내 작업 관리</h2>
+<p>고객이 <b>내 견적을 선택한</b> 건만 보입니다.</p>
 
-<c:if test="${not empty message}"><p style="color:red;"><c:out value="${message}"/></p></c:if>
+<c:if test="${not empty message}">
+	<p style="color:blue; font-weight:bold;"><c:out value="${message}"/></p>
+</c:if>
+
+<p>
+	<a href="/fixer/jobs">전체</a> ·
+	<a href="/fixer/jobs?statusCode=REQ_03">진행중</a> ·
+	<a href="/fixer/jobs?statusCode=REQ_04">완료</a>
+	<c:if test="${not empty statusCode}">
+		<span>(현재 필터: <c:out value="${statusCode}"/>)</span>
+	</c:if>
+</p>
 
 <c:choose>
 	<c:when test="${empty jobList}">
-		<p>진행 중인 작업이 없습니다.</p>
-		<p style="color:#888; font-size:0.9em;">고객이 내 견적을 수락하면 여기에 표시됩니다.</p>
+		<p>해당하는 작업이 없습니다.</p>
 	</c:when>
+
 	<c:otherwise>
 		<table>
 			<tr>
-				<th>상태</th><th>접수</th><th>제목</th>
-				<th>고객</th><th>연락처</th><th>방문 예정</th><th>금액</th>
+				<th>접수번호</th>
+				<th>제목</th>
+				<th>분야</th>
+				<th>고객</th>
+				<th>주소</th>
+				<th>금액</th>
+				<th>상태</th>
+				<th>접수일</th>
 			</tr>
-			<c:forEach var="j" items="${jobList}">
+
+			<c:forEach var="job" items="${jobList}">
 				<tr>
-					<td class="${j.receiptStatus}">${j.statusLabel}</td>
-					<td><c:if test="${j.receiptUrgent eq 1}"><span class="urgent">[긴급]</span> </c:if><c:out value="${j.receiptCode}"/></td>
-					<td><a href="/fixer/jobs/${j.repairNo}"><c:out value="${j.receiptTitle}"/></a></td>
-					<td><c:out value="${j.userName}"/></td>
-					<td><c:out value="${j.userPnumber}"/></td>
-					<td>${j.visitAtText}</td>
-					<td style="text-align:right;">${j.myPrice}원</td>
+					<td>${job.requestId}</td>
+					<td>
+						<a href="/fixer/jobs/${job.requestId}">
+							<c:out value="${job.title}"/>
+						</a>
+					</td>
+					<td><c:out value="${job.categoryName}"/></td>
+					<td><c:out value="${job.customerName}"/></td>
+					<td><c:out value="${job.serviceAddress}"/></td>
+					<td><fmt:formatNumber value="${job.estimatedPrice}" pattern="#,##0"/> 원</td>
+					<td>
+						<c:choose>
+							<c:when test="${job.statusCode eq 'REQ_04'}">
+								<span class="done"><c:out value="${job.statusName}"/></span>
+							</c:when>
+							<c:otherwise>
+								<span class="ing"><c:out value="${job.statusName}"/></span>
+							</c:otherwise>
+						</c:choose>
+					</td>
+					<td><fmt:formatDate value="${job.createdAt}" pattern="yyyy-MM-dd HH:mm"/></td>
 				</tr>
 			</c:forEach>
 		</table>

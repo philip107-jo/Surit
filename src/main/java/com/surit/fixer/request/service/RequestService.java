@@ -1,15 +1,18 @@
 package com.surit.fixer.request.service;
 
 import java.util.List;
-import java.util.Map;
 
+import com.surit.fixer.common.model.dto.CommonCodeDTO;
 import com.surit.fixer.request.model.dto.RepairRequestDTO;
 
 public interface RequestService {
 
-	/** 내 주변 새 접수 목록 */
-	List<RepairRequestDTO> getNearbyRequests(String fixerId);
+	/** 검색 화면의 분야 셀렉트 박스 */
+	List<CommonCodeDTO> getCategoryList();
 
-	/** 접수 상세 + 사진 (키: request, photos) */
-	Map<String, Object> getRequestDetail(Long repairNo, String fixerId);
+	/** 내 주변 새 접수 목록 */
+	List<RepairRequestDTO> getNearbyRequests(int userNo, String categoryCode, String keyword);
+
+	/** 접수 상세 (볼 수 없는 접수면 예외) */
+	RepairRequestDTO getRequestDetail(int userNo, long requestId);
 }
