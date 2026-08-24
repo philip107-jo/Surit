@@ -409,15 +409,15 @@ table{border-collapse:collapse;width:100%}
 .empty p{font-size:17px}
 
 /* 안내 박스 */
-.note{display:flex;gap:14px;padding:20px 22px;border-radius:var(--r-md);
-  font-size:16px;line-height:1.7}
-.note svg{width:24px;height:24px;flex:0 0 auto;margin-top:1px;fill:none;stroke-width:2;
-  stroke-linecap:round;stroke-linejoin:round}
+.note{display:flex;align-items:center;gap:30px;padding:20px 22px;border-radius:var(--r-md);
+  font-size:16px;line-height:1.7; margin:30px;}
+  .note svg{width:24px;height:24px;flex:0 0 auto;fill:none;stroke-width:2;
+    stroke-linecap:round;stroke-linejoin:round;display:block}
+.note p{margin:0}
 .note--blue{background:var(--p-50);color:var(--p-700)} .note--blue svg{stroke:var(--p-600)}
 .note--warn{background:var(--warn-l);color:#92400E}   .note--warn svg{stroke:var(--warn)}
 .note--ok{background:var(--ok-l);color:#166534}       .note--ok svg{stroke:var(--ok)}
 .note--gray{background:var(--g-50);color:var(--g-600)}.note--gray svg{stroke:var(--g-500)}
-
 /* 정의형 목록 (요약 정보) */
 .dl{display:grid;grid-template-columns:auto 1fr;gap:16px 28px;font-size:16.5px}
 .dl dt{color:var(--g-500)}

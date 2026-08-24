@@ -23,7 +23,7 @@
 
         <c:if test="${ not empty sessionScope.loginMember }">
             <nav class="gnb">
-                <a href="/request">수리접수</a>
+                <a href="/fixer/request">수리접수</a>
             </nav>
         </c:if>
 
