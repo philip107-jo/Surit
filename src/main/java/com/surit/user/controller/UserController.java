@@ -105,7 +105,7 @@ public class UserController {
 		if(session != null) {
 			session.invalidate(); //세션 자체 만료
 		}
-	return "redirect:/";
+	return "redirect:/user/login";
 	}
 	@PostMapping("/withdraw")
 	public String withdraw(HttpSession session) {
