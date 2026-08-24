@@ -14,7 +14,7 @@ public class ReviewDTO {
 	private Long requestId;
 	private Long userId;	
 	private Long fixerId;
-	private int scoer;
+	private int score;
 	private String content;
 	private LocalDateTime createdAt;
 	
