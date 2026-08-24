@@ -45,6 +45,12 @@
                                 <svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 20a8 8 0 0 1 16 0"/></svg>
                                 마이페이지
                             </a>
+                            <c:if test="${ sessionScope.loginMember.userRole == 'FIXER' }">
+                                <a href="/fixer/dashboard" class="switch">
+                                    <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z"/></svg>
+                                    기사 모드로 전환
+                                </a>
+                            </c:if>
                             <a href="/user/logout" class="logout">
                                 <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
                                 로그아웃
