@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.surit.user.mapper.UserMapper">
+ 
+<insert id="insertUser" parameterType="com.surit.user.dto.UserDTO">
+    INSERT INTO USERS (USER_ID, EMAIL, PASSWORD, NAME, PHONE)
+    VALUES (#{userId}, #{email}, #{password}, #{name}, #{phone})
+</insert>
+ 
+ <select id="countByUserId" parameterType="string" resultType="int">
+ SELECT COUNT(*) FROM USERS WHERE USER_ID = #{userId}
+ 
+ </select>
+ 
+ <select id="selectByUserID" parameterType="string" resultType="UserDTO">
+ SELECT USER_ID,
+    PASSWORD, NAME, EMAIL,
+    TO_CHAR(CREATED_AT, 'YYYY-MM-DD HH24:MI') AS CREATE_AT_STR
+    FROM USERS
+    WHERE USER_ID = #{userId}
+ 
+ </select>
+ 
+ <delete id="deleteUser" parameterType="string">
+ DELETE FROM USERS WHERE USER_ID = #{userId}
+ </delete>
+  <insert id="insertAddress" parameterType="UserAddressDTO">
+ INSERT INTO USERS (
+	   ADDRESS_ID,
+		USER_NO,
+		ZIP_CODE,
+		ADDRESS,
+		ADDRESS_DETAIL,
+		IS_DEFAULT) 
+ VALUES(#{addressId}, #{userNo}, #{zipCode},#{addressDetail},#{isDefault})
+ </insert>
+</mapper>
+
