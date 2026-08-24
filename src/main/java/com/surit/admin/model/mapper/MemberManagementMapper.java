@@ -7,22 +7,22 @@ import org.apache.ibatis.annotations.Param;
 
 import com.surit.admin.model.dto.AdminFixerDetailDTO;
 import com.surit.admin.model.dto.AdminMemberListDTO;
-import com.surit.admin.model.dto.FixerLicenseDTO;
+import com.surit.admin.model.dto.AdminLicenseDTO;
 import com.surit.admin.model.dto.MemberSearchCondition;
 
 @Mapper
 public interface MemberManagementMapper {
 
 	// --- 조회 ---
-	List<AdminMemberListDTO> selectPendingFixers();
-	List<AdminMemberListDTO> selectMemberList(MemberSearchCondition cond);
-	int selectMemberCount(MemberSearchCondition cond);
-	AdminFixerDetailDTO selectFixerDetail(Long userNo);
-	List<FixerLicenseDTO> selectLicenses(Long userNo);
-	List<String> selectCategories(Long userNo);
-	List<String> selectRegions(Long userNo);
+	List<AdminMemberListDTO> selectPendingFixers();  // 대기 기사 명단
+	List<AdminMemberListDTO> selectMemberList(MemberSearchCondition cond); // 전체 회원 조회 
+	int selectMemberCount(MemberSearchCondition cond); // 페이지 개수 
+	AdminFixerDetailDTO selectFixerDetail(Long userNo); // 기사 상세
+	List<AdminLicenseDTO> selectLicenses(Long userNo); // 자격증
+	List<String> selectCategories(Long userNo); // 수리 카테고리
+	List<String> selectRegions(Long userNo); // 활동 지역
 
-	// --- 변경 ---
+	// 계정 차단 (변경 되는 것들)
 	int updateApprove(@Param("userNo") Long userNo);
 	int updateReject(@Param("userNo") Long userNo,
 	                 @Param("reason") String reason);

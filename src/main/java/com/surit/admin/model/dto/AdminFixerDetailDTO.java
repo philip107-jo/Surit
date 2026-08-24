@@ -30,7 +30,7 @@ public class AdminFixerDetailDTO {
 	private String rejectReason;
 	
 	// 1:N - 별도조회
-	private List<FixerLicenseDTO> licenses;
+	private List<AdminLicenseDTO> licenses;
 	private List<String> categories;
 	private List<String> regions;
 	

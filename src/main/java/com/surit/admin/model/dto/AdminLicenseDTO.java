@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class FixerLicenseDTO {
+public class AdminLicenseDTO {
 
 	private Long licenseId;
 	private Long userNo;
