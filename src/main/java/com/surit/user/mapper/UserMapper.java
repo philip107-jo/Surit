@@ -13,7 +13,7 @@ public interface UserMapper {
 	int countByUserId(String userId);
 	
 	// 아이디를 통한 회원 조회
-	UserDTO selectByUserID(String userID);
+	UserDTO selectByUserId(String userID);
 	
 	//아이디 기준을 회원 삭제 -> 데이터 삭제
 	int deleteUser(String userId);

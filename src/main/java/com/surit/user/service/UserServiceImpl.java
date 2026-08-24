@@ -33,19 +33,19 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public boolean isUserIdCheck(String userId) {
 		// TODO Auto-generated method stub
-		return mapper.countByUserId(userId) ==1;
+		return mapper.countByUserId(userId) >0;
 	}
 
 	@Override
 	public UserDTO login(String userId, String userPwd) throws IllegalStateException {
 		//아이디 기준으로 회원 정보 조회
-		UserDTO user = mapper.selectByUserID(userId);
+		UserDTO user = mapper.selectByUserId(userId);
 		//조회된 정보 중 비밀번호(암호문)와 전달된 비밀번호(평문)가 일치하는 지 확인
 		//암호화된 비밀번호 = DB에서 조회된 값(member.etMemberPwd())
 		//평문 비밀번호 => 전달된 값 (memberPwd)
 		
 		//passwordEncoder.matches(평문, 암호문)=> 동일한 경우 true, 그렇지 않으면 false 반환
-		if(user == null || passwordencoder.matches(userPwd, user.getPassword())) {
+		if(user == null || !passwordencoder.matches(userPwd, user.getPassword())) {
 			throw new IllegalStateException("아이디 또는 비밀번호가 일치하지 않습니다.");
 		}
 		//회원 정보 반환
@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void withdraw(String userId) {
 		//삭제 전 아이디 기준으로 조회
-		UserDTO user = mapper.selectByUserID(userId);
+		UserDTO user = mapper.selectByUserId(userId);
 		// DB에서 해당 사용자 정보 삭제 (Mapper)
 		mapper.deleteUser(userId);
 		//프로필 이미지가 있는 경우 서버에서 이미지 파일 삭제 (FileUploadUtil)
