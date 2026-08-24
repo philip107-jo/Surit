@@ -71,7 +71,18 @@ public class EstimateController {
 
 		} catch (IllegalStateException e) {
 			ra.addFlashAttribute("message", e.getMessage());
-			return "redirect:/fixer/estimates/new?requestId=" + form.getRequestId();
+
+			/*
+			 * requestId 가 없으면(폼이 조작됐거나 값이 안 넘어온 경우)
+			 * "...new?requestId=null" 로 리다이렉트하게 되고,
+			 * 그 다음 화면은 long 타입으로 못 받아서 또 에러 화면이 뜬다.
+			 * requestId 가 있을 때만 견적 작성 화면으로 돌려보내고,
+			 * 없으면 안전하게 목록으로 보낸다.
+			 */
+			if (form.getRequestId() != null) {
+				return "redirect:/fixer/estimates/new?requestId=" + form.getRequestId();
+			}
+			return "redirect:/fixer/requests";
 		}
 	}
 

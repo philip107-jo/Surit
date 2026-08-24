@@ -85,6 +85,19 @@
 		  LEFT JOIN COMMON_CODE cc ON cc.CODE_ID = r.CATEGORY_CODE
 		  LEFT JOIN COMMON_CODE sc ON sc.CODE_ID = r.STATUS_CODE
 		 WHERE e.FIXER_NO = #{fixerNo}
+		<!--
+			수리까지 완료(REQ_04)됐는데 내 견적이 SELECTED 가 아니면
+			= 다른 기사에게 넘어가서 결과가 이미 끝난 견적.
+			이런 건 "내 견적" 목록에서 더 이상 볼 필요가 없어서 뺀다.
+
+			행을 지우는 게 아니라 화면에서만 걸러내는 것이다.
+			ESTIMATES 데이터는 그대로 남아있으니, 나중에 분쟁이나 통계가
+			필요해지면 언제든 DB 에서 확인할 수 있다.
+
+			아직 진행중(REQ_01~REQ_03)이면 결과가 안 나온 거라 계속 보여주고,
+			내가 SELECTED 로 완료된 건(내 성공 사례)도 계속 보여준다.
+		-->
+		AND NOT (r.STATUS_CODE = 'REQ_04' AND e.STATUS != 'SELECTED')
 		 ORDER BY e.CREATED_AT DESC, e.ESTIMATE_ID DESC
 	</select>
 

@@ -5,14 +5,16 @@
 <mapper namespace="com.surit.fixer.request.model.mapper.RequestMapper">
 
 	<!--
-		기사가 "볼 수 있는" 접수의 조건.
+		기사가 "볼 수 있는" 접수의 조건 — 분야 · 지역 · 차단 여부.
 		목록과 상세가 똑같은 조건을 써야 한다. 한쪽만 고치면 구멍이 생기니까
 		<sql> 로 빼놓고 양쪽에서 <include> 한다.
-	-->
-	<sql id="visibleToFixer">
-		<!-- 아직 기사를 못 정한 접수만 (접수대기 / 견적중) -->
-		AND r.STATUS_CODE IN ('REQ_01', 'REQ_02')
 
+		상태(STATUS_CODE) 조건은 여기 넣지 않는다.
+		목록(새 접수 찾기)과 상세(내가 견적 낸 것도 계속 보기)가
+		"어떤 상태까지 보여줄지" 기준이 서로 다르기 때문에,
+		각 <select> 에서 따로 붙인다.
+	-->
+	<sql id="fixerScope">
 		<!-- 내가 등록한 수리 분야와 일치 -->
 		AND EXISTS (
 			SELECT 1
@@ -82,7 +84,9 @@
 	        resultType="com.surit.fixer.request.model.dto.RepairRequestDTO">
 		<include refid="baseColumns"/>
 		 WHERE 1 = 1
-		<include refid="visibleToFixer"/>
+		<!-- 새 접수 찾기 화면이므로 아직 기사를 못 정한 접수만 (접수대기 / 견적중) -->
+		AND r.STATUS_CODE IN ('REQ_01', 'REQ_02')
+		<include refid="fixerScope"/>
 
 		<if test="categoryCode != null and categoryCode != ''">
 			AND r.CATEGORY_CODE = #{categoryCode}
@@ -106,7 +110,24 @@
 	        resultType="com.surit.fixer.request.model.dto.RepairRequestDTO">
 		<include refid="baseColumns"/>
 		 WHERE r.REQUEST_ID = #{requestId}
-		<include refid="visibleToFixer"/>
+		<!--
+			둘 중 하나면 상세를 볼 수 있다.
+			  1) 아직 기사를 못 정한 접수 (접수대기 / 견적중)
+			  2) 내가 이미 견적을 낸 접수 — 매칭완료/수리완료로 바뀌어도
+			     "내 견적" 목록에서 눌러 들어갈 수 있어야 한다.
+			이 조건은 상세에만 넣는다. 목록(selectNearbyRequests)에까지 넣으면
+			이미 끝난 접수가 "새 접수 찾기" 화면에 다시 나타나 버린다.
+		-->
+		AND (
+			r.STATUS_CODE IN ('REQ_01', 'REQ_02')
+			OR EXISTS (
+				SELECT 1
+				  FROM ESTIMATES e
+				 WHERE e.REQUEST_ID = r.REQUEST_ID
+				   AND e.FIXER_NO   = #{userNo}
+			)
+		)
+		<include refid="fixerScope"/>
 	</select>
 
 

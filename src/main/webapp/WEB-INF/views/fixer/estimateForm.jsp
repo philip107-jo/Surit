@@ -31,7 +31,17 @@
 </table>
 
 <h3>견적 입력</h3>
-<form action="/fixer/estimates" method="post">
+<%--
+	onsubmit 에서 버튼을 막아도 이번 제출 자체는 그대로 나간다.
+	브라우저는 onsubmit 이 true 를 돌려준 뒤에 폼을 전송하기 때문에,
+	여기서 disabled 를 걸어도 지금 누른 제출은 막지 않고
+	"같은 버튼을 한 번 더 누르는 것"만 막는다.
+
+	다만 이건 실수로 두 번 클릭하는 걸 줄여주는 보조 수단일 뿐이고,
+	진짜 중복 방지는 서버(DB의 UNIQUE 제약)가 한다.
+	자바스크립트가 꺼져 있거나 새로고침으로 다시 보내는 경우까지는 못 막는다.
+--%>
+<form action="/fixer/estimates" method="post" onsubmit="return handleSubmit(this);">
 
 	<%-- CSRF 를 켜둔 프로젝트에서만 토큰이 만들어진다. 없으면 이 줄은 그냥 건너뛴다 --%>
 	<c:if test="${not empty _csrf}">
@@ -62,10 +72,26 @@
 	</table>
 
 	<p>
-		<button type="submit">견적 제출</button>
+		<button type="submit" id="submitBtn">견적 제출</button>
 		<a href="/fixer/requests/${repair.requestId}">취소</a>
 	</p>
 </form>
+
+<script>
+function handleSubmit(form) {
+	var btn = document.getElementById('submitBtn');
+
+	// 이미 한 번 눌러서 비활성화된 상태면 더 이상 못 누르게 막는다
+	if (btn.disabled) {
+		return false;
+	}
+
+	btn.disabled = true;
+	btn.textContent = '제출 중...';
+
+	return true; // 폼은 그대로 전송한다
+}
+</script>
 
 </body>
 </html>
