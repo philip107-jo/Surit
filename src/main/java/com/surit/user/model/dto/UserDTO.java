@@ -1,4 +1,4 @@
-package com.surit.user.dto;
+package com.surit.user.model.dto;
 
 import java.sql.Timestamp;
 
@@ -17,7 +17,7 @@ public class UserDTO {
 	private int userNo;
 	private String userId;
 	private String email;
-	private String password;
+	private String passWord;
 	private String name;
 	private String phone;
 	private String userRole;

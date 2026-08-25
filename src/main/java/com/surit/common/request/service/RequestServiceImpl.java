@@ -1,15 +1,15 @@
-package com.surit.fixer.request.service;
+package com.surit.common.request.service;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.surit.common.model.dto.CommonCodeDTO;
+import com.surit.common.model.mapper.CommonCodeMapper;
+import com.surit.common.request.model.dto.RequestDTO;
+import com.surit.common.request.model.mapper.RequestMapper;
 import com.surit.fixer.common.FixerGuard;
-import com.surit.fixer.common.model.dto.CommonCodeDTO;
-import com.surit.fixer.common.model.mapper.CommonCodeMapper;
-import com.surit.fixer.request.model.dto.RepairRequestDTO;
-import com.surit.fixer.request.model.mapper.RequestMapper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,7 +28,7 @@ public class RequestServiceImpl implements RequestService {
 
 	@Override
 	@Transactional(readOnly = true)   // 조회만 하니까 readOnly. 커밋 처리를 안 해서 조금 가볍다
-	public List<RepairRequestDTO> getNearbyRequests(int userNo, String categoryCode, String keyword) {
+	public List<RequestDTO> getNearbyRequests(int userNo, String categoryCode, String keyword) {
 
 		fixerGuard.requireApprovedFixer(userNo);
 
@@ -37,11 +37,11 @@ public class RequestServiceImpl implements RequestService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public RepairRequestDTO getRequestDetail(int userNo, long requestId) {
+	public RequestDTO getRequestDetail(int userNo, long requestId) {
 
 		fixerGuard.requireApprovedFixer(userNo);
 
-		RepairRequestDTO request = mapper.selectRequestDetail(userNo, requestId);
+		RequestDTO request = mapper.selectRequestDetail(userNo, requestId);
 
 		if (request == null) {
 			// 없는 번호이거나, 내 분야/지역이 아니거나, 이미 매칭이 끝난 접수.

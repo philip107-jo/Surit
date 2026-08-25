@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.surit.fixer.common.model.dto.CommonCodeDTO;
-import com.surit.fixer.common.model.mapper.CommonCodeMapper;
+import com.surit.common.model.dto.CommonCodeDTO;
+import com.surit.common.model.mapper.CommonCodeMapper;
 import com.surit.fixer.common.util.FileUploadUtil;
 import com.surit.fixer.common.util.SavedFile;
 import com.surit.fixer.verify.model.dto.FixerLicenseDTO;

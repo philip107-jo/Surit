@@ -1,4 +1,4 @@
-package com.surit.fixer.common.model.dto;
+package com.surit.common.model.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

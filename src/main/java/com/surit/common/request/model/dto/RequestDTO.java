@@ -1,4 +1,4 @@
-package com.surit.fixer.request.model.dto;
+package com.surit.common.request.model.dto;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -15,7 +15,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class RepairRequestDTO {
+public class RequestDTO {
 
 	// ---- REPAIR_REQUESTS 컬럼 ----
 	private Long      requestId;
@@ -41,5 +41,5 @@ public class RepairRequestDTO {
 	private Long myEstimateId;
 
 	// ---- 상세 화면에서만 채운다 ----
-	private List<RepairPhotoDTO> photos;
+	private List<RequestPhotoDTO> photos;
 }

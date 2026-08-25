@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.surit.common.ApiResponse;
-import com.surit.user.dto.UserDTO;
+import com.surit.user.model.dto.UserDTO;
 import com.surit.user.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;

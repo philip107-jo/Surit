@@ -1,4 +1,4 @@
-package com.surit.fixer.request.controller;
+package com.surit.common.request.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.surit.fixer.request.service.RequestService;
+import com.surit.common.request.service.RequestService;
 import com.surit.user.SessionConst;
-import com.surit.user.dto.UserDTO;
+import com.surit.user.model.dto.UserDTO;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;

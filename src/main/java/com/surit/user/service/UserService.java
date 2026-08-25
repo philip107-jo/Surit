@@ -2,7 +2,7 @@ package com.surit.user.service;
 
 import java.io.IOException;
 
-import com.surit.user.dto.UserDTO;
+import com.surit.user.model.dto.UserDTO;
 
 public interface UserService {
 

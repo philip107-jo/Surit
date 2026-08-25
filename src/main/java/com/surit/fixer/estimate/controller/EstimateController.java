@@ -12,7 +12,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.surit.fixer.estimate.model.dto.EstimateForm;
 import com.surit.fixer.estimate.service.EstimateService;
 import com.surit.user.SessionConst;
-import com.surit.user.dto.UserDTO;
+import com.surit.user.model.dto.UserDTO;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;

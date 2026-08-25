@@ -26,15 +26,10 @@
  <delete id="deleteUser" parameterType="string">
  DELETE FROM USERS WHERE USER_ID = #{userId}
  </delete>
-  <insert id="insertAddress" parameterType="UserAddressDTO">
- INSERT INTO USERS (
-	   ADDRESS_ID,
-		USER_NO,
-		ZIP_CODE,
-		ADDRESS,
-		ADDRESS_DETAIL,
-		IS_DEFAULT) 
- VALUES(#{addressId}, #{userId}, #{zipCode},#{addressDetail},#{isDefault})
- </insert>
+<insert id="insertAddress" parameterType="UserAddressDTO"
+        useGeneratedKeys="true" keyProperty="addressId" keyColumn="ADDRESS_ID">
+    INSERT INTO USER_ADDRESS (USER_NO, ZIP_CODE, ADDRESS, ADDRESS_DETAIL, IS_DEFAULT)
+    VALUES (#{userNo}, #{zipCode}, #{address}, #{addressDetail}, #{isDefault})
+</insert>
 </mapper>
 

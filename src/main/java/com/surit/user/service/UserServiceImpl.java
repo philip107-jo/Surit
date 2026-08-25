@@ -5,8 +5,8 @@ import java.io.IOException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.surit.user.dto.UserDTO;
 import com.surit.user.mapper.UserMapper;
+import com.surit.user.model.dto.UserDTO;
 
 import lombok.RequiredArgsConstructor;
 

@@ -3,7 +3,7 @@ package com.surit.fixer.verify.service;
 import java.io.IOException;
 import java.util.List;
 
-import com.surit.fixer.common.model.dto.CommonCodeDTO;
+import com.surit.common.model.dto.CommonCodeDTO;
 import com.surit.fixer.verify.model.dto.FixerProfileDTO;
 import com.surit.fixer.verify.model.dto.FixerVerifyRequest;
 

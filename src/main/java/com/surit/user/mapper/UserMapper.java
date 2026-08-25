@@ -2,7 +2,7 @@ package com.surit.user.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.surit.user.dto.UserDTO;
+import com.surit.user.model.dto.UserDTO;
 @Mapper
 public interface UserMapper {
 
