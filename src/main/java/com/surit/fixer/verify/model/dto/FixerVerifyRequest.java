@@ -20,6 +20,9 @@ public class FixerVerifyRequest {
 	private String  intro;
 	private Integer careerYears;
 
+	// → FIXER_PROFILE.FIXER_PHOTO_URL (고객 확인용 사진, 필수 1장)
+	private MultipartFile photoFile;
+
 	// → FIXER_REGION   (COMMON_CODE 의 REGION 코드)
 	private List<String> regionCodes;
 

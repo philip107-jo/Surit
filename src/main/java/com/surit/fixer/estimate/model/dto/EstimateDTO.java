@@ -26,7 +26,7 @@ public class EstimateDTO {
 	 * 돈은 double 로 다루지 않는다.
 	 * double 은 0.1 같은 값을 정확히 못 담아서 더할수록 오차가 쌓인다.
 	 */
-	private BigDecimal estimatedPrice;
+	private BigDecimal estimatedPrice;     // 소수점 계산 
 	private Integer    estimatedDuration;  // 예상 소요 시간(분)
 	private String     content;
 	private String     status;             // PENDING / SELECTED
