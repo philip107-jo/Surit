@@ -1,4 +1,4 @@
-package com.surit.admin.model.dto;
+package com.surit.common;
 
 import java.time.LocalDateTime;
 
@@ -19,3 +19,4 @@ public class ReviewDTO {
 	private LocalDateTime createdAt;
 	
 }
+

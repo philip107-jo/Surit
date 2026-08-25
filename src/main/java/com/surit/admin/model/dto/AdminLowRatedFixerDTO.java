@@ -1,7 +1,5 @@
 package com.surit.admin.model.dto;
 
-import java.time.LocalDate;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,11 +7,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class AdminLicenseDTO {
-
-	private Long licenseId;
+public class AdminLowRatedFixerDTO {
 	private Long userNo;
-	private String licenseName;
-	private String uploadUrl;
-	private LocalDate issuedAt;
+	private String userId;
+	private String name;
+	private Double avgScore;
+	private Integer reviewCount;
 }

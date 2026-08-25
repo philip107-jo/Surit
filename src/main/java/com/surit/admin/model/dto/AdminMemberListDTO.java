@@ -19,5 +19,5 @@ public class AdminMemberListDTO {
 	
 	private String approvalStatus;
 	private Double avgScore;	//review 계산값 1
-	private Integer reviewCount; // review 계산값 2
+	private Long reviewCount; // review 계산값 2
 }

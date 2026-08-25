@@ -1,10 +1,13 @@
 package com.surit.admin.model.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+// 검색 조건
 public class MemberSearchCondition {
 
 	// 검색 파라미터 : 카테고리, 검색 종류, 키워드

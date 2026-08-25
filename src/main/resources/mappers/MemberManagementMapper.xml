@@ -66,7 +66,7 @@
 	</select>
 
 	<!-- 5. 자격증 -->
-	<select id="selectLicenses" resultType="AdminLicenseDTO">
+	<select id="selectLicenses" resultType="FixerLicenseDTO">
 		SELECT LICENSE_ID, USER_NO, LICENSE_NAME, UPLOAD_URL, ISSUED_AT
 		  FROM FIXER_LICENSE
 		 WHERE USER_NO = #{userNo}

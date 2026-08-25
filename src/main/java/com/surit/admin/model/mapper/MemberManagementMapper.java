@@ -7,8 +7,8 @@ import org.apache.ibatis.annotations.Param;
 
 import com.surit.admin.model.dto.AdminFixerDetailDTO;
 import com.surit.admin.model.dto.AdminMemberListDTO;
-import com.surit.admin.model.dto.AdminLicenseDTO;
 import com.surit.admin.model.dto.MemberSearchCondition;
+import com.surit.fixer.verify.model.dto.FixerLicenseDTO;
 
 @Mapper
 public interface MemberManagementMapper {
@@ -18,7 +18,7 @@ public interface MemberManagementMapper {
 	List<AdminMemberListDTO> selectMemberList(MemberSearchCondition cond); // 전체 회원 조회 
 	int selectMemberCount(MemberSearchCondition cond); // 페이지 개수 
 	AdminFixerDetailDTO selectFixerDetail(Long userNo); // 기사 상세
-	List<AdminLicenseDTO> selectLicenses(Long userNo); // 자격증
+	List<FixerLicenseDTO> selectLicenses(Long userNo); // 자격증
 	List<String> selectCategories(Long userNo); // 수리 카테고리
 	List<String> selectRegions(Long userNo); // 활동 지역
 

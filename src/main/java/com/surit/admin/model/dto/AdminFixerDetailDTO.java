@@ -3,6 +3,8 @@ package com.surit.admin.model.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.surit.fixer.verify.model.dto.FixerLicenseDTO;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,13 +26,13 @@ public class AdminFixerDetailDTO {
 	
 	// FIXER_PROFILE
 	private String intro;
-	private Integer careerYears;
+	private Long careerYears;
 	private String approvalStatus;
 	private LocalDateTime approvedAt;
 	private String rejectReason;
 	
 	// 1:N - 별도조회
-	private List<AdminLicenseDTO> licenses;
+	private List<FixerLicenseDTO> licenses;
 	private List<String> categories;
 	private List<String> regions;
 	
