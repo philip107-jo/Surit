@@ -23,11 +23,11 @@ public interface EstimateMapper {
 
 	/** 내가 이 접수에 이미 견적을 냈는지 */
 	int countMyEstimate(@Param("requestId") long requestId,
-	                    @Param("fixerNo") int fixerNo);
+	                    @Param("fixerNo") long fixerNo);
 
 	/** 접수 상태를 '접수대기(REQ_01)' → '견적중(REQ_02)' 로 */
 	int updateRequestToEstimating(@Param("requestId") long requestId);
 
 	/** 내가 낸 견적 목록 */
-	List<EstimateDTO> selectMyEstimates(@Param("fixerNo") int fixerNo);
+	List<EstimateDTO> selectMyEstimates(@Param("fixerNo") long fixerNo);
 }

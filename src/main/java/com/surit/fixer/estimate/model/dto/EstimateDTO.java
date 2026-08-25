@@ -1,6 +1,5 @@
 package com.surit.fixer.estimate.model.dto;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 import lombok.Getter;
@@ -19,15 +18,15 @@ import lombok.Setter;
 public class EstimateDTO {
 
 	// ---- ESTIMATES 컬럼 ----
-	private Long       estimateId;
+	private Long estimateId;
 	private Long       requestId;
-	private Integer    fixerNo;            // 견적을 낸 기사의 USER_NO
+	private Long    fixerNo;            // 견적을 낸 기사의 USER_NO
 	/**
 	 * 돈은 double 로 다루지 않는다.
 	 * double 은 0.1 같은 값을 정확히 못 담아서 더할수록 오차가 쌓인다.
 	 */
-	private BigDecimal estimatedPrice;     // 소수점 계산 
-	private Integer    estimatedDuration;  // 예상 소요 시간(분)
+	private Long    estimatedPrice;     // 원 단위 정수 (소수점 없음)
+	private Long    estimatedDuration;  // 예상 소요 시간(분)
 	private String     content;
 	private String     status;             // PENDING / SELECTED
 	private Timestamp  createdAt;
