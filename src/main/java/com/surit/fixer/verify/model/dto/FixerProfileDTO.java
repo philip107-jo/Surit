@@ -1,20 +1,20 @@
 package com.surit.fixer.verify.model.dto;
 
-import java.time.LocalDateTime;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * FIXER_PROFILE 한 행.
+ * PK 가 USER_NO 라서 USERS 와 1:1 이다. (한 사람당 기사 프로필 하나)
+ */
 @Getter @Setter @NoArgsConstructor @ToString
 public class FixerProfileDTO {
 
-	private String        fixerId;            // ★ USER_ID 아님. 팀 스키마는 FIXER_ID
-	private Integer       fixerNo;            // SEQ_FIXER_NO 로 발급, UNIQUE
-	private String        fixerApproval;      // PENDING / APPROVED / REJECTED
-	private LocalDateTime fixerApprovedAt;
-	private String        fixerRejectReason;  // 거절 사유 (재신청 화면에 보여줌)
-	private String        fixerIntro;         // 500자
-	private String        fixerCareer;        // 200자
+	private Long    userNo;          // USER_NO (PK, USERS 참조)
+	private String  intro;           // INTRO
+	private Long    careerYears;     // CAREER_YEARS (숫자! 예전엔 문자열이었음)
+	private String  approvalStatus;  // PENDING / APPROVED / REJECTED
+	private String  photoUrl;        // FIXER_PHOTO_URL (고객 확인용 사진, 파일 경로)
 }

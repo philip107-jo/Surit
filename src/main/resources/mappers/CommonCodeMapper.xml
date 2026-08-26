@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.surit.fixer.common.model.mapper.CommonCodeMapper">
+
+	<select id="selectByGroup" parameterType="string"
+	        resultType="com.surit.fixer.common.model.dto.CommonCodeDTO">
+		SELECT CODE_ID, CODE_GROUP, CODE_NAME, USE_YN
+		  FROM COMMON_CODE
+		 WHERE CODE_GROUP = #{codeGroup}
+		   AND USE_YN = 'Y'
+		 ORDER BY CODE_ID
+	</select>
+
+</mapper>

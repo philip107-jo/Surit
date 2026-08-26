@@ -1,35 +1,45 @@
 package com.surit.fixer.request.model.dto;
 
+import java.sql.Timestamp;
+import java.util.List;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
-@Getter @Setter @NoArgsConstructor @ToString
+/**
+ * REPAIR_REQUESTS 한 줄 + 화면에 같이 보여줄 조인 결과.
+ *
+ * REQUEST_ID 는 IDENTITY 라 INSERT 할 때 넣지 않는다.
+ */
+@Getter
+@Setter
+@NoArgsConstructor
 public class RepairRequestDTO {
 
-	private Long    repairNo;
-	private String  receiptCode;      // R-260820-001
-	private String  receiptTitle;
-	private String  modelName;
-	private String  receiptDetails;   // 상세 화면에서만 사용
-	private String  receiptAddress;
-	private String  receiptStatus;
-	private Integer receiptUrgent;    // 1 이면 긴급
+	// ---- REPAIR_REQUESTS 컬럼 ----
+	private Long      requestId;
+	private Long      userNo;          // 의뢰한 고객
+	private String    categoryCode;
+	private String    title;
+	private String    content;
+	private String    serviceAddress;
+	private String    statusCode;
+	private Timestamp createdAt;
 
-	private String  categoryId;
-	private String  categoryItem;     // CATEGORY 조인
-	private String  userName;         // USERS 조인 (고객 이름)
+	// ---- 조인해서 가져오는 값 ----
+	private String  categoryName;      // COMMON_CODE.CODE_NAME
+	private String  statusName;        // COMMON_CODE.CODE_NAME
+	private String  customerName;      // USERS.NAME
+	private Long    estimateCount;     // 이 접수에 달린 견적 수
 
-	// 화면에 그대로 뿌릴 문자열. SQL 의 TO_CHAR 로 미리 만들어서 받는다
-	private String  visitAtText;      // 2026-08-25 14:00
-	private String  createdAtText;    // 2026-08-20 09:12
+	/**
+	 * 내가 이미 이 접수에 견적을 냈으면 그 ESTIMATE_ID, 아니면 null.
+	 * 목록에서 접수 하나마다 따로 조회하면 N+1 이 되니까
+	 * 목록 SQL 안에서 스칼라 서브쿼리로 한 번에 가져온다.
+	 */
+	private Long myEstimateId;
 
-	private Long    myEstimateId;     // 내가 이미 낸 견적 (없으면 null)
-	private Integer photoCount;
+	// ---- 상세 화면에서만 채운다 ----
+	private List<RepairPhotoDTO> photos;
 }
-/*
- * 날짜를 TO_CHAR 로 받는 이유: JSTL 의 <fmt:formatDate> 는 옛날 java.util.Date 용이라 LocalDateTime 을 못 받아.
- *  JSP에서 날짜 포맷 맞추려면 방법이 번거로워져. 
- *  SQL에서 이미 문자로 만들어 보내면 JSP는 그냥 ${r.visitAtText} 로 찍기만 하면 돼.
- */

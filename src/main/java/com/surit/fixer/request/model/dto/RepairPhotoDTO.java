@@ -1,16 +1,21 @@
 package com.surit.fixer.request.model.dto;
 
+import java.sql.Timestamp;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
-@Getter @Setter @NoArgsConstructor @ToString
+/** REPAIR_PHOTO 한 줄 (고객이 올린 고장 사진) */
+@Getter
+@Setter
+@NoArgsConstructor
 public class RepairPhotoDTO {
 
-	private Long    photoId;
-	private Long    repairNo;
-	private String  photoPath;
-	private String  photoType;    // REQUEST(접수사진) / BEFORE / AFTER
-	private Integer photoOrder;
+	private Long      photoId;
+	private Long      requestId;
+	private String    photoPath;
+	private String    photoType;
+	private Long      photoOrder;
+	private Timestamp createdAt;
 }

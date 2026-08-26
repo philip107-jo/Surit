@@ -22,14 +22,11 @@ document.addEventListener('click', function (e) {
  
 /* 선택형 UI (카테고리 / 라디오 카드 / 칩) — 같은 그룹 안에서 하나만 선택 */
 document.addEventListener('click', function (e) {
-  var el = e.target.closest('[data-select]');
-  if (!el) return;
-  var group = el.getAttribute('data-select');
-  document.querySelectorAll('[data-select="' + group + '"]').forEach(function (x) {
-    x.classList.remove('is-on');
-  });
-  el.classList.add('is-on');
-});
+	 var el = e.target.closest('[data-select="role"]');
+	  if (!el) return;
+	  var roleInput = document.getElementById('user-role');
+	  if (roleInput) roleInput.value = el.dataset.role;
+	});
  
 /* 다중 선택 칩 */
 document.addEventListener('click', function (e) {
@@ -61,10 +58,13 @@ document.addEventListener('click', function (e) {
 /* 회원가입 : 회원 유형(role) 선택 카드가 hidden input(userRole)에도 값을 반영 */
 /* 카드 전환 자체는 위 [data-select] 핸들러가 처리, 여기서는 hidden input 동기화만 담당 */
 document.addEventListener('click', function (e) {
-  var el = e.target.closest('[data-select="role"]');
+  var el = e.target.closest('[data-select]');
   if (!el) return;
-  var roleInput = document.getElementById('user-role');
-  if (roleInput) roleInput.value = el.dataset.role;
+  var group = el.getAttribute('data-select');
+  document.querySelectorAll('[data-select="' + group + '"]').forEach(function (x) {
+    x.classList.remove('is-on');
+  });
+  el.classList.add('is-on');
 });
  
 /* 회원가입 폼 유효성 검사 + 아이디 중복확인 */

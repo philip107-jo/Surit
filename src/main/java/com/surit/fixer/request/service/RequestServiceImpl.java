@@ -1,13 +1,13 @@
 package com.surit.fixer.request.service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.surit.fixer.common.FixerGuard;
+import com.surit.fixer.common.model.dto.CommonCodeDTO;
+import com.surit.fixer.common.model.mapper.CommonCodeMapper;
 import com.surit.fixer.request.model.dto.RepairRequestDTO;
 import com.surit.fixer.request.model.mapper.RequestMapper;
 
@@ -17,46 +17,48 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RequestServiceImpl implements RequestService {
 
-	private final RequestMapper mapper;
-	private final FixerGuard    guard;
-
+	private final RequestMapper    mapper;
+	private final CommonCodeMapper codeMapper;
+	private final FixerGuard       fixerGuard;
 
 	@Override
-	@Transactional(readOnly = true)
-	public List<RepairRequestDTO> getNearbyRequests(String fixerId) {
-
-		guard.requireApprovedFixer(fixerId);
-		return mapper.selectNearbyRequests(fixerId);
+	public List<CommonCodeDTO> getCategoryList() {
+		return codeMapper.selectByGroup("CATEGORY");
 	}
 
+	@Override
+	@Transactional(readOnly = true)   // 조회만 하니까 readOnly. 커밋 처리를 안 해서 조금 가볍다
+	public List<RepairRequestDTO> getNearbyRequests(long userNo, String categoryCode, String keyword) {
+
+		fixerGuard.requireApprovedFixer(userNo);
+
+		return mapper.selectNearbyRequests(userNo, trimToNull(categoryCode), trimToNull(keyword));
+	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public Map<String, Object> getRequestDetail(Long repairNo, String fixerId) {
+	public RepairRequestDTO getRequestDetail(long userNo, long requestId) {
 
-		guard.requireApprovedFixer(fixerId);
+		fixerGuard.requireApprovedFixer(userNo);
 
-		RepairRequestDTO request = mapper.selectRequestDetail(repairNo, fixerId);
+		RepairRequestDTO request = mapper.selectRequestDetail(userNo, requestId);
 
 		if (request == null) {
-			// 없는 번호이거나, 내 지역·분야 밖이거나, 이미 마감된 건
-			throw new IllegalStateException("조회할 수 없는 접수입니다.");
+			// 없는 번호이거나, 내 분야/지역이 아니거나, 이미 매칭이 끝난 접수.
+			// 어느 쪽인지 굳이 알려주지 않는다. 알려주면 번호를 하나씩 넣어보며
+			// "이 번호는 존재하는구나" 를 알아낼 수 있다.
+			throw new IllegalStateException("볼 수 없는 접수입니다.");
 		}
 
-		Map<String, Object> result = new HashMap<>();
-		result.put("request", request);
-		result.put("photos", mapper.selectRequestPhotos(repairNo));
+		request.setPhotos(mapper.selectPhotos(requestId));
+		return request;
+	}
 
-		return result;
+	/** 빈 문자열은 null 로 (XML 의 <if> 조건을 단순하게 유지하려고) */
+	private String trimToNull(String s) {
+		if (s == null || s.isBlank()) {
+			return null;
+		}
+		return s.trim();
 	}
 }
-
-/*
-@Transactional(readOnly = true) — 조회만 하는 메서드에 붙여. 
-DB에게 "나 안 고칠 거야" 라고 미리 알려주는 거라 최적화가 되고, 
-실수로 INSERT 를 넣었을 때 막아주기도 해.
-
-requireApprovedFixer 가 F-14 와 F-15 를 잇는 고리야. 
-인증 안 받은 사람이 접수를 보면 안 되잖아.
- 그리고 이 검사는 F-16, F-17 에서도 똑같이 필요해.
- 나중에 공통으로 뺄 자리야.*/

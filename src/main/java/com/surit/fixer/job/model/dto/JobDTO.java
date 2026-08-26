@@ -1,34 +1,39 @@
 package com.surit.fixer.job.model.dto;
 
+import java.sql.Timestamp;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
-@Getter @Setter @NoArgsConstructor @ToString
+/**
+ * 내 작업 한 건.
+ *
+ * "작업" = 내가 낸 견적이 선택(SELECTED)된 접수.
+ * 그래서 ESTIMATES + REPAIR_REQUESTS + USERS 를 조인한 결과를 담는다.
+ */
+@Getter
+@Setter
+@NoArgsConstructor
 public class JobDTO {
 
-	private Long    repairNo;
-	private String  receiptCode;
-	private String  receiptTitle;
-	private String  modelName;
-	private String  receiptDetails;
-	private String  receiptAddress;
-	private String  receiptStatus;
-	private Integer receiptUrgent;
+	// ---- 접수 ----
+	private Long      requestId;
+	private String    title;
+	private String    content;
+	private String    serviceAddress;
+	private String    statusCode;
+	private String    statusName;
+	private String    categoryName;
+	private Timestamp createdAt;
 
-	private String  categoryItem;
-	private String  userName;
-	private String  userPnumber;      // 방문해야 하니 연락처 필요
+	// ---- 고객 ----
+	private String customerName;
+	private String customerPhone;
 
-	private String  visitAtText;
-	private String  visitConfirmedAtText;
-	private String  canceledAtText;
-	private String  cancelReason;
-
-	private Long    myPrice;
-	private String  myDuration;
-	private String  myMessage;
-
-	private String  statusLabel;      // 서비스가 채움
+	// ---- 내 견적 ----
+	private Long estimateId;
+	private Long estimatedPrice;      // 원 단위 정수 (소수점 없음)
+	private Long estimatedDuration;
+	private String     estimateContent;
 }

@@ -1,88 +1,77 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.fixer.job.model.mapper.JobMapper">
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
+<mapper namespace="com.surit.fixer.job.model.mapper.JobMapper">
+
+	<!--
+		"내 작업" 의 기준 :
+		ESTIMATES 에서 내가 낸 견적이면서 STATUS = 'SELECTED' 인 건.
+		고객이 내 견적을 골랐다는 뜻이다.
+
+		ESTIMATES 를 먼저 두고 REPAIR_REQUESTS 를 JOIN 하는 이유는
+		"내가 낸 견적" 이 훨씬 적어서 여기서 먼저 걸러내는 게 빠르기 때문.
+	-->
 	<sql id="jobColumns">
-		       r.REPAIR_NO,
-		       r.RECEIPT_CODE,
-		       r.RECEIPT_TITLE,
-		       r.MODEL_NAME,
-		       r.RECEIPT_DETAILS,
-		       r.RECEIPT_ADDRESS,
-		       r.RECEIPT_STATUS,
-		       r.RECEIPT_URGENT,
-		       r.CANCEL_REASON,
-		       TO_CHAR(r.RECEIPT_VISIT_AT,   'YYYY-MM-DD HH24:MI') AS VISIT_AT_TEXT,
-		       TO_CHAR(r.VISIT_CONFIRMED_AT, 'YYYY-MM-DD HH24:MI') AS VISIT_CONFIRMED_AT_TEXT,
-		       TO_CHAR(r.CANCELED_AT,        'YYYY-MM-DD HH24:MI') AS CANCELED_AT_TEXT,
-		       c.CATEGORY_ITEM,
-		       u.USER_NAME,
-		       u.USER_PNUMBER,
-		       e.ESTIMATES_PRICE AS MY_PRICE,
-		       e.EST_DURATION    AS MY_DURATION,
-		       e.EST_MESSAGE     AS MY_MESSAGE
+		SELECT r.REQUEST_ID,
+		       r.TITLE,
+		       r.CONTENT,
+		       r.SERVICE_ADDRESS,
+		       r.STATUS_CODE,
+		       r.CREATED_AT,
+		       sc.CODE_NAME AS STATUS_NAME,
+		       cc.CODE_NAME AS CATEGORY_NAME,
+		       u.NAME       AS CUSTOMER_NAME,
+		       u.PHONE      AS CUSTOMER_PHONE,
+		       e.ESTIMATE_ID,
+		       e.ESTIMATED_PRICE,
+		       e.ESTIMATED_DURATION,
+		       e.CONTENT    AS ESTIMATE_CONTENT
+		  FROM ESTIMATES e
+		  JOIN REPAIR_REQUESTS r ON r.REQUEST_ID = e.REQUEST_ID
+		  JOIN USERS           u ON u.USER_NO    = r.USER_NO
+		  LEFT JOIN COMMON_CODE cc ON cc.CODE_ID = r.CATEGORY_CODE
+		  LEFT JOIN COMMON_CODE sc ON sc.CODE_ID = r.STATUS_CODE
+		 WHERE e.FIXER_NO = #{fixerNo}
+		   AND e.STATUS   = 'SELECTED'
 	</sql>
 
-	<!-- JOIN 조건 자체가 소유권 검사다.
-	     내 ACCEPTED 견적이 없으면 애초에 행이 안 나온다 -->
-	<sql id="jobFrom">
-		  FROM REPAIR_REQUESTS r
-		  JOIN ESTIMATES e ON e.REPAIR_NO        = r.REPAIR_NO
-		                  AND e.FIXER_ID         = #{fixerId}
-		                  AND e.ESTIMATES_STATUS = 'ACCEPTED'
-		  JOIN CATEGORY c  ON c.CATEGORY_ID = r.CATEGORY_ID
-		  JOIN USERS    u  ON u.USER_ID     = r.USER_ID
-	</sql>
 
-	<select id="selectMyJobs" parameterType="string" resultType="JobDTO">
-		SELECT <include refid="jobColumns"/>
-		<include refid="jobFrom"/>
-		 ORDER BY CASE r.RECEIPT_STATUS
-		            WHEN 'IN_PROGRESS' THEN 1
-		            WHEN 'MATCHED'     THEN 2
-		            WHEN 'COMPLETED'   THEN 3
-		            ELSE 4
-		          END,
-		          r.RECEIPT_VISIT_AT
-	</select>
-
-	<select id="selectMyJob" resultType="JobDTO">
-		SELECT <include refid="jobColumns"/>
-		<include refid="jobFrom"/>
-		 WHERE r.REPAIR_NO = #{repairNo}
-	</select>
-
-	<update id="updateJobStatus">
-		UPDATE REPAIR_REQUESTS r
-		   SET r.RECEIPT_STATUS = #{toStatus}
-		<if test='toStatus == "IN_PROGRESS"'>
-		     , r.VISIT_CONFIRMED_AT = SYSTIMESTAMP
+	<select id="selectMyJobs" resultType="com.surit.fixer.job.model.dto.JobDTO">
+		<include refid="jobColumns"/>
+		<if test="statusCode != null and statusCode != ''">
+			AND r.STATUS_CODE = #{statusCode}
 		</if>
-		 WHERE r.REPAIR_NO      = #{repairNo}
-		   AND r.RECEIPT_STATUS = #{fromStatus}
-		   AND EXISTS (
-		           SELECT 1 FROM ESTIMATES e
-		            WHERE e.REPAIR_NO        = r.REPAIR_NO
-		              AND e.FIXER_ID         = #{fixerId}
-		              AND e.ESTIMATES_STATUS = 'ACCEPTED'
-		       )
-	</update>
+		<!-- 진행중(REQ_03)을 위로, 그 다음 최신순 -->
+		 ORDER BY CASE r.STATUS_CODE WHEN 'REQ_03' THEN 0 ELSE 1 END,
+		          r.CREATED_AT DESC,
+		          r.REQUEST_ID DESC
+	</select>
 
-	<update id="cancelJob">
-		UPDATE REPAIR_REQUESTS r
-		   SET r.RECEIPT_STATUS = 'CANCELED',
-		       r.CANCEL_BY      = #{fixerId},
-		       r.CANCEL_REASON  = #{reason},
-		       r.CANCELED_AT    = SYSTIMESTAMP
-		 WHERE r.REPAIR_NO = #{repairNo}
-		   AND r.RECEIPT_STATUS IN ('MATCHED', 'IN_PROGRESS')
+
+	<select id="selectMyJob" resultType="com.surit.fixer.job.model.dto.JobDTO">
+		<include refid="jobColumns"/>
+		   AND r.REQUEST_ID = #{requestId}
+	</select>
+
+
+	<!--
+		수리 완료 처리.
+		EXISTS 절이 "이건 내 작업이 맞다" 를 SQL 안에서 확인한다.
+		남의 작업 번호를 주소창에 넣어도 0건이 되어 아무 일도 안 일어난다.
+	-->
+	<update id="completeJob">
+		UPDATE REPAIR_REQUESTS
+		   SET STATUS_CODE = 'REQ_04'
+		 WHERE REQUEST_ID  = #{requestId}
+		   AND STATUS_CODE = 'REQ_03'
 		   AND EXISTS (
-		           SELECT 1 FROM ESTIMATES e
-		            WHERE e.REPAIR_NO        = r.REPAIR_NO
-		              AND e.FIXER_ID         = #{fixerId}
-		              AND e.ESTIMATES_STATUS = 'ACCEPTED'
-		       )
+		 		SELECT 1
+		 		  FROM ESTIMATES e
+		 		 WHERE e.REQUEST_ID = #{requestId}
+		 		   AND e.FIXER_NO   = #{fixerNo}
+		 		   AND e.STATUS     = 'SELECTED'
+		 	)
 	</update>
 
 </mapper>
