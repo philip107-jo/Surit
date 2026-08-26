@@ -1,84 +1,132 @@
 <%@ page language="java" contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="UTF-8">
-	<title>작업 상세</title>
-	<style>
-		table { border-collapse: collapse; width: 100%; max-width: 800px; }
-		th, td { border: 1px solid #ccc; padding: 6px 8px; font-size: 14px; text-align: left; }
-		th { background: #f5f5f5; width: 140px; }
-	</style>
-</head>
-<body>
+<jsp:include page="/WEB-INF/views/common/header.jsp"/>
+<%@ include file="common/icons.jspf" %>
+<c:set var="navActive" value="jobs"/>
 
-<h2>작업 상세</h2>
+<div class="container" style="max-width:900px">
 
-<c:if test="${not empty message}">
-	<p style="color:blue; font-weight:bold;"><c:out value="${message}"/></p>
-</c:if>
+	<div class="page-head page-head--plain">
+		<h1><c:out value="${job.title}"/>
+			<c:choose>
+				<c:when test="${job.statusCode eq 'REQ_04'}">
+					<span class="badge st-done"><c:out value="${job.statusName}"/></span>
+				</c:when>
+				<c:otherwise>
+					<span class="badge st-repairing"><c:out value="${job.statusName}"/></span>
+				</c:otherwise>
+			</c:choose>
+		</h1>
+		<p>접수번호 ${job.requestId} ·
+			<fmt:formatDate value="${job.createdAt}" pattern="yyyy-MM-dd HH:mm"/> 접수</p>
+	</div>
 
-<h3>접수 정보</h3>
-<table>
-	<tr><th>접수번호</th><td>${job.requestId}</td></tr>
-	<tr><th>제목</th>    <td><c:out value="${job.title}"/></td></tr>
-	<tr><th>분야</th>    <td><c:out value="${job.categoryName}"/></td></tr>
-	<tr><th>상태</th>    <td><c:out value="${job.statusName}"/></td></tr>
-	<tr><th>접수일</th>  <td><fmt:formatDate value="${job.createdAt}" pattern="yyyy-MM-dd HH:mm"/></td></tr>
-	<tr>
-		<th>증상</th>
-		<td><pre style="white-space:pre-wrap; margin:0;"><c:out value="${job.content}"/></pre></td>
-	</tr>
-</table>
+	<c:if test="${not empty message}">
+		<div class="note note--blue" style="margin-bottom:24px">
+			<svg><use href="#i-bell"/></svg>
+			<span><c:out value="${message}"/></span>
+		</div>
+	</c:if>
 
-<h3>고객 / 방문지</h3>
-<table>
-	<tr><th>고객명</th>  <td><c:out value="${job.customerName}"/></td></tr>
-	<tr><th>연락처</th>  <td><c:out value="${job.customerPhone}"/></td></tr>
-	<tr><th>방문 주소</th><td><c:out value="${job.serviceAddress}"/></td></tr>
-</table>
+	<!-- 접수 정보 -->
+	<div class="card">
+		<div class="card__head"><h2 class="card__title">접수 정보</h2></div>
+		<dl class="dl--inline">
+			<dt>분야</dt><dd><c:out value="${job.categoryName}"/></dd>
+			<dt>상태</dt><dd><c:out value="${job.statusName}"/></dd>
+		</dl>
+		<div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--g-100)">
+			<div class="field__label" style="margin-bottom:8px">증상</div>
+			<p style="font-size:16px;line-height:1.8;color:var(--g-700);white-space:pre-wrap;margin:0"><c:out value="${job.content}"/></p>
+		</div>
+	</div>
 
-<h3>내 견적</h3>
-<table>
-	<tr><th>견적번호</th>     <td>${job.estimateId}</td></tr>
-	<tr><th>금액</th>         <td><fmt:formatNumber value="${job.estimatedPrice}" pattern="#,##0"/> 원</td></tr>
-	<tr><th>예상 소요 시간</th><td>${job.estimatedDuration} 분</td></tr>
-	<tr>
-		<th>견적 설명</th>
-		<td><pre style="white-space:pre-wrap; margin:0;"><c:out value="${job.estimateContent}"/></pre></td>
-	</tr>
-</table>
+	<!-- 고객 / 방문지 -->
+	<%--
+		연락처와 방문 주소는 내 작업으로 확정된 뒤에만 보인다.
+		접수 목록·상세(F-15)에는 고객 이름만 있고 전화번호가 없다.
+	--%>
+	<div class="card">
+		<div class="card__head">
+			<h2 class="card__title">고객 · 방문지</h2>
+			<span class="muted" style="font-size:15px">매칭된 뒤에만 보입니다</span>
+		</div>
+		<div style="display:flex;align-items:center;gap:20px;margin-bottom:22px">
+			<span class="avatar avatar--lg"><svg><use href="#i-user"/></svg></span>
+			<div>
+				<div style="font-size:21px;font-weight:700"><c:out value="${job.customerName}"/> 고객님</div>
+				<div class="muted" style="font-size:16px;margin-top:4px"><c:out value="${job.customerPhone}"/></div>
+			</div>
+		</div>
+		<dl class="dl--inline">
+			<dt>방문 주소</dt><dd><c:out value="${job.serviceAddress}"/></dd>
+		</dl>
+	</div>
 
-<hr>
+	<!-- 내 견적 -->
+	<div class="card">
+		<div class="card__head">
+			<h2 class="card__title">내가 보낸 예상 견적</h2>
+			<span class="muted" style="font-size:15px">견적번호 ${job.estimateId}</span>
+		</div>
+		<div class="field__label" style="margin-bottom:8px">견적 설명</div>
+		<p style="font-size:16px;line-height:1.8;color:var(--g-700);white-space:pre-wrap;margin:0 0 20px"><c:out value="${job.estimateContent}"/></p>
 
-<c:choose>
-	<c:when test="${job.statusCode eq 'REQ_03'}">
-		<%--
-			상태를 바꾸는 건 POST 로 보낸다.
-			<a href> 링크(GET)로 만들면 클릭 한 번, 심하면 크롤러가 긁기만 해도
-			상태가 바뀌어버린다.
-		--%>
-		<form action="/fixer/jobs/${job.requestId}/complete" method="post"
-		      onsubmit="return confirm('수리 완료로 변경할까요? 되돌릴 수 없습니다.');">
-			<c:if test="${not empty _csrf}">
-				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-			</c:if>
-			<button type="submit">수리 완료 처리</button>
-		</form>
-	</c:when>
+		<dl class="dl--inline">
+			<dt>예상 소요 시간</dt><dd>${job.estimatedDuration} 분</dd>
+		</dl>
 
-	<c:when test="${job.statusCode eq 'REQ_04'}">
-		<p>수리가 완료된 작업입니다.</p>
-	</c:when>
+		<div style="display:flex;justify-content:space-between;align-items:center;
+			margin-top:20px;padding-top:20px;border-top:2px solid var(--g-200)">
+			<span style="font-size:18px;font-weight:700">예상 금액</span>
+			<span style="font-size:32px;font-weight:800;letter-spacing:-1.4px">
+				<fmt:formatNumber value="${job.estimatedPrice}" pattern="#,##0"/>원</span>
+		</div>
+	</div>
 
-	<c:otherwise>
-		<p>아직 완료 처리를 할 수 있는 단계가 아닙니다.</p>
-	</c:otherwise>
-</c:choose>
+	<!-- 완료 처리 -->
+	<div class="card card--flat">
+		<div class="card__head"><h2 class="card__title">수리 완료 처리</h2></div>
 
-<p><a href="/fixer/jobs">← 목록으로</a></p>
+		<c:choose>
+			<c:when test="${job.statusCode eq 'REQ_03'}">
+				<%--
+					상태를 바꾸는 건 POST 로 보낸다.
+					<a href> 링크(GET)로 만들면 클릭 한 번, 심하면 크롤러가 긁기만 해도
+					상태가 바뀌어버린다.
 
-</body>
-</html>
+					여기서 버튼을 숨기는 건 안내일 뿐이고, 진짜 차단은
+					completeJob 의 WHERE 절(상태 + 소유자 확인)이 한다.
+				--%>
+				<form action="/fixer/jobs/${job.requestId}/complete" method="post"
+				      onsubmit="return confirm('수리 완료로 변경할까요? 되돌릴 수 없습니다.');">
+					<c:if test="${not empty _csrf}">
+						<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+					</c:if>
+					<button type="submit" class="btn btn--ok btn--xl btn--block">
+						<svg class="ico"><use href="#i-check"/></svg>수리 완료 처리</button>
+				</form>
+			</c:when>
+
+			<c:when test="${job.statusCode eq 'REQ_04'}">
+				<div class="note note--ok" style="margin-bottom:0">
+					<svg><use href="#i-check"/></svg>
+					<span><b>수리가 완료된 작업입니다.</b></span>
+				</div>
+			</c:when>
+
+			<c:otherwise>
+				<div class="note note--gray" style="margin-bottom:0">
+					<svg><use href="#i-clock"/></svg>
+					<span>아직 완료 처리를 할 수 있는 단계가 아닙니다.</span>
+				</div>
+			</c:otherwise>
+		</c:choose>
+	</div>
+
+	<p style="margin-top:24px"><a href="/fixer/jobs">← 목록으로</a></p>
+
+</div>
+
+<jsp:include page="/WEB-INF/views/common/footer.jsp"/>

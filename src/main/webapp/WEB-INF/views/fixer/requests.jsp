@@ -1,95 +1,131 @@
 <%@ page language="java" contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="UTF-8">
-	<title>내 주변 새 접수</title>
-	<style>
-		table { border-collapse: collapse; width: 100%; }
-		th, td { border: 1px solid #ccc; padding: 6px 8px; font-size: 14px; }
-		th { background: #f5f5f5; }
-		.done { color: #888; }
-	</style>
-</head>
-<body>
+<jsp:include page="/WEB-INF/views/common/header.jsp"/>
+<%@ include file="common/icons.jspf" %>
+<c:set var="navActive" value="requests"/>
 
-<h2>내 주변 새 접수</h2>
-<p>내가 등록한 <b>수리 분야</b>와 <b>활동 지역</b>에 맞는 접수만 보입니다.</p>
+<div class="container">
 
-<c:if test="${not empty message}">
-	<p style="color:red; font-weight:bold;"><c:out value="${message}"/></p>
-</c:if>
+	<div class="page-head">
+		<h1>내 주변 새 접수</h1>
+		<p>내가 등록한 <b>수리 분야</b>와 <b>활동 지역</b>에 맞는 접수만 보입니다.</p>
+	</div>
 
-<form action="/fixer/requests" method="get">
-	<select name="categoryCode">
-		<option value="">분야 전체</option>
-		<c:forEach var="category" items="${categoryList}">
-			<option value="${category.codeId}"
-				<c:if test="${categoryCode eq category.codeId}">selected</c:if>>
-				<c:out value="${category.codeName}"/>
-			</option>
-		</c:forEach>
-	</select>
-	<input type="text" name="keyword" value="<c:out value='${keyword}'/>" placeholder="제목 · 내용 검색">
-	<button type="submit">검색</button>
-	<a href="/fixer/requests">초기화</a>
-</form>
+	<%@ include file="common/fixernav.jspf" %>
 
-<hr>
+	<c:if test="${not empty message}">
+		<div class="note note--warn" style="margin-bottom:24px">
+			<svg><use href="#i-alert"/></svg>
+			<span><c:out value="${message}"/></span>
+		</div>
+	</c:if>
 
-<c:choose>
-	<c:when test="${empty requestList}">
-		<p>조건에 맞는 새 접수가 없습니다.</p>
-	</c:when>
+	<!-- 검색 -->
+	<div class="card card--sm" style="margin-bottom:28px">
+		<form action="/fixer/requests" method="get">
+			<div class="field-row" style="margin-bottom:0">
+				<div class="field" style="margin-bottom:0">
+					<label class="field__label" for="categoryCode">분야</label>
+					<select class="input" id="categoryCode" name="categoryCode">
+						<option value="">분야 전체</option>
+						<c:forEach var="category" items="${categoryList}">
+							<%--
+								검색하고 돌아왔을 때 고른 값이 그대로 남아 있게 한다.
+								컨트롤러가 model 에 categoryCode 를 다시 실어 보내주기 때문에 가능하다.
+							--%>
+							<option value="${category.codeId}"
+								<c:if test="${categoryCode eq category.codeId}">selected</c:if>>
+								<c:out value="${category.codeName}"/>
+							</option>
+						</c:forEach>
+					</select>
+				</div>
+				<div class="field" style="margin-bottom:0">
+					<label class="field__label" for="keyword">검색어</label>
+					<%-- 사용자가 친 글자를 그대로 다시 넣을 때도 c:out 으로 이스케이프한다 --%>
+					<input class="input" id="keyword" type="text" name="keyword"
+					       value="<c:out value='${keyword}'/>" placeholder="제목 · 내용 검색">
+				</div>
+			</div>
+			<div class="btn-row" style="margin-top:16px">
+				<button type="submit" class="btn btn--primary btn--lg">
+					<svg class="ico"><use href="#i-search"/></svg>검색</button>
+				<a class="btn btn--ghost btn--lg" href="/fixer/requests">초기화</a>
+			</div>
+		</form>
+	</div>
 
-	<c:otherwise>
-		<table>
-			<tr>
-				<th>번호</th>
-				<th>분야</th>
-				<th>제목</th>
-				<th>지역</th>
-				<th>상태</th>
-				<th>견적</th>
-				<th>접수일</th>
-			</tr>
+	<!-- 목록 -->
+	<c:choose>
+		<c:when test="${empty requestList}">
+			<div class="card card--flat" style="text-align:center;padding:56px 24px">
+				<span class="tile tile--sm t-blue" style="margin:0 auto 16px"><svg><use href="#i-search"/></svg></span>
+				<b style="font-size:19px">조건에 맞는 새 접수가 없습니다.</b>
+				<p class="muted" style="margin-top:8px">
+					활동 지역과 수리 분야를 넓히면 더 많은 접수가 보입니다.
+					<a href="/fixer/verify">인증 정보에서 수정하기</a>
+				</p>
+			</div>
+		</c:when>
 
+		<c:otherwise>
 			<c:forEach var="request" items="${requestList}">
-				<tr>
-					<td>${request.requestId}</td>
-					<td><c:out value="${request.categoryName}"/></td>
-					<td>
-						<a href="/fixer/requests/${request.requestId}">
-							<c:out value="${request.title}"/>
-						</a>
-					</td>
-					<td><c:out value="${request.serviceAddress}"/></td>
-					<td><c:out value="${request.statusName}"/></td>
-					<td>
-						<c:choose>
-							<c:when test="${not empty request.myEstimateId}">
-								<span class="done">제출함</span>
-							</c:when>
-							<c:otherwise>
-								<a href="/fixer/estimates/new?requestId=${request.requestId}">견적 내기</a>
-							</c:otherwise>
-						</c:choose>
-						(${request.estimateCount})
-					</td>
-					<td><fmt:formatDate value="${request.createdAt}" pattern="yyyy-MM-dd HH:mm"/></td>
-				</tr>
+				<%-- 아직 아무도 견적을 안 낸 접수는 강조해서 보여준다 --%>
+				<div class="list-card ${request.estimateCount eq 0 ? 'list-card--accent' : ''}">
+
+					<span class="tile t-lock"><svg><use href="#i-tools"/></svg></span>
+
+					<div class="list-card__body">
+						<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+							<span class="badge badge--primary"><c:out value="${request.categoryName}"/></span>
+							<span class="badge badge--gray"><c:out value="${request.statusName}"/></span>
+							<span class="muted" style="font-size:14.5px">
+								접수번호 ${request.requestId} ·
+								<fmt:formatDate value="${request.createdAt}" pattern="yyyy-MM-dd HH:mm"/>
+							</span>
+						</div>
+
+						<div class="list-card__title">
+							<a href="/fixer/requests/${request.requestId}"><c:out value="${request.title}"/></a>
+						</div>
+
+						<div class="list-card__meta">
+							<c:out value="${request.serviceAddress}"/> ·
+							<c:choose>
+								<c:when test="${request.estimateCount eq 0}">
+									<b style="color:var(--ok)">아직 신청자가 없어요</b>
+								</c:when>
+								<c:otherwise>
+									현재 ${request.estimateCount}명 신청
+								</c:otherwise>
+							</c:choose>
+						</div>
+					</div>
+
+					<%--
+						myEstimateId 가 null 이면 "아직 견적을 안 냈다" 는 뜻이다.
+						이 값을 Long 으로 둔 이유가 여기 있다. 원시형이면 0 이 되어
+						"0번 견적을 냈다" 로 읽혀서 이 분기가 뒤집힌다.
+					--%>
+					<c:choose>
+						<c:when test="${not empty request.myEstimateId}">
+							<div style="text-align:right">
+								<span class="badge st-done">견적 제출함</span><br>
+								<a class="btn btn--ghost btn--sm" style="margin-top:8px"
+								   href="/fixer/requests/${request.requestId}">상세 보기</a>
+							</div>
+						</c:when>
+						<c:otherwise>
+							<a class="btn btn--primary btn--lg" href="/fixer/requests/${request.requestId}">상세 보기</a>
+						</c:otherwise>
+					</c:choose>
+
+				</div>
 			</c:forEach>
-		</table>
-	</c:otherwise>
-</c:choose>
+		</c:otherwise>
+	</c:choose>
 
-<p>
-	<a href="/fixer/verify">인증 정보</a> ·
-	<a href="/fixer/estimates">내 견적</a> ·
-	<a href="/fixer/jobs">내 작업 관리</a>
-</p>
+</div>
 
-</body>
-</html>
+<jsp:include page="/WEB-INF/views/common/footer.jsp"/>
