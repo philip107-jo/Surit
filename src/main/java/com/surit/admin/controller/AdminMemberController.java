@@ -24,7 +24,7 @@ public class AdminMemberController {
 	private final MemberManagementService memberService;
 
 
-
+	
 	@GetMapping("/{userNo}")
 	public String memberDetail(@PathVariable Long userNo, Model model) {
 		model.addAttribute("fixer", memberService.getFixerDetail(userNo));

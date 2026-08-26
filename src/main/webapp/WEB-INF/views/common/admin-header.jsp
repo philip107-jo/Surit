@@ -16,7 +16,7 @@
 <header class="site-header">
 	<div class="site-header__inner">
 
-		<a href="/admin" class="logo">
+		<a href="/admin/members" class="logo">
 			<span class="logo__mark">
 				<svg viewBox="0 0 24 24"><path d="M8 12h8M8 8h8M8 16h5"/></svg>
 			</span>

@@ -4,12 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class AdminDTO {
-
 	private String adminId;
 	private String adminPwd;
 	private String adminName;
+	
 }

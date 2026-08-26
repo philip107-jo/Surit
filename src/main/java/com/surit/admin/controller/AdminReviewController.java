@@ -37,7 +37,6 @@ public class AdminReviewController {
 	                   @RequestParam String reason,
 	                   HttpSession session, RedirectAttributes ra) {
 		String adminId = (String) session.getAttribute("adminId");
-		if (adminId == null) adminId = "admin";   // TODO: 로그인 만들면 이 줄 삭제
 
 		reviewService.warnFixer(fixerNo, reason, adminId);
 		ra.addFlashAttribute("msg", "경고를 등록했습니다");

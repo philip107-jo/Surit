@@ -22,8 +22,8 @@ public interface MemberManagementMapper {
 	List<String> selectCategories(Long userNo); // 수리 카테고리
 	List<String> selectRegions(Long userNo); // 활동 지역
 
-	// 계정 차단 (변경 되는 것들)
-	int updateApprove(@Param("userNo") Long userNo);
-	int updateReject(@Param("userNo") Long userNo,
+	// 계정 승인/반려 (변경 되는 것들)
+	int updateApprove(@Param("userNo") Long userNo); // 승인
+	int updateReject(@Param("userNo") Long userNo, 	// 반려
 	                 @Param("reason") String reason);
 }

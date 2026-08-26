@@ -21,6 +21,12 @@ public class ReviewManagementServiceImpl implements ReviewManagementService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<AdminReviewListDTO> getReviewList(AdminReviewSearchCondition cond) {
+		
+		// 잘못된 페이지 번호 방어
+		if (cond.getPage() < 1) {
+			cond.setPage(1);
+		}
+		
 		cond.setOffset((cond.getPage() - 1) * cond.getSize());
 		return reviewMapper.selectReviewList(cond);
 	}
@@ -30,6 +36,7 @@ public class ReviewManagementServiceImpl implements ReviewManagementService {
 	public int getReviewCount(AdminReviewSearchCondition cond) {
 		return reviewMapper.selectReviewCount(cond);
 	}
+	// DTO로 만든 검색조건을 int 타입으로 돌려주는, 아무나 쓸 수 있는 매서드
 
 	@Override
 	@Transactional(readOnly = true)

@@ -10,6 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class AdminMemberListDTO {
+	
+	// MemberManagement 에서 사용
+	// 기사 정보
+	
 	private Long userNo;
 	private String userId;
 	private String name;
