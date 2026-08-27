@@ -28,7 +28,7 @@ public class RequestServiceImpl implements RequestService {
 
 	@Override
 	@Transactional(readOnly = true)   // 조회만 하니까 readOnly. 커밋 처리를 안 해서 조금 가볍다
-	public List<RequestDTO> getNearbyRequests(int userNo, String categoryCode, String keyword) {
+	public List<RequestDTO> getNearbyRequests(Long userNo, String categoryCode, String keyword) {
 
 		fixerGuard.requireApprovedFixer(userNo);
 
@@ -37,7 +37,7 @@ public class RequestServiceImpl implements RequestService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public RequestDTO getRequestDetail(int userNo, long requestId) {
+	public RequestDTO getRequestDetail(Long userNo, Long requestId) {
 
 		fixerGuard.requireApprovedFixer(userNo);
 
@@ -60,5 +60,39 @@ public class RequestServiceImpl implements RequestService {
 			return null;
 		}
 		return s.trim();
+	}
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public void createRequest(RequestDTO request) {
+
+	    if (request.getCategoryCode() == null
+	            || request.getCategoryCode().isBlank()) {
+	        throw new IllegalStateException("수리 분야를 선택해주세요.");
+	    }
+
+	    if (request.getTitle() == null
+	            || request.getTitle().isBlank()) {
+	        throw new IllegalStateException("제목을 입력해주세요.");
+	    }
+
+	    if (request.getServiceAddress() == null
+	            || request.getServiceAddress().isBlank()) {
+	        throw new IllegalStateException("방문 주소를 입력해주세요.");
+	    }
+
+	    request.setTitle(request.getTitle().trim());
+	    request.setServiceAddress(request.getServiceAddress().trim());
+
+	    if (request.getContent() != null) {
+	        request.setContent(request.getContent().trim());
+	    }
+
+	    request.setStatusCode("RECEIVED");
+
+	    Long result = mapper.insertRequest(request);
+
+	    if (result == 0) {
+	        throw new IllegalStateException("수리 접수 등록에 실패했습니다.");
+	    }
 	}
 }

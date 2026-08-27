@@ -2,7 +2,105 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <jsp:include page="/WEB-INF/views/common/header.jsp"/>
 
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="i-tools" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z"/></symbol><symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.6"/></symbol><symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.6"/><path d="M4 17l5-5 4 4 3-2 4 4"/></symbol><symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></symbol><symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.4-3 8-7 9.5-4-1.5-7-5.1-7-9.5V6z"/><path d="M9.2 12l2 2 3.6-3.8"/></symbol></defs></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+
+        <!-- 도어락 · 잠금 -->
+        <symbol id="i-lock" viewBox="0 0 24 24">
+            <rect x="5" y="10" width="14" height="10" rx="2"/>
+            <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+            <circle cx="12" cy="15" r="1.4" fill="currentColor" stroke="none"/>
+        </symbol>
+
+        <!-- 냉장고 -->
+        <symbol id="i-fridge" viewBox="0 0 24 24">
+            <rect x="6" y="3" width="12" height="18" rx="2"/>
+            <path d="M6 10h12"/>
+            <path d="M9 6v2"/>
+            <path d="M9 13v2.5"/>
+        </symbol>
+
+        <!-- PC · 노트북 -->
+        <symbol id="i-pc" viewBox="0 0 24 24">
+            <rect x="3" y="5" width="18" height="12" rx="2"/>
+            <path d="M9 21h6"/>
+            <path d="M12 17v4"/>
+        </symbol>
+
+        <!-- 배관 · 누수 -->
+        <symbol id="i-drop" viewBox="0 0 24 24">
+            <path d="M12 3c4 4.5 6 7 6 9a6 6 0 0 1-12 0c0-2 2-4.5 6-9z"/>
+        </symbol>
+
+        <!-- 전기 · 조명 -->
+        <symbol id="i-bolt" viewBox="0 0 24 24">
+            <path d="M13 2 5 14h6l-1 8 8-12h-6l1-8z"/>
+        </symbol>
+
+        <!-- 세탁기 · 건조기 -->
+        <symbol id="i-washer" viewBox="0 0 24 24">
+            <rect x="5" y="3" width="14" height="18" rx="2"/>
+            <circle cx="12" cy="14" r="4"/>
+            <path d="M8 6.5h2"/>
+        </symbol>
+
+        <!-- 에어컨 · 보일러 -->
+        <symbol id="i-ac" viewBox="0 0 24 24">
+            <rect x="3" y="5" width="18" height="7" rx="2"/>
+            <path d="M8 15q2 2 0 4"/>
+            <path d="M12 15q2 2 0 4"/>
+            <path d="M16 15q2 2 0 4"/>
+        </symbol>
+
+        <!-- 가구 · 조립 -->
+        <symbol id="i-chair" viewBox="0 0 24 24">
+            <rect x="6" y="3" width="12" height="8" rx="2"/>
+            <path d="M5 13h14"/>
+            <path d="M7 21v-4"/>
+            <path d="M17 21v-4"/>
+        </symbol>
+
+        <!-- TV · 모니터 -->
+        <symbol id="i-tv" viewBox="0 0 24 24">
+            <rect x="3" y="5" width="18" height="12" rx="2"/>
+            <path d="M9 21h6"/>
+            <path d="M12 17v4"/>
+        </symbol>
+
+        <!-- 기타 -->
+        <symbol id="i-dots" viewBox="0 0 24 24">
+            <circle cx="5" cy="12" r="1.6" fill="currentColor" stroke="none"/>
+            <circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/>
+            <circle cx="19" cy="12" r="1.6" fill="currentColor" stroke="none"/>
+        </symbol>
+
+        <!-- 사진 첨부 -->
+        <symbol id="i-camera" viewBox="0 0 24 24">
+            <path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/>
+            <circle cx="12" cy="13.5" r="3.6"/>
+        </symbol>
+
+        <!-- 이미지 -->
+        <symbol id="i-image" viewBox="0 0 24 24">
+            <rect x="3" y="5" width="18" height="14" rx="2"/>
+            <circle cx="8.5" cy="10" r="1.6"/>
+            <path d="M4 17l5-5 4 4 3-2 4 4"/>
+        </symbol>
+
+        <!-- 플러스 -->
+        <symbol id="i-plus" viewBox="0 0 24 24">
+            <path d="M12 5v14"/>
+            <path d="M5 12h14"/>
+        </symbol>
+
+        <!-- 방패 -->
+        <symbol id="i-shield" viewBox="0 0 24 24">
+            <path d="M12 3l7 3v5.5c0 4.4-3 8-7 9.5-4-1.5-7-5.1-7-9.5V6z"/>
+            <path d="M9.2 12l2 2 3.6-3.8"/>
+        </symbol>
+
+    </defs>
+</svg>
 
 <main>
 <div class="container">
@@ -12,7 +110,10 @@
     </div>
 
     <div class="card" style="max-width:840px;margin:0 auto">
-        <form id="request-form" action="/request" method="post">
+		<form id="request-form"
+		      action="/request"
+		      method="post"
+		      enctype="multipart/form-data">
 
             <div class="form-sec">
                 <div class="form-sec__head">
@@ -20,17 +121,105 @@
                     <div><div class="form-sec__title">무엇이 고장났나요?</div></div>
                 </div>
 
-                <div class="cat-grid">
-                    <c:forEach var="cat" items="${ categories }" varStatus="status">
-                        <button type="button" class="cat${ status.first ? ' is-on' : '' }"
-                                data-select="category" data-category-code="${ cat.codeId }">
-                            <span class="tile tile--sm t-blue"><svg><use href="#i-tools"/></svg></span>
-                            <span><c:out value="${ cat.codeName }"/></span>
-                        </button>
-                    </c:forEach>
-                </div>
-                <input type="hidden" id="category-code" name="categoryCode"
-                    value="${ not empty categories ? categories[0].codeId : '' }" required>
+				<div class="cat-grid">
+
+				    <c:forEach var="cat" items="${categoryList}" varStatus="status">
+
+				        <button type="button"
+				                class="cat${status.first ? ' is-on' : ''}"
+				                data-select="category"
+				                data-category-code="${cat.codeId}">
+
+								<c:choose>
+
+								    <c:when test="${cat.codeId eq 'CAT_10'}">
+								        <span class="tile t-lock">
+								            <svg><use href="#i-lock"/></svg>
+								        </span>
+								        <span>도어락 · 잠금</span>
+								    </c:when>
+
+								    <c:when test="${cat.codeId eq 'CAT_02'}">
+								        <span class="tile t-fridge">
+								            <svg><use href="#i-fridge"/></svg>
+								        </span>
+								        <span>냉장고</span>
+								    </c:when>
+
+								    <c:when test="${cat.codeId eq 'CAT_01'}">
+								        <span class="tile t-pc">
+								            <svg><use href="#i-pc"/></svg>
+								        </span>
+								        <span>PC · 노트북</span>
+								    </c:when>
+
+								    <c:when test="${cat.codeId eq 'CAT_05'}">
+								        <span class="tile t-drop">
+								            <svg><use href="#i-drop"/></svg>
+								        </span>
+								        <span>배관 · 누수</span>
+								    </c:when>
+
+								    <c:when test="${cat.codeId eq 'CAT_06'}">
+								        <span class="tile t-bolt">
+								            <svg><use href="#i-bolt"/></svg>
+								        </span>
+								        <span>전기 · 조명</span>
+								    </c:when>
+
+								    <c:when test="${cat.codeId eq 'CAT_03'}">
+								        <span class="tile t-washer">
+								            <svg><use href="#i-washer"/></svg>
+								        </span>
+								        <span>세탁기 · 건조기</span>
+								    </c:when>
+
+								    <c:when test="${cat.codeId eq 'CAT_09'}">
+								        <span class="tile t-ac">
+								            <svg><use href="#i-ac"/></svg>
+								        </span>
+								        <span>에어컨 · 보일러</span>
+								    </c:when>
+
+								    <c:when test="${cat.codeId eq 'CAT_04'}">
+								        <span class="tile t-chair">
+								            <svg><use href="#i-chair"/></svg>
+								        </span>
+								        <span>가구 · 조립</span>
+								    </c:when>
+
+								    <c:when test="${cat.codeId eq 'CAT_08'}">
+								        <span class="tile t-tv">
+								            <svg><use href="#i-tv"/></svg>
+								        </span>
+								        <span>TV · 모니터</span>
+								    </c:when>
+
+								    <c:when test="${cat.codeId eq 'CAT_07'}">
+								        <span class="tile t-dots">
+								            <svg><use href="#i-dots"/></svg>
+								        </span>
+								        <span>기타</span>
+								    </c:when>
+
+								</c:choose>
+
+				        </button>
+
+				    </c:forEach>
+
+				</div>
+
+				<input type="hidden"
+				       id="category-code"
+				       name="categoryCode"
+				       value="${not empty categoryList ? categoryList[0].codeId : ''}">
+                
+				<input type="hidden"
+				       id="category-code"
+				       name="categoryCode"
+				       value="${not empty categoryList ? categoryList[0].codeId : ''}"
+				       required>
             </div>
 
             <div class="form-sec">
@@ -51,16 +240,35 @@
                 <textarea id="request-content" name="content" class="textarea"
                     placeholder="예) 현관 도어락 버튼을 눌러도 반응이 없고 삐 소리만 납니다.&#10;건전지는 어제 새로 갈았습니다."></textarea>
 
-                <div class="field__label" style="margin:26px 0 12px">
-                    사진 첨부 <span class="muted" style="font-weight:400">(선택 · 최대 5장, 준비 중인 기능이에요)</span>
-                </div>
-                <div class="upload">
-                    <button type="button" class="upload__add" disabled>
-                        <svg><use href="#i-camera"/></svg>
-                        <span>사진 추가</span>
-                    </button>
-                </div>
-            </div>
+					<div class="field__label" style="margin:26px 0 12px">
+					    사진 첨부
+					    <span class="muted" style="font-weight:400">
+					        (선택 · 최대 5장)
+					    </span>
+					</div>
+
+					<div class="upload">
+
+					    <!-- 사진 추가 버튼 -->
+					    <label for="request-photos" class="upload__add">
+					        <svg>
+					            <use href="#i-camera"/>
+					        </svg>
+					        <span>사진 추가</span>
+					    </label>
+
+					    <!-- 실제 파일 선택 -->
+					    <input type="file"
+					           id="request-photos"
+					           name="photoFiles"
+					           accept="image/*"
+					           multiple
+					           style="display:none;">
+
+					    <!-- 선택한 사진들이 여기에 좌르륵 나옴 -->
+					    <div id="photo-preview" class="photo-preview"></div>
+
+					</div>
 
             <div class="form-sec">
                 <div class="form-sec__head">

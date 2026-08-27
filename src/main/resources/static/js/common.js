@@ -244,3 +244,91 @@ document.addEventListener('click', function (e) {
     hidden.value = checkbox.checked ? 'Y' : 'N';
   });
 })();
+/*사진 선택 후 브라우저 보이는 기능*/ 
+const photoInput = document.getElementById("request-photos");
+const photoPreview = document.getElementById("photo-preview");
+
+const selectedFiles = new DataTransfer();
+
+if (photoInput && photoPreview) {
+
+    photoInput.addEventListener("change", function () {
+
+        const newFiles = Array.from(this.files);
+
+        for (const file of newFiles) {
+
+            if (!file.type.startsWith("image/")) {
+                alert("이미지 파일만 첨부할 수 있습니다.");
+                continue;
+            }
+
+            if (selectedFiles.files.length >= 5) {
+                alert("사진은 최대 5장까지 첨부할 수 있습니다.");
+                break;
+            }
+
+            selectedFiles.items.add(file);
+        }
+
+        // 실제 input에도 누적된 파일 목록 적용
+        photoInput.files = selectedFiles.files;
+
+        renderPhotoPreview();
+    });
+
+
+    function renderPhotoPreview() {
+
+        photoPreview.innerHTML = "";
+
+        Array.from(selectedFiles.files).forEach(function (file, index) {
+
+            const item = document.createElement("div");
+            item.className = "photo-preview__item";
+
+            const img = document.createElement("img");
+            img.src = URL.createObjectURL(file);
+            img.alt = "첨부 사진";
+
+            const removeButton = document.createElement("button");
+            removeButton.type = "button";
+            removeButton.className = "photo-preview__remove";
+            removeButton.innerHTML = "×";
+
+            removeButton.addEventListener("click", function () {
+                removePhoto(index);
+            });
+
+            item.appendChild(img);
+            item.appendChild(removeButton);
+
+            photoPreview.appendChild(item);
+        });
+    }
+
+
+    function removePhoto(removeIndex) {
+
+        const newTransfer = new DataTransfer();
+
+        Array.from(selectedFiles.files).forEach(function (file, index) {
+
+            if (index !== removeIndex) {
+                newTransfer.items.add(file);
+            }
+        });
+
+        // 기존 DataTransfer 비우기
+        selectedFiles.items.clear();
+
+        // 삭제 제외한 파일 다시 넣기
+        Array.from(newTransfer.files).forEach(function (file) {
+            selectedFiles.items.add(file);
+        });
+
+        photoInput.files = selectedFiles.files;
+
+        renderPhotoPreview();
+    }
+}

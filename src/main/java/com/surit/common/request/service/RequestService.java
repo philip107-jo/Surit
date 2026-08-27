@@ -10,8 +10,10 @@ public interface RequestService {
 	List<CommonCodeDTO> getCategoryList();
 
 	/** 내 주변 새 접수 목록 */
-	List<RequestDTO> getNearbyRequests(int userNo, String categoryCode, String keyword);
+	List<RequestDTO> getNearbyRequests(Long userNo, String categoryCode, String keyword);
 
 	/** 접수 상세 (볼 수 없는 접수면 예외) */
-	RequestDTO getRequestDetail(int userNo, long requestId);
+	RequestDTO getRequestDetail(Long userNo, Long requestId);
+
+	void createRequest(RequestDTO request);
 }

@@ -14,7 +14,7 @@
  
  </select>
  
- <select id="selectByUserId" parameterType="string" resultType="UserDTO">
+ <select id="selectByUserId" parameterType="string" resultType="com.surit.user.model.dto.UserDTO">
  SELECT USER_NO,USER_ID,EMAIL,
     PASSWORD, NAME,USER_ROLE,
     TO_CHAR(CREATED_AT, 'YYYY-MM-DD HH24:MI') AS CREATED_AT_STR

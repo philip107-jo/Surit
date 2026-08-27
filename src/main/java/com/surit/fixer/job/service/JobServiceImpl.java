@@ -20,7 +20,7 @@ public class JobServiceImpl implements JobService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<JobDTO> getMyJobs(int fixerNo, String statusCode) {
+	public List<JobDTO> getMyJobs(Long fixerNo, String statusCode) {
 
 		fixerGuard.requireApprovedFixer(fixerNo);
 
@@ -29,7 +29,7 @@ public class JobServiceImpl implements JobService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public JobDTO getMyJob(int fixerNo, long requestId) {
+	public JobDTO getMyJob(Long fixerNo, Long requestId) {
 
 		fixerGuard.requireApprovedFixer(fixerNo);
 
@@ -43,14 +43,14 @@ public class JobServiceImpl implements JobService {
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public void complete(int fixerNo, long requestId) {
+	public void complete(Long fixerNo, Long requestId) {
 
 		fixerGuard.requireApprovedFixer(fixerNo);
 
 		// 여기서 조회해서 if 로 검사하지 않는다.
 		// 조회한 뒤 UPDATE 하기 전에 상태가 바뀔 수 있기 때문(TOCTOU).
 		// 조건은 전부 UPDATE 의 WHERE 에 들어있고, 결과 건수로 판단한다.
-		int updated = mapper.completeJob(fixerNo, requestId);
+		Long updated = mapper.completeJob(fixerNo, requestId);
 
 		if (updated == 0) {
 			throw new IllegalStateException(

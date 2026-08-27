@@ -1,148 +1,115 @@
 <%@ page language="java" contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<jsp:include page="/WEB-INF/views/common/header.jsp"/>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>기사 인증 신청</title>
+	<style>
+		.region { display:inline-block; width:180px; }
+	</style>
+</head>
+<body>
 
-<div class="container">
-    <div class="page-head">
-        <h1>기사 인증 신청</h1>
-        <p>자격증과 활동 정보를 등록하면 관리자 심사 후 기사로 활동하실 수 있어요.</p>
-    </div>
+<h2>기사 인증 신청</h2>
 
-    <c:if test="${ not empty message }">
-        <div class="note note--blue">
-            <svg viewBox="0 0 24 24"><path d="M12 8v4M12 16h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
-            <p><c:out value="${ message }"/></p>
-        </div>
-    </c:if>
+<c:if test="${not empty message}"><p style="color:blue; font-weight:bold;"><c:out value="${message}"/></p></c:if>
 
-    <c:choose>
+<c:choose>
 
-        <c:when test="${ profile.approvalStatus eq 'PENDING' }">
-            <div class="note note--warn">
-                <svg viewBox="0 0 24 24"><path d="M12 8v4M12 16h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
-                <p>심사 중입니다. 결과가 나올 때까지 기다려주세요.</p>
-            </div>
-        </c:when>
+	<c:when test="${profile.approvalStatus eq 'PENDING'}">
+		<p>심사 중입니다. 결과가 나올 때까지 기다려주세요.</p>
+	</c:when>
 
-        <c:when test="${ profile.approvalStatus eq 'APPROVED' }">
-            <div class="note note--ok">
-                <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
-                <p>인증이 완료된 기사입니다.</p>
-            </div>
-            <div class="btn-row" style="margin-top:16px">
-                <a href="/fixer/requests" class="btn btn--primary">내 주변 새 접수 보기</a>
-                <a href="/fixer/jobs" class="btn btn--ghost">내 작업 관리</a>
-            </div>
-        </c:when>
+	<c:when test="${profile.approvalStatus eq 'APPROVED'}">
+		<p>인증이 완료된 기사입니다.</p>
+		<p>
+			<a href="/fixer/requests">내 주변 새 접수 보기</a> ·
+			<a href="/fixer/jobs">내 작업 관리</a>
+		</p>
+	</c:when>
 
-        <c:otherwise>
+	<c:otherwise>
 
-            <c:if test="${ profile.approvalStatus eq 'REJECTED' }">
-                <div class="note note--warn">
-                    <svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.29 3.86l-8.18 14.14A2 2 0 0 0 3.82 21h16.36a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
-                    <p>이전 신청이 거절되었습니다. 내용을 보완해서 다시 신청해주세요.</p>
-                </div>
-            </c:if>
+		<c:if test="${profile.approvalStatus eq 'REJECTED'}">
+			<div style="border:1px solid #f0b8b8; background:#fff5f5; padding:12px 16px; margin-bottom:16px;">
 
-            <form id="fixer-verify-form" action="/fixer/verify" method="post" enctype="multipart/form-data">
+				<p style="color:red; font-weight:bold; margin:0 0 8px;">
+					이전 신청이 거절되었습니다. 내용을 보완해서 다시 신청해주세요.
+				</p>
 
-                <div class="form-sec">
-                    <div class="form-sec__head">
-                        <div class="form-sec__no">1</div>
-                        <div>
-                            <div class="form-sec__title">기본 정보</div>
-                            <div class="form-sec__desc">고객에게 보여질 소개와 경력이에요</div>
-                        </div>
-                    </div>
+				<%-- 관리자가 REJECT_REASON 을 안 적었거나, 이 컬럼이 생기기 전에
+				     거절된 건이면 null 이다. 그래서 반드시 empty 검사를 먼저 한다.
+				     검사 없이 출력하면 빈 상자만 덩그러니 남는다. --%>
+				<c:choose>
+					<c:when test="${not empty profile.rejectReason}">
+						<p style="margin:0 0 4px; font-weight:bold;">거절 사유</p>
+						<%-- 관리자가 쓴 글이므로 반드시 c:out 으로 이스케이프한다.
+						     pre + pre-wrap : 줄바꿈은 살리고 가로 스크롤은 안 생기게. --%>
+						<pre style="white-space:pre-wrap; word-break:break-all;
+						            margin:0; font-family:inherit; font-size:inherit;"><c:out value="${profile.rejectReason}"/></pre>
+					</c:when>
+					<c:otherwise>
+						<p style="margin:0; color:#888;">
+							등록된 거절 사유가 없습니다. 자격증과 사진을 다시 확인해주세요.
+						</p>
+					</c:otherwise>
+				</c:choose>
 
-                    <div class="field">
-                        <label class="field__label" for="intro">자기소개</label>
-                        <textarea id="intro" name="intro" class="textarea" maxlength="4000"><c:out value="${ profile.intro }"/></textarea>
-                    </div>
+			</div>
+		</c:if>
 
-                    <div class="field">
-                        <label class="field__label" for="career-years">경력 (년)<span class="req">*</span></label>
-                        <input type="number" id="career-years" name="careerYears" class="input"
-                            min="0" max="70" required value="${ profile.careerYears }">
-                    </div>
-                </div>
+		<form action="/fixer/verify" method="post" enctype="multipart/form-data">
+			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
-                <div class="form-sec">
-                    <div class="form-sec__head">
-                        <div class="form-sec__no">2</div>
-                        <div>
-                            <div class="form-sec__title">활동 지역</div>
-                            <div class="form-sec__desc">최소 1개 이상 선택해주세요</div>
-                        </div>
-                    </div>
+			<h3>1. 기본 정보</h3>
+			<p>
+				자기소개<br>
+				<textarea name="intro" rows="4" cols="60" maxlength="4000"><c:out value="${profile.intro}"/></textarea>
+			</p>
+			<p>
+				경력 (년)<br>
+				<input type="number" name="careerYears" min="0" max="70" required value="${profile.careerYears}">
+			</p>
 
-                    <div class="chip-row">
-                        <c:forEach var="region" items="${ regionList }">
-                            <label class="check">
-                                <input type="checkbox" name="regionCodes" value="${ region.codeId }">
-                                <c:out value="${ region.codeName }"/>
-                            </label>
-                        </c:forEach>
-                    </div>
-                </div>
+			<h3>2. 본인 확인용 사진 (필수 · jpg/png)</h3>
+			<p>
+				얼굴이 나온 사진 1장을 첨부해주세요. 고객이 기사님을 확인할 수 있도록 공개되는 사진입니다.<br>
+				<input type="file" name="photoFile" accept=".jpg,.jpeg,.png" required>
+			</p>
 
-                <div class="form-sec">
-                    <div class="form-sec__head">
-                        <div class="form-sec__no">3</div>
-                        <div>
-                            <div class="form-sec__title">수리 가능 분야</div>
-                            <div class="form-sec__desc">최소 1개 이상 선택해주세요</div>
-                        </div>
-                    </div>
+			<h3>3. 활동 지역 (1개 이상)</h3>
+			<c:forEach var="region" items="${regionList}">
+				<label class="region">
+					<input type="checkbox" name="regionCodes" value="${region.codeId}">
+					<c:out value="${region.codeName}"/>
+				</label>
+			</c:forEach>
 
-                    <div class="chip-row">
-                        <c:forEach var="category" items="${ categoryList }">
-                            <label class="check">
-                                <input type="checkbox" name="categoryCodes" value="${ category.codeId }">
-                                <c:out value="${ category.codeName }"/>
-                            </label>
-                        </c:forEach>
-                    </div>
-                </div>
+			<h3>4. 수리 가능 분야 (1개 이상)</h3>
+			<c:forEach var="category" items="${categoryList}">
+				<label>
+					<input type="checkbox" name="categoryCodes" value="${category.codeId}">
+					<c:out value="${category.codeName}"/>
+				</label><br>
+			</c:forEach>
 
-                <div class="form-sec">
-                    <div class="form-sec__head">
-                        <div class="form-sec__no">4</div>
-                        <div>
-                            <div class="form-sec__title">자격증</div>
-                            <div class="form-sec__desc">최소 1개 이상 등록해주세요 (증빙파일은 jpg·png·pdf)</div>
-                        </div>
-                    </div>
+			<h3>5. 자격증 (1개 이상 · 증빙파일은 jpg/png/pdf)</h3>
+			<c:forEach var="i" begin="1" end="3">
+				<fieldset style="margin-bottom:8px;">
+					<legend>자격증 ${i}</legend>
+					자격증명 <input type="text" name="licenseNames" maxlength="100"><br>
+					발급일 <input type="date" name="licenseIssuedAts"><br>
+					증빙파일 <input type="file" name="licenseFiles" accept=".jpg,.jpeg,.png,.pdf">
+				</fieldset>
+			</c:forEach>
 
-                    <c:forEach var="i" begin="1" end="3">
-                        <div class="card card--sm">
-                            <div class="card__title" style="font-size:16px;margin-bottom:14px">자격증 ${ i }</div>
+			<hr>
+			<button type="submit">신청하기</button>
+		</form>
 
-                            <div class="field">
-                                <label class="field__label">자격증명</label>
-                                <input type="text" name="licenseNames" class="input" maxlength="100">
-                            </div>
+	</c:otherwise>
+</c:choose>
 
-                            <div class="field-row">
-                                <div class="field">
-                                    <label class="field__label">발급일</label>
-                                    <input type="date" name="licenseIssuedAts" class="input">
-                                </div>
-                                <div class="field">
-                                    <label class="field__label">증빙파일</label>
-                                    <input type="file" name="licenseFiles" class="input" accept=".jpg,.jpeg,.png,.pdf">
-                                </div>
-                            </div>
-                        </div>
-                    </c:forEach>
-                </div>
-
-                <button type="submit" class="btn btn--primary btn--xl btn--block">신청하기</button>
-            </form>
-
-        </c:otherwise>
-    </c:choose>
-</div>
-
-<script src="/js/common.js"></script>
-<jsp:include page="/WEB-INF/views/common/footer.jsp"/>
+</body>
+</html>

@@ -143,5 +143,30 @@
 		 WHERE REQUEST_ID = #{requestId}
 		 ORDER BY PHOTO_ORDER, PHOTO_ID
 	</select>
+	
+	<insert id="insertRequest"
+        parameterType="com.surit.common.request.model.dto.RequestDTO">
+
+    INSERT INTO REPAIR_REQUESTS
+    (
+        USER_NO,
+        CATEGORY_CODE,
+        TITLE,
+        CONTENT,
+        SERVICE_ADDRESS,
+        STATUS_CODE
+    )
+    VALUES
+    (
+        #{userNo},
+        #{categoryCode},
+        #{title},
+        #{content},
+        #{serviceAddress},
+        #{statusCode}
+    )
+
+</insert>
+	
 
 </mapper>

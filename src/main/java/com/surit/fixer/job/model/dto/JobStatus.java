@@ -12,7 +12,7 @@ public final class JobStatus {
 	public static final String WAITING   = "REQ_01";
 	/** 견적중 */
 	public static final String ESTIMATING = "REQ_02";
-	/** 매칭/결제완료 → 기사가 실제로 작업할 단계 */
+	/** 매칭완료 → 기사가 실제로 작업할 단계 (결제는 수리완료 후 F-19 에서) */
 	public static final String MATCHED   = "REQ_03";
 	/** 수리완료 */
 	public static final String DONE      = "REQ_04";
