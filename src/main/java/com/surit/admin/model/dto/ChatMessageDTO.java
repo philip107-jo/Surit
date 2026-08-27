@@ -11,6 +11,12 @@ import lombok.NoArgsConstructor;
 @Data
 public class ChatMessageDTO {
 	
+	public enum MessageType{
+		ENTER,  // 입장
+		TALK,	// 일반메시지
+		LEAVE	// 채팅방 퇴장
+	}
+	
 	private Long messageId;
 	private Long roomId;
 	private Long senderId;

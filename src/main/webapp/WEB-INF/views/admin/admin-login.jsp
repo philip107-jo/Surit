@@ -21,11 +21,11 @@
 
 	<div class="card card--sm">
 		<c:if test="${not empty error}">
-			<div class="alert" style="margin-bottom:16px;color:#EF4444">${error}</div>
+			<div class="alert" style="margin-bottom:16px;color:#EF4444"><c:out value="${error}"/></div>
 		</c:if>
 
 		<form method="post" action="/admin/login">
-			<input type="hidden" name="returnUri" value="${returnUri}">
+			<input type="hidden" name="returnUri" value="<c:out value='${returnUri}'/>">
 
 			<label><b>아이디</b></label>
 			<input type="text" name="adminId" class="input"

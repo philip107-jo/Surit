@@ -8,7 +8,7 @@
 		</div>
 
 		<c:if test="${not empty msg}">
-			<div class="alert" style="margin-bottom:16px">${msg}</div>
+			<div class="alert" style="margin-bottom:16px"><c:out value="${msg}"/></div>
 		</c:if>
 
 		<%--=====승인 대기 기사=====--%>
@@ -24,11 +24,11 @@
 				<div class="list-card">
 					<div class="list-card__body">
 						<div style="display:flex;align-items:center;gap:10px">
-							<b style="font-size:19px">${f.name}</b>
+							<b style="font-size:19px"><c:out value="${f.name}"/></b>
 							<span class="badge badge--warn">승인 대기</span>
 						</div>
 						<div class="list-card__meta" style="margin-top:6px">
-							아이디 ${f.userId}
+							아이디 <c:out value="${f.userId}"/>
 						</div>
 						<div class="muted" style="font-size:14.5px;margin-top:4px">
 							신청일 ${fn:substring(f.createdAt, 0, 10)}
@@ -76,7 +76,7 @@
 							</option>
 						</select>
 						<input type="text" name="keyword" class="input" style="flex:1" placeholder="이름 또는 아이디"
-							value="${condition.keyword}">
+							value="${fn:escapeXml(condition.keyword)}">
 						<button type="submit" class="btn btn--primary btn--sm">검색</button>
 					</form>
 
@@ -106,7 +106,7 @@
 												</c:otherwise>
 											</c:choose>
 										</td>
-										<td class="ttl">${m.name}</td>
+										<td class="ttl"><c:out value="${m.name}"/></td>
 										<td class="num">${fn:substring(m.createdAt, 0, 10)}</td>
 										<td>
 											<c:choose>
@@ -153,7 +153,7 @@
 						<div style="display:flex;gap:6px;justify-content:center;margin-top:24px">
 							<c:forEach var="p" begin="1" end="${totalPage}">
 								<a class="btn btn--sm ${p == condition.page ? 'btn--primary' : 'btn--ghost'}"
-									href="${pageContext.request.contextPath}/admin/members?page=${p}&userRole=${condition.userRole}&status=${condition.status}&keyword=${condition.keyword}">
+									href="${pageContext.request.contextPath}/admin/members?page=${p}&amp;userRole=${fn:escapeXml(condition.userRole)}&amp;status=${fn:escapeXml(condition.status)}&amp;keyword=${fn:escapeXml(condition.keyword)}">
 									${p}
 								</a>
 							</c:forEach>

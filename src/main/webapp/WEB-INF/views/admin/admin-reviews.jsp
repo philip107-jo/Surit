@@ -8,7 +8,7 @@
 	</div>
 
 	<c:if test="${not empty msg}">
-		<div class="alert" style="margin-bottom:16px">${msg}</div>
+		<div class="alert" style="margin-bottom:16px"><c:out value="${msg}"/></div>
 	</c:if>
 
 	<%--===== 평점 하위 기사 =====--%>
@@ -23,11 +23,11 @@
 		<div class="list-card">
 			<div class="list-card__body">
 				<div style="display:flex;align-items:center;gap:10px">
-					<b style="font-size:19px">${lf.name}</b>
+					<b style="font-size:19px"><c:out value="${lf.name}"/></b>
 					<span class="badge badge--danger">★ ${lf.avgScore}</span>
 				</div>
 				<div class="muted" style="font-size:14.5px;margin-top:4px">
-					아이디 ${lf.userId} · 리뷰 ${lf.reviewCount}건
+					아이디 <c:out value="${lf.userId}"/> · 리뷰 ${lf.reviewCount}건
 				</div>
 			</div>
 			<div class="btn-row">
@@ -66,7 +66,7 @@
 				<c:if test="${condition.lowOnly}">checked</c:if>> 3점 이하만
 		</label>
 		<input type="text" name="keyword" class="input" style="flex:1"
-			placeholder="기사명 또는 고객명" value="${condition.keyword}">
+			placeholder="기사명 또는 고객명" value="${fn:escapeXml(condition.keyword)}">
 		<button type="submit" class="btn btn--primary btn--sm">검색</button>
 	</form>
 
@@ -97,10 +97,10 @@
 							</c:otherwise>
 						</c:choose>
 					</td>
-					<td class="ttl">${r.fixerName}</td>
-					<td>${r.userName}</td>
-					<td>${r.content}</td>
-					<td class="num">${r.createdAt}</td>
+					<td class="ttl"><c:out value="${r.fixerName}"/></td>
+					<td><c:out value="${r.userName}"/></td>
+					<td><c:out value="${r.content}"/></td>
+					<td class="num"><c:out value="${r.createdAt}"/></td>
 				</tr>
 			</c:forEach>
 
@@ -119,7 +119,7 @@
 	<div style="display:flex;gap:6px;justify-content:center;margin-top:24px">
 		<c:forEach var="p" begin="1" end="${totalPage}">
 			<a class="btn btn--sm ${p == condition.page ? 'btn--primary' : 'btn--ghost'}"
-				href="${pageContext.request.contextPath}/admin/reviews?page=${p}&score=${condition.score}&keyword=${condition.keyword}">
+				href="${pageContext.request.contextPath}/admin/reviews?page=${p}&amp;score=${fn:escapeXml(condition.score)}&amp;keyword=${fn:escapeXml(condition.keyword)}">
 				${p}
 			</a>
 		</c:forEach>

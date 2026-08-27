@@ -4,7 +4,7 @@
 <div class="container">
 
   <div class="page-head" style="display:flex;justify-content:space-between;align-items:center">
-    <h1>${fixer.name}
+    <h1><c:out value="${fixer.name}"/>
       <c:choose>
         <c:when test="${fixer.userRole eq 'FIXER'}">
           <span class="badge badge--primary">기사</span>
@@ -31,10 +31,10 @@
   <div class="sec-head"><h2>기본 정보</h2></div>
   <div class="card card--sm" style="margin-bottom:32px">
     <table class="tbl">
-      <tr><th style="width:140px">아이디</th><td>${fixer.userId}</td></tr>
-      <tr><th>이름</th><td>${fixer.name}</td></tr>
-      <tr><th>전화번호</th><td>${fixer.phone}</td></tr>
-      <tr><th>이메일</th><td>${fixer.email}</td></tr>
+      <tr><th style="width:140px">아이디</th><td><c:out value="${fixer.userId}"/></td></tr>
+      <tr><th>이름</th><td><c:out value="${fixer.name}"/></td></tr>
+      <tr><th>전화번호</th><td><c:out value="${fixer.phone}"/></td></tr>
+      <tr><th>이메일</th><td><c:out value="${fixer.email}"/></td></tr>
       <tr><th>계정 상태</th>
         <td>
           <c:choose>
@@ -56,7 +56,7 @@
     <div class="card card--sm" style="margin-bottom:32px">
       <table class="tbl">
         <tr><th style="width:140px">경력</th><td>${fixer.careerYears}년</td></tr>
-        <tr><th>소개</th><td>${fixer.intro}</td></tr>
+        <tr><th>소개</th><td><c:out value="${fixer.intro}"/></td></tr>
       </table>
     </div>
 
@@ -66,13 +66,13 @@
       <c:forEach var="lic" items="${fixer.licenses}">
         <div class="list-card">
           <div class="list-card__body">
-            <b>${lic.licenseName}</b>
+            <b><c:out value="${lic.licenseName}"/></b>
             <div class="muted" style="font-size:14.5px;margin-top:4px">
               취득일 ${fn:substring(lic.issuedAt, 0, 10)}
             </div>
           </div>
           <div class="btn-row">
-            <a class="btn btn--ghost btn--sm" href="${lic.uploadUrl}" target="_blank">원본 보기</a>
+            <a class="btn btn--ghost btn--sm" href="${fn:escapeXml(lic.uploadUrl)}" target="_blank" rel="noopener noreferrer">원본 보기</a>
           </div>
         </div>
       </c:forEach>
@@ -89,7 +89,7 @@
           <th style="width:140px">수리 가능 카테고리</th>
           <td>
             <c:forEach var="cat" items="${fixer.categories}">
-              <span class="badge badge--gray">${cat}</span>
+              <span class="badge badge--gray"><c:out value="${cat}"/></span>
             </c:forEach>
             <c:if test="${empty fixer.categories}"><span class="muted">-</span></c:if>
           </td>
@@ -98,7 +98,7 @@
           <th>활동 가능 지역</th>
           <td>
             <c:forEach var="rg" items="${fixer.regions}">
-              <span class="badge badge--gray">${rg}</span>
+              <span class="badge badge--gray"><c:out value="${rg}"/></span>
             </c:forEach>
             <c:if test="${empty fixer.regions}"><span class="muted">-</span></c:if>
           </td>
@@ -113,7 +113,7 @@
 
         <c:if test="${not empty fixer.rejectReason}">
           <div class="alert" style="margin-bottom:16px">
-            <b>이전 반려 사유</b><br>${fixer.rejectReason}
+            <b>이전 반려 사유</b><br><c:out value="${fixer.rejectReason}"/>
           </div>
         </c:if>
 
