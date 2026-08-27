@@ -118,11 +118,50 @@ public class RequestController {
     }
     /**고객 수리 접수 페이지 **/
     @GetMapping("/request")
-    public String requestPage(Model model) {
+    public String requestPage(
+            @RequestParam(value = "cat", required = false) String cat,
+            Model model) {
+
+        String selectedCategoryCode = null;
+
+        if (cat != null) {
+
+            switch (cat) {
+
+                case "lock":
+                    selectedCategoryCode = "CAT_10";
+                    break;
+
+                case "fridge":
+                    selectedCategoryCode = "CAT_02";
+                    break;
+
+                case "pc":
+                    selectedCategoryCode = "CAT_01";
+                    break;
+
+                case "pipe":
+                    selectedCategoryCode = "CAT_05";
+                    break;
+
+                case "elec":
+                    selectedCategoryCode = "CAT_06";
+                    break;
+
+                case "etc":
+                    selectedCategoryCode = "CAT_07";
+                    break;
+            }
+        }
 
         model.addAttribute(
             "categoryList",
             service.getCategoryList()
+        );
+
+        model.addAttribute(
+            "selectedCategoryCode",
+            selectedCategoryCode
         );
 
         return "request/request";

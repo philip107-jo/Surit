@@ -126,7 +126,7 @@
 				    <c:forEach var="cat" items="${categoryList}" varStatus="status">
 
 				        <button type="button"
-				                class="cat${status.first ? ' is-on' : ''}"
+				               class="cat${cat.codeId eq selectedCategoryCode ? ' is-on' : ''}"
 				                data-select="category"
 				                data-category-code="${cat.codeId}">
 
@@ -213,7 +213,9 @@
 				<input type="hidden"
 				       id="category-code"
 				       name="categoryCode"
-				       value="${not empty categoryList ? categoryList[0].codeId : ''}">
+				       value="${not empty selectedCategoryCode
+				                ? selectedCategoryCode
+				                : categoryList[0].codeId}">
                 
 				<input type="hidden"
 				       id="category-code"
