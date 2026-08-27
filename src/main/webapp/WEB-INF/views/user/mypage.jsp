@@ -38,7 +38,7 @@
   <div class="profile-box">
     <span class="avatar avatar--xl"><svg><use href="#i-user"/></svg></span>
     <div>
-      <div class="profile-box__name"><c:out value="${user.userName}"/> 고객님</div>
+      <div class="profile-box__name"><c:out value="${user.name}"/> 고객님</div>
       <div class="profile-box__mail"><c:out value="${user.email}"/></div>
     </div>
     <div class="btn-row">
@@ -74,13 +74,14 @@
         <h2>나의 접수</h2>
       </div>
 
-      <%-- 상단 상태 탭: 실제 COMMON_CODE(STATUS) 4단계 그대로 표시 --%>
+      <%-- 상단 상태 탭: 실제 COMMON_CODE(STATUS) 5단계 그대로 표시 --%>
       <div class="chip-row" style="margin-bottom:24px">
         <button class="chip chip--dark" data-select="tab">전체 ${fn:length(requestList)}</button>
         <button class="chip" data-select="tab">접수대기 ${waitingCnt}</button>
         <button class="chip" data-select="tab">견적중 ${estimatingCnt}</button>
         <button class="chip" data-select="tab">매칭완료 ${matchedCnt}</button>
         <button class="chip" data-select="tab">수리완료 ${doneCnt}</button>
+        <button class="chip" data-select="tab">취소 ${canceledCnt}</button>
       </div>
 
       <div class="card card--sm">
@@ -141,6 +142,9 @@
                       </c:when>
                       <c:when test="${req.statusCode == 'REQ_04'}">
                         <span class="badge st-done"><c:out value="${req.statusName}"/></span>
+                      </c:when>
+                      <c:when test="${req.statusCode == 'REQ_05'}">
+                        <span class="badge st-canceled"><c:out value="${req.statusName}"/></span>
                       </c:when>
                       <c:otherwise>
                         <span class="badge badge--gray"><c:out value="${req.statusName}"/></span>

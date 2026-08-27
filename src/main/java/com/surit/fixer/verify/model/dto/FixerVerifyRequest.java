@@ -13,12 +13,15 @@ import lombok.ToString;
  * 기사 인증 신청 화면 → 서버.
  * 대응하는 테이블이 없다. 서비스가 4개 테이블로 쪼개서 나눠 담는다.
  */
-@Getter @Setter @NoArgsConstructor @ToString
+@Getter @Setter @NoArgsConstructor @ToString 
 public class FixerVerifyRequest {
 
 	// → FIXER_PROFILE
 	private String  intro;
-	private Integer careerYears;
+	private Long careerYears;
+
+	// → FIXER_PROFILE.FIXER_PHOTO_URL (고객 확인용 사진, 필수 1장)
+	private MultipartFile photoFile;
 
 	// → FIXER_REGION   (COMMON_CODE 의 REGION 코드)
 	private List<String> regionCodes;

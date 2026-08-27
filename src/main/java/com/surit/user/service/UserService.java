@@ -21,6 +21,6 @@ public interface UserService {
 	//회원 주소 가입
 	void insertAddress(UserDTO address);
 	
-	UserDTO getUserInfo(Long userId);
+	UserDTO getUserInfo(String userId);
 	
 }

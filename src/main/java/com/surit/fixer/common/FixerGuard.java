@@ -23,7 +23,7 @@ public class FixerGuard {
 	private final FixerMapper fixerMapper;
 
 	/** 승인된 기사가 아니면 예외를 던진다 */
-	public void requireApprovedFixer(int userNo) {
+	public void requireApprovedFixer(Long userNo) {
 
 		FixerProfileDTO profile = fixerMapper.selectFixerProfile(userNo);
 

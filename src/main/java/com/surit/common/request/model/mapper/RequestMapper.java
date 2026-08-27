@@ -39,5 +39,8 @@ public interface RequestMapper {
 	/** 접수에 딸린 사진 목록 */
 	List<RequestPhotoDTO> selectPhotos(@Param("requestId") Long requestId);
 	
-	List<RequestDTO> findByUserId(Long userId);
+	List<RequestDTO> findByUserId(Long userNo);
+
+	Long insertRequest(RequestDTO request);
+
 }

@@ -17,7 +17,7 @@ public interface FixerMapper {
 	FixerProfileDTO selectFixerProfile(Long userNo);
 
 	/** 기사가 등록한 자격증 목록 (재신청 시 기존 파일 삭제용) */
-	List<FixerLicenseDTO> selectLicensesByUserNo(int userNo);
+	List<FixerLicenseDTO> selectLicensesByUserNo(Long userNo);
 
 	// ---------- 등록 / 수정 ----------
 
