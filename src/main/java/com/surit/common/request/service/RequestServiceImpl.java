@@ -37,7 +37,7 @@ public class RequestServiceImpl implements RequestService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public RequestDTO getRequestDetail(int userNo, long requestId) {
+	public RequestDTO getRequestDetail(int userNo, Long requestId) {
 
 		fixerGuard.requireApprovedFixer(userNo);
 
@@ -60,5 +60,14 @@ public class RequestServiceImpl implements RequestService {
 			return null;
 		}
 		return s.trim();
+	}
+	// ==========================================================
+	// [2] 파일: com.surit.common.request.service.RequestServiceImpl (구현체)
+	// 클래스 내부에 아래 메서드 추가 (기존에 requestMapper 필드가 이미 주입되어 있다는 전제)
+	// ==========================================================
+	 
+	@Override
+	public List<RequestDTO> getRequestsByUserId(Long userId) {
+	    return mapper.findByUserId(userId);
 	}
 }
