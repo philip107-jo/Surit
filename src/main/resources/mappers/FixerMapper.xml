@@ -12,9 +12,9 @@
 	     MyBatis 는 에러 없이 조용히 건너뛰어 값이 null 이 된다.
 	     (INSERT/UPDATE 는 #{photoUrl} 로 직접 지정해서 영향 없음 → 읽기만 깨짐)
 	     별칭을 주면 PHOTO_URL → photoUrl 로 정확히 맞는다. -->
-	<select id="selectFixerProfile" parameterType="long"
 
-
+	<select id="selectFixerProfile" 
+	        parameterType="long"
 	        resultType="com.surit.fixer.verify.model.dto.FixerProfileDTO">
 		SELECT USER_NO, INTRO, CAREER_YEARS, APPROVAL_STATUS,
 		       FIXER_PHOTO_URL AS PHOTO_URL
@@ -22,7 +22,8 @@
 		 WHERE USER_NO = #{userNo}
 	</select>
 
-	<select id="selectLicensesByUserNo" parameterType="long"
+	<select id="selectLicensesByUserNo" 
+	        parameterType="Long"
 	        resultType="com.surit.fixer.verify.model.dto.FixerLicenseDTO">
 		SELECT LICENSE_ID, USER_NO, LICENSE_NAME, UPLOAD_URL, ISSUED_AT
 		  FROM FIXER_LICENSE
@@ -86,15 +87,15 @@
 
 	<!-- ================= 삭제 ================= -->
 
-	<delete id="deleteLicensesByUserNo" parameterType="long">
+	<delete id="deleteLicensesByUserNo" parameterType="Long">
 		DELETE FROM FIXER_LICENSE WHERE USER_NO = #{userNo}
 	</delete>
 
-	<delete id="deleteRegionsByUserNo" parameterType="long">
+	<delete id="deleteRegionsByUserNo" parameterType="Long">
 		DELETE FROM FIXER_REGION WHERE USER_NO = #{userNo}
 	</delete>
 
-	<delete id="deleteCategoriesByUserNo" parameterType="long">
+	<delete id="deleteCategoriesByUserNo" parameterType="Long">
 		DELETE FROM FIXER_CATEGORY WHERE USER_NO = #{userNo}
 	</delete>
 

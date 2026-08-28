@@ -1,376 +1,189 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!doctype html>
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>화면 목록 | 수릿 Surit</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>기사 매칭 | 수릿 Surit</title>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/pages.css">
 </head>
 <body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/></symbol>
+<symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2.6l2.9 6 6.6.9-4.8 4.6 1.2 6.6L12 17.6 6.1 20.7l1.2-6.6L2.5 9.5l6.6-.9z"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M4.5 12.5 9.5 17.5 19.5 6.5"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.4-3 8-7 9.5-4-1.5-7-5.1-7-9.5V6z"/><path d="M9.2 12l2 2 3.6-3.8"/></symbol>
+<symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.6"/><path d="M4 17l5-5 4 4 3-2 4 4"/></symbol>
+</defs>
+</svg>
 
 <jsp:include page="/WEB-INF/views/common/header.jsp" />
 
 <main>
 <div class="container">
 
-  <div class="page-head">
-    <h1>수릿 화면 목록</h1>
-    <p>총 34개 화면 · 클릭하면 화면이 열립니다</p>
+  <div class="page-head page-head--plain">
+    <h1>
+      <c:out value="${request.title}"/>
+      <c:choose>
+        <c:when test="${request.statusCode == 'REQ_01'}">
+          <span class="badge st-received"><c:out value="${request.statusName}"/></span>
+        </c:when>
+        <c:when test="${request.statusCode == 'REQ_02'}">
+          <span class="badge st-matching"><c:out value="${request.statusName}"/></span>
+        </c:when>
+        <c:when test="${request.statusCode == 'REQ_03'}">
+          <span class="badge st-assigned"><c:out value="${request.statusName}"/></span>
+        </c:when>
+        <c:when test="${request.statusCode == 'REQ_04'}">
+          <span class="badge st-done"><c:out value="${request.statusName}"/></span>
+        </c:when>
+        <c:when test="${request.statusCode == 'REQ_05'}">
+          <span class="badge st-canceled"><c:out value="${request.statusName}"/></span>
+        </c:when>
+      </c:choose>
+    </h1>
+    <p><fmt:formatDate value="${request.createdAt}" pattern="yyyy.MM.dd HH:mm"/> 접수</p>
   </div>
 
-  <%-- 전체 흐름도: 원본 파일의 .flow 스타일 그대로 유지 --%>
-  <style>
-  .flow{background:var(--g-900);color:#D1D5DB;padding:24px 26px;border-radius:16px;
-    font-size:14px;line-height:1.9;white-space:pre;overflow-x:auto;
-    font-family:ui-monospace,monospace;margin-bottom:44px}
-  </style>
-  <div class="flow">/  ─┬─▶ /request ─▶ /orders/{id}/matching ─▶ /orders/{id} ─▶ 리뷰 작성
-    │                                            └─▶ /chat
-    ├─▶ /user/mypage ─▶ /orders/{id}
-    └─▶ /support ─▶ /chat (수릿 문의하기)
-
-기사   /fixer/requests ─▶ /fixer/requests/{id} (예상 견적 제시)
-            ─▶ 고객이 선택 ─▶ /fixer/jobs/{id} (매칭 확인 · 수락/취소)
-            ─▶ /fixer/chat (방문 일정 확정 → 접수 정보에 저장)
-            ─▶ /fixer/jobs/{id}/booking (예약 확정 · 취소 · 채팅)
-            ─▶ 방문 · 수리 ─▶ 현장 결제
-            ─▶ /fixer/jobs/{id}/complete (결제 금액으로 영수증 · 견적서 발행)
-
-관리자 /admin ─┬─▶ /admin/members  ├─▶ /admin/blacklist
-              ├─▶ /admin/reviews  └─▶ /admin/inquiries</div>
-
-  <%-- ============================================================
-       ⚠ "확인필요" 뱃지가 없는 항목만 실제 컨트롤러 매핑과 대조 확인됨.
-       나머지는 아직 컨트롤러가 없거나(채팅/관리자/기사 작업 화면 등)
-       naming이 다를 수 있어(partner → fixer 등) 확인 후 수정하세요.
-       ============================================================ --%>
-
-  <div class="sec-head"><h2>고객 화면</h2></div>
-  <div style="margin-bottom:40px">
-    <a class="list-card" href="${pageContext.request.contextPath}/">
-      <div class="list-card__body">
-        <div class="list-card__title">메인페이지</div>
-        <div class="list-card__meta">
-          <span class="badge badge--primary">/</span>
-          <span class="muted">home/index.jsp</span>
-        </div>
+  <%-- 진행 단계: 접수완료 → 기사매칭 → 방문·수리 → 수리완료
+       request.statusCode 기준으로 현재 단계 표시 --%>
+  <div style="margin-bottom:36px">
+    <div class="steps">
+      <div class="steps__item done">
+        <div class="steps__dot"><svg><use href="#i-check"/></svg></div>
+        <div class="steps__label">접수 완료</div>
       </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/request/request">
-      <div class="list-card__body">
-        <div class="list-card__title">수리 접수</div>
-        <div class="list-card__meta">
-          <span class="badge badge--primary">/request/request</span>
-          <span class="muted">request/request.jsp</span>
+      <div class="steps__item ${request.statusCode == 'REQ_01' || request.statusCode == 'REQ_02' ? 'now' : (request.statusCode == 'REQ_03' || request.statusCode == 'REQ_04' ? 'done' : '')}">
+        <div class="steps__dot">
+          <c:choose>
+            <c:when test="${request.statusCode == 'REQ_03' || request.statusCode == 'REQ_04'}">
+              <svg><use href="#i-check"/></svg>
+            </c:when>
+            <c:otherwise>2</c:otherwise>
+          </c:choose>
         </div>
+        <div class="steps__label">기사 매칭</div>
       </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/orders/matching">
-      <div class="list-card__body">
-        <div class="list-card__title">기사 매칭 · 선택 <span class="badge badge--warn">확인필요</span></div>
-        <div class="list-card__meta">
-          <span class="badge badge--gray">/orders/{id}/matching</span>
-          <span class="muted">matching.jsp</span>
+      <div class="steps__item ${request.statusCode == 'REQ_03' ? 'now' : (request.statusCode == 'REQ_04' ? 'done' : '')}">
+        <div class="steps__dot">
+          <c:choose>
+            <c:when test="${request.statusCode == 'REQ_04'}">
+              <svg><use href="#i-check"/></svg>
+            </c:when>
+            <c:otherwise>3</c:otherwise>
+          </c:choose>
         </div>
+        <div class="steps__label">방문 · 수리</div>
       </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/fixers">
-      <div class="list-card__body">
-        <div class="list-card__title">기사 프로필 (고객이 보는 화면) <span class="badge badge--warn">확인필요</span></div>
-        <div class="list-card__meta">
-          <span class="badge badge--gray">/fixers/{id}</span>
-          <span class="muted">tech-profile.jsp</span>
-        </div>
+      <div class="steps__item ${request.statusCode == 'REQ_04' ? 'now' : ''}">
+        <div class="steps__dot">4</div>
+        <div class="steps__label">수리 완료</div>
       </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/orders">
-      <div class="list-card__body">
-        <div class="list-card__title">접수 상세 · 진행 중 (예약 확정) <span class="badge badge--warn">확인필요</span></div>
-        <div class="list-card__meta">
-          <span class="badge badge--gray">/orders/{id}</span>
-          <span class="muted">order-progress.jsp</span>
-        </div>
-      </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/orders">
-      <div class="list-card__body">
-        <div class="list-card__title">접수 상세 · 리뷰 작성 (완료) <span class="badge badge--warn">확인필요</span></div>
-        <div class="list-card__meta">
-          <span class="badge badge--gray">/orders/{id}</span>
-          <span class="muted">order-detail.jsp</span>
-        </div>
-      </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/chat">
-      <div class="list-card__body">
-        <div class="list-card__title">채팅 (고객) <span class="badge badge--warn">확인필요</span></div>
-        <div class="list-card__meta">
-          <span class="badge badge--gray">/chat</span>
-          <span class="muted">chat.jsp</span>
-        </div>
-      </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/support">
-      <div class="list-card__body">
-        <div class="list-card__title">고객센터 <span class="badge badge--warn">확인필요</span></div>
-        <div class="list-card__meta">
-          <span class="badge badge--gray">/support</span>
-          <span class="muted">support.jsp</span>
-        </div>
-      </div>
-    </a>
+    </div>
   </div>
 
-  <div class="sec-head"><h2>마이페이지</h2></div>
-  <div style="margin-bottom:40px">
-    <a class="list-card" href="${pageContext.request.contextPath}/user/mypage">
-      <div class="list-card__body">
-        <div class="list-card__title">나의 접수</div>
-        <div class="list-card__meta">
-          <span class="badge badge--primary">/user/mypage</span>
-          <span class="muted">user/mypage.jsp</span>
-        </div>
+  <div class="summary" style="margin-bottom:44px">
+    <c:if test="${not empty request.photos}">
+      <div class="summary__thumbs">
+        <c:forEach var="photo" items="${request.photos}" varStatus="ps" begin="0" end="1">
+          <span class="thumb"><svg><use href="#i-image"/></svg></span>
+        </c:forEach>
       </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/user/mypage/address">
-      <div class="list-card__body">
-        <div class="list-card__title">주소 관리 <span class="badge badge--warn">확인필요</span></div>
-        <div class="list-card__meta">
-          <span class="badge badge--gray">/user/mypage/address</span>
-          <span class="muted">mypage-address.jsp</span>
-        </div>
+    </c:if>
+    <div class="summary__body">
+      <div class="summary__title">접수 내용</div>
+      <p style="font-size:16.5px;color:var(--g-700);margin-bottom:14px">
+        <c:out value="${request.content}"/>
+      </p>
+      <div class="summary__meta">
+        <span>카테고리 <b><c:out value="${request.categoryName}"/></b></span>
+        <span>방문 주소 <b><c:out value="${request.serviceAddress}"/></b></span>
       </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/user/mypage/address/form">
-      <div class="list-card__body">
-        <div class="list-card__title">주소 추가 · 수정 <span class="badge badge--warn">확인필요</span></div>
-        <div class="list-card__meta">
-          <span class="badge badge--gray">/user/mypage/address/form</span>
-          <span class="muted">mypage-address-form.jsp</span>
-        </div>
+    </div>
+    <c:if test="${request.statusCode == 'REQ_01' || request.statusCode == 'REQ_02'}">
+      <div class="summary__actions">
+        <a class="btn btn--ghost btn--sm" href="${pageContext.request.contextPath}/request/edit/${request.requestId}">수정</a>
+        <a class="btn btn--danger btn--sm" href="${pageContext.request.contextPath}/user/mypage">접수 취소</a>
       </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/user/mypage/profile">
-      <div class="list-card__body">
-        <div class="list-card__title">내 정보 수정 <span class="badge badge--warn">확인필요</span></div>
-        <div class="list-card__meta">
-          <span class="badge badge--gray">/user/mypage/profile</span>
-          <span class="muted">mypage-profile.jsp</span>
-        </div>
-      </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/user/mypage/reviews">
-      <div class="list-card__body">
-        <div class="list-card__title">내가 쓴 리뷰 <span class="badge badge--warn">확인필요</span></div>
-        <div class="list-card__meta">
-          <span class="badge badge--gray">/user/mypage/reviews</span>
-          <span class="muted">mypage-reviews.jsp</span>
-        </div>
-      </div>
-    </a>
+    </c:if>
   </div>
 
-  <div class="sec-head"><h2>계정</h2></div>
-  <div style="margin-bottom:40px">
-    <a class="list-card" href="${pageContext.request.contextPath}/user/login">
-      <div class="list-card__body">
-        <div class="list-card__title">로그인</div>
-        <div class="list-card__meta">
-          <span class="badge badge--primary">/user/login</span>
-          <span class="muted">user/login.jsp</span>
-        </div>
-      </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/user/sign">
-      <div class="list-card__body">
-        <div class="list-card__title">회원가입</div>
-        <div class="list-card__meta">
-          <span class="badge badge--primary">/user/sign</span>
-          <span class="muted">user/sign.jsp</span>
-        </div>
-      </div>
-    </a>
+  <div class="sec-head sec-head--row">
+    <div>
+      <h2>신청한 기사님 ${fn:length(estimateList)}명</h2>
+      <p>아래 금액은 기사님이 보낸 <b>예상 견적</b>입니다. 선택하면 기사님이 확인한 뒤 채팅이 열리고,
+        그 전까지는 양쪽 모두 취소할 수 있습니다.</p>
+    </div>
   </div>
 
-  <div class="sec-head"><h2>수리 기사</h2></div>
-  <div style="margin-bottom:40px">
-    <a class="list-card" href="${pageContext.request.contextPath}/fixer/requests">
-      <div class="list-card__body">
-        <div class="list-card__title">접수 찾기</div>
-        <div class="list-card__meta">
-          <span class="badge badge--primary">/fixer/requests</span>
-          <span class="muted">fixer/requests.jsp</span>
-        </div>
+  <c:choose>
+    <c:when test="${empty estimateList}">
+      <div class="empty">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><use href="#i-clock"/></svg>
+        <p>아직 신청한 기사님이 없습니다. 조금만 기다려 주세요.</p>
       </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/fixer/requests">
-      <div class="list-card__body">
-        <div class="list-card__title">새 접수 상세 · 예상 견적 제시</div>
-        <div class="list-card__meta">
-          <span class="badge badge--primary">/fixer/requests/{requestId}</span>
-          <span class="muted">fixer/requestDetail.jsp</span>
+    </c:when>
+    <c:otherwise>
+      <c:forEach var="est" items="${estimateList}">
+        <div class="tech">
+          <div class="tech__top">
+            <span class="avatar avatar--lg"><svg><use href="#i-user"/></svg></span>
+            <div>
+              <div class="tech__name"><c:out value="${est.fixerName}"/> 기사님</div>
+              <%-- 경력/평점/후기건수는 EstimateDTO/FixerProfileDTO 확인 후 추가 --%>
+            </div>
+            <div class="tech__price">
+              <small>예상 견적</small>
+              <b><fmt:formatNumber value="${est.estimatedPrice}" pattern="#,##0"/>원</b>
+            </div>
+          </div>
+
+          <p class="tech__msg">
+            <c:out value="${est.content}"/>
+            <c:if test="${not empty est.estimatedDuration}">
+              <br>예상 소요 시간 약 ${est.estimatedDuration}분
+            </c:if>
+          </p>
+
+          <div class="tech__foot">
+            <a class="btn btn--ghost" href="${pageContext.request.contextPath}/fixers/${est.fixerNo}">프로필 보기</a>
+
+            <c:choose>
+              <c:when test="${est.status == 'SELECTED'}">
+                <span class="badge badge--ok" style="margin-left:auto">선택됨</span>
+              </c:when>
+              <c:when test="${request.statusCode == 'REQ_01' || request.statusCode == 'REQ_02'}">
+                <form method="post" action="${pageContext.request.contextPath}/request/matching/select" style="margin-left:auto">
+                  <input type="hidden" name="requestId" value="${request.requestId}">
+                  <input type="hidden" name="estimateId" value="${est.estimateId}">
+                  <button type="submit" class="btn btn--primary btn--lg">이 기사님으로 결정</button>
+                </form>
+              </c:when>
+            </c:choose>
+          </div>
         </div>
-      </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/fixer/jobs">
-      <div class="list-card__body">
-        <div class="list-card__title">내 작업 <span class="badge badge--warn">확인필요</span></div>
-        <div class="list-card__meta">
-          <span class="badge badge--gray">/fixer/jobs</span>
-          <span class="muted">fixer/jobs.jsp</span>
-        </div>
-      </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/fixer/jobs">
-      <div class="list-card__body">
-        <div class="list-card__title">내 작업 상세 · 매칭 확인 <span class="badge badge--warn">확인필요</span></div>
-        <div class="list-card__meta">
-          <span class="badge badge--gray">/fixer/jobs/{id}</span>
-          <span class="muted">fixer/jobDetail.jsp</span>
-        </div>
-      </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/fixer/jobs">
-      <div class="list-card__body">
-        <div class="list-card__title">예약 확정 · 취소 <span class="badge badge--warn">확인필요</span></div>
-        <div class="list-card__meta">
-          <span class="badge badge--gray">/fixer/jobs/{id}/booking</span>
-          <span class="muted">partner-booking.jsp</span>
-        </div>
-      </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/fixer/jobs">
-      <div class="list-card__body">
-        <div class="list-card__title">현장 결제 · 수리 완료 처리 <span class="badge badge--warn">확인필요</span></div>
-        <div class="list-card__meta">
-          <span class="badge badge--gray">/fixer/jobs/{id}/complete</span>
-          <span class="muted">partner-complete.jsp</span>
-        </div>
-      </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/fixer/chat">
-      <div class="list-card__body">
-        <div class="list-card__title">채팅 (기사) <span class="badge badge--warn">확인필요</span></div>
-        <div class="list-card__meta">
-          <span class="badge badge--gray">/fixer/chat</span>
-          <span class="muted">partner-chat.jsp</span>
-        </div>
-      </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/fixer/blocked">
-      <div class="list-card__body">
-        <div class="list-card__title">차단 고객 <span class="badge badge--warn">확인필요</span></div>
-        <div class="list-card__meta">
-          <span class="badge badge--gray">/fixer/blocked</span>
-          <span class="muted">partner-blocked.jsp</span>
-        </div>
-      </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/fixer/verify">
-      <div class="list-card__body">
-        <div class="list-card__title">기사 인증 · 자격증 제출</div>
-        <div class="list-card__meta">
-          <span class="badge badge--primary">/fixer/verify</span>
-          <span class="muted">fixer/verify.jsp</span>
-        </div>
-      </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/fixer/mypage">
-      <div class="list-card__body">
-        <div class="list-card__title">기사 마이페이지 · 수리 정보 <span class="badge badge--warn">확인필요</span></div>
-        <div class="list-card__meta">
-          <span class="badge badge--gray">/fixer/mypage</span>
-          <span class="muted">partner-mypage.jsp</span>
-        </div>
-      </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/fixer/mypage/address">
-      <div class="list-card__body">
-        <div class="list-card__title">기사 주소 관리 <span class="badge badge--warn">확인필요</span></div>
-        <div class="list-card__meta">
-          <span class="badge badge--gray">/fixer/mypage/address</span>
-          <span class="muted">partner-mypage-address.jsp</span>
-        </div>
-      </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/fixer/mypage/address/form">
-      <div class="list-card__body">
-        <div class="list-card__title">기사 주소 추가 · 수정 <span class="badge badge--warn">확인필요</span></div>
-        <div class="list-card__meta">
-          <span class="badge badge--gray">/fixer/mypage/address/form</span>
-          <span class="muted">partner-mypage-address-form.jsp</span>
-        </div>
-      </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/fixer/mypage/profile">
-      <div class="list-card__body">
-        <div class="list-card__title">기사 정보 수정 <span class="badge badge--warn">확인필요</span></div>
-        <div class="list-card__meta">
-          <span class="badge badge--gray">/fixer/mypage/profile</span>
-          <span class="muted">partner-mypage-profile.jsp</span>
-        </div>
-      </div>
-    </a>
+      </c:forEach>
+    </c:otherwise>
+  </c:choose>
+
+  <div class="note note--gray" style="margin-top:28px;justify-content:center">
+    <svg><use href="#i-clock"/></svg>
+    <span>아직 마음에 드는 기사님이 없다면 조금 더 기다려 보세요. 신청은 계속 들어옵니다.</span>
   </div>
 
-  <div class="sec-head"><h2>관리자</h2></div>
-  <div style="margin-bottom:40px">
-    <a class="list-card" href="${pageContext.request.contextPath}/admin">
-      <div class="list-card__body">
-        <div class="list-card__title">접수 현황 <span class="badge badge--warn">확인필요</span></div>
-        <div class="list-card__meta">
-          <span class="badge badge--gray">/admin</span>
-          <span class="muted">admin.jsp</span>
-        </div>
-      </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/admin/members">
-      <div class="list-card__body">
-        <div class="list-card__title">회원 · 기사 관리 <span class="badge badge--warn">확인필요</span></div>
-        <div class="list-card__meta">
-          <span class="badge badge--gray">/admin/members</span>
-          <span class="muted">admin-members.jsp</span>
-        </div>
-      </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/admin/members">
-      <div class="list-card__body">
-        <div class="list-card__title">기사 심사 상세 (자격증 확인) <span class="badge badge--warn">확인필요</span></div>
-        <div class="list-card__meta">
-          <span class="badge badge--gray">/admin/members/{id}</span>
-          <span class="muted">admin-member-detail.jsp</span>
-        </div>
-      </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/admin/blacklist">
-      <div class="list-card__body">
-        <div class="list-card__title">블랙리스트 <span class="badge badge--warn">확인필요</span></div>
-        <div class="list-card__meta">
-          <span class="badge badge--gray">/admin/blacklist</span>
-          <span class="muted">admin-blacklist.jsp</span>
-        </div>
-      </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/admin/reviews">
-      <div class="list-card__body">
-        <div class="list-card__title">리뷰 관리 <span class="badge badge--warn">확인필요</span></div>
-        <div class="list-card__meta">
-          <span class="badge badge--gray">/admin/reviews</span>
-          <span class="muted">admin-reviews.jsp</span>
-        </div>
-      </div>
-    </a>
-    <a class="list-card" href="${pageContext.request.contextPath}/admin/inquiries">
-      <div class="list-card__body">
-        <div class="list-card__title">문의 응대 <span class="badge badge--warn">확인필요</span></div>
-        <div class="list-card__meta">
-          <span class="badge badge--gray">/admin/inquiries</span>
-          <span class="muted">admin-inquiry.jsp</span>
-        </div>
-      </div>
-    </a>
+  <div class="note note--blue" style="margin-top:16px">
+    <svg><use href="#i-shield"/></svg>
+    <span><b>선택 이후 진행 순서</b><br>
+    기사님 확인 → 채팅 시작 → 채팅에서 방문 일정 확정 → 방문 · 수리 →
+    현장에서 결제 → 결제한 금액으로 영수증 겸 견적서 발행</span>
   </div>
 
 </div>

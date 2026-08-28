@@ -75,11 +75,7 @@ public class RequestServiceImpl implements RequestService {
 	    return mapper.findByUserId(userNo);
 	}
 
-	@Override
-	public void createRequest(RequestDTO request) {
-		// TODO Auto-generated method stub
-		
-	}
+
 
 @Override
 @Transactional(readOnly = true)
@@ -118,4 +114,26 @@ public void selectEstimate(Long userNo, Long requestId, Long estimateId) {
     mapper.updateSelectedEstimate(requestId, estimateId);
 }
  
+	@Transactional
+	public void createRequest(RequestDTO request) {
+
+	    // 신규 접수 상태
+	    request.setStatusCode("REQ_01");
+
+	    System.out.println("===== 접수 INSERT =====");
+	    System.out.println("userNo = " + request.getUserNo());
+	    System.out.println("categoryCode = " + request.getCategoryCode());
+	    System.out.println("title = " + request.getTitle());
+	    System.out.println("content = " + request.getContent());
+	    System.out.println("serviceAddress = " + request.getServiceAddress());
+	    System.out.println("statusCode = " + request.getStatusCode());
+
+	    Long result = mapper.insertRequest(request);
+
+	    System.out.println("INSERT RESULT = " + result);
+
+	    if (result != 1) {
+	        throw new IllegalStateException("수리 접수 등록에 실패했습니다.");
+	    }
+	}
 }
