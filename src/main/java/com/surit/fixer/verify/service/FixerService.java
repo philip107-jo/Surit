@@ -31,8 +31,10 @@ public interface FixerService {
 	List<CommonCodeDTO> getRegionList();
 
 	/** 내 신청 상태 (없으면 null) */
-	FixerProfileDTO getMyProfile(long userNo);
+
+	FixerProfileDTO getMyProfile(Long userNo);
 
 	/** 기사 인증 신청 (신규 / 재신청) */
-	void applyVerify(long userNo, FixerVerifyRequest request) throws IOException;
+	void applyVerify(Long userNo, FixerVerifyRequest request) throws IOException;
 }
+

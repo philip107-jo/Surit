@@ -22,17 +22,9 @@ public class FixerGuard {
 
 	private final FixerMapper fixerMapper;
 
-	/**
-	 * 승인된 기사가 아니면 예외를 던진다.
-	 * 통과하면 아무것도 반환하지 않는다 — 조용히 끝나는 게 곧 "통과" 다.
-	 *
-	 * userNo 를 Long 이 아니라 long 으로 받는 이유 (팀 숫자 타입 규칙) :
-	 *   이 값은 항상 로그인 세션에서 오므로 null 일 수가 없다.
-	 *   원시형으로 두면 그 사실이 타입으로 보장되고, null 이 넘어와
-	 *   언박싱에서 NullPointerException 이 나는 경로 자체가 막힌다.
-	 *   (DTO 필드는 반대로 Long — DB 의 NULL 을 0 과 구분해야 하므로)
-	 */
-	public void requireApprovedFixer(long userNo) {
+	/** 승인된 기사가 아니면 예외를 던진다 */
+	public void requireApprovedFixer(Long userNo) {
+
 
 		FixerProfileDTO profile = fixerMapper.selectFixerProfile(userNo);
 

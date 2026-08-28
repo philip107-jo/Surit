@@ -1,4 +1,4 @@
-package com.surit.user.dto;
+package com.surit.user.model.dto;
 
 import java.sql.Timestamp;
 
@@ -14,14 +14,14 @@ import lombok.ToString;
 @ToString
 	
 public class UserDTO {
-	private int userNo;
+	private Long userNo;
 	private String userId;
 	private String email;
-	private String password;
+	private String passWord;
 	private String name;
 	private String phone;
 	private String userRole;
 	private String status;
-	private Timestamp createdAt;
+	private Timestamp createdAt; 
 	
 }

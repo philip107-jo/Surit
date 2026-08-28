@@ -143,5 +143,33 @@
 		 WHERE REQUEST_ID = #{requestId}
 		 ORDER BY PHOTO_ORDER, PHOTO_ID
 	</select>
-
+<select id="findByUserId" resultType="com.surit.common.request.model.dto.RequestDTO">
+    SELECT
+        r.REQUEST_ID       AS requestId,
+        r.USER_NO          AS userNo,
+        r.CATEGORY_CODE    AS categoryCode,
+        cc.CODE_NAME       AS categoryName,
+        r.TITLE            AS title,
+        r.CONTENT          AS content,
+        r.SERVICE_ADDRESS  AS serviceAddress,
+        r.STATUS_CODE      AS statusCode,
+        sc.CODE_NAME       AS statusName,
+        r.CREATED_AT       AS createdAt,
+        (
+            SELECT COUNT(*)
+            FROM ESTIMATES e          <!-- 테이블명 확인 필요 -->
+            WHERE e.REQUEST_ID = r.REQUEST_ID
+        ) AS estimateCount
+    FROM REPAIR_REQUESTS r
+    LEFT JOIN COMMON_CODE cc
+           ON cc.CODE_ID = r.CATEGORY_CODE
+          AND cc.CODE_GROUP = 'CATEGORY'
+          AND cc.USE_YN = 'Y'
+    LEFT JOIN COMMON_CODE sc
+           ON sc.CODE_ID = r.STATUS_CODE
+          AND sc.CODE_GROUP = 'STATUS'
+          AND sc.USE_YN = 'Y'
+    WHERE r.USER_NO = #{userId}
+    ORDER BY r.CREATED_AT DESC
+</select>
 </mapper>

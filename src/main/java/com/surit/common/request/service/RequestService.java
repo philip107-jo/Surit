@@ -30,4 +30,10 @@ public interface RequestService {
 
 	/** 접수 상세 (볼 수 없는 접수면 예외) */
 	RequestDTO getRequestDetail(long userNo, long requestId);
+
+	/** 고객 기능 — 내가 올린 접수 목록 */
+	List<RequestDTO> getRequestsByUserId(long userNo);
+	
+	/** 고객 기능 — 접수 등록 */
+	void createRequest(RequestDTO request);
 }

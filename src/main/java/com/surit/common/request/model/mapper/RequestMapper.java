@@ -5,8 +5,8 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import com.surit.common.request.model.dto.RequestPhotoDTO;
 import com.surit.common.request.model.dto.RequestDTO;
+import com.surit.common.request.model.dto.RequestPhotoDTO;
 
 @Mapper
 public interface RequestMapper {
@@ -22,8 +22,8 @@ public interface RequestMapper {
 	 * @param keyword      제목/내용 검색어 (없으면 null)
 	 */
 	List<RequestDTO> selectNearbyRequests(@Param("userNo") long userNo,
-	                                           @Param("categoryCode") String categoryCode,
-	                                           @Param("keyword") String keyword);
+	                                      @Param("categoryCode") String categoryCode,
+	                                      @Param("keyword") String keyword);
 
 	/**
 	 * 접수 상세.
@@ -34,8 +34,14 @@ public interface RequestMapper {
 	 * "볼 수 있는 조건" 을 붙이고, 조건에 안 맞으면 null 이 돌아오게 한다.
 	 */
 	RequestDTO selectRequestDetail(@Param("userNo") long userNo,
-	                                     @Param("requestId") long requestId);
+	                               @Param("requestId") long requestId);
 
 	/** 접수에 딸린 사진 목록 */
 	List<RequestPhotoDTO> selectPhotos(@Param("requestId") long requestId);
+
+	/** 고객 기능 — 내가 올린 접수 목록 */
+	List<RequestDTO> findByUserId(Long userNo);
+
+	/** 고객 기능 — 접수 등록 */
+	Long insertRequest(RequestDTO request);
 }

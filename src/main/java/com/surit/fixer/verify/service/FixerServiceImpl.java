@@ -59,14 +59,16 @@ public class FixerServiceImpl implements FixerService {
 	}
 
 	@Override
-	public FixerProfileDTO getMyProfile(long userNo) {
+
+	public FixerProfileDTO getMyProfile(Long userNo) {
 		return mapper.selectFixerProfile(userNo);
 	}
 
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public void applyVerify(long userNo, FixerVerifyRequest request) throws IOException {
+
+	public void applyVerify(Long userNo, FixerVerifyRequest request) throws IOException {
 
 		// ---------- 0) 입력값 검증 ----------
 		validate(request);
@@ -175,7 +177,8 @@ public class FixerServiceImpl implements FixerService {
 	 * 실패 시 치우는 책임은 이제 applyVerify() 의 바깥 try/catch 가 진다
 	 * (사진 파일과 함께 한 곳에서 정리하기 위함).
 	 */
-	private int saveLicenses(long userNo, FixerVerifyRequest request, List<String> savedPaths) throws IOException {
+
+	private int saveLicenses(Long userNo, FixerVerifyRequest request, List<String> savedPaths) throws IOException {
 
 		List<String>        names = request.getLicenseNames();
 		List<String>        dates = request.getLicenseIssuedAts();

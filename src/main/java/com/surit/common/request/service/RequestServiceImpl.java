@@ -31,7 +31,6 @@ public class RequestServiceImpl implements RequestService {
 	public List<RequestDTO> getNearbyRequests(long userNo, String categoryCode, String keyword) {
 
 		fixerGuard.requireApprovedFixer(userNo);
-
 		return mapper.selectNearbyRequests(userNo, trimToNull(categoryCode), trimToNull(keyword));
 	}
 
@@ -42,7 +41,6 @@ public class RequestServiceImpl implements RequestService {
 		fixerGuard.requireApprovedFixer(userNo);
 
 		RequestDTO request = mapper.selectRequestDetail(userNo, requestId);
-
 		if (request == null) {
 			// 없는 번호이거나, 내 분야/지역이 아니거나, 이미 매칭이 끝난 접수.
 			// 어느 쪽인지 굳이 알려주지 않는다. 알려주면 번호를 하나씩 넣어보며
@@ -54,11 +52,25 @@ public class RequestServiceImpl implements RequestService {
 		return request;
 	}
 
+	/** 고객 기능 — 내가 올린 접수 목록 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<RequestDTO> getRequestsByUserId(long userNo) {
+		return mapper.findByUserId(userNo);
+	}
+
 	/** 빈 문자열은 null 로 (XML 의 <if> 조건을 단순하게 유지하려고) */
 	private String trimToNull(String s) {
 		if (s == null || s.isBlank()) {
 			return null;
 		}
 		return s.trim();
+	}
+	
+	/** 고객 기능 — 접수 등록 */
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public void createRequest(RequestDTO request) {
+		mapper.insertRequest(request);
 	}
 }

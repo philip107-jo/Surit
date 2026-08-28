@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 
 <!DOCTYPE html>
 <html>
@@ -23,7 +25,7 @@
 
         <c:if test="${ not empty sessionScope.loginMember }">
             <nav class="gnb">
-                <a href="/request">수리접수</a>
+                <a href="/fixer/request">수리접수</a>
             </nav>
         </c:if>
 
@@ -46,7 +48,7 @@
                                 마이페이지
                             </a>
                             <c:if test="${ sessionScope.loginMember.userRole == 'FIXER' }">
-                                <a href="/fixer/dashboard" class="switch">
+                                <a href="/fixer/requests" class="switch">
                                     <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z"/></svg>
                                     기사 모드로 전환
                                 </a>

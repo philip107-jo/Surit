@@ -208,3 +208,100 @@
   .join-banner{flex-direction:column;align-items:flex-start;padding:36px}
   .summary{flex-direction:column}
 }
+/* ==============================
+   수리 접수 - 사진 첨부
+   ============================== */
+
+.upload {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* 사진 추가 버튼 */
+.upload__add {
+    width: 110px;
+    height: 110px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+    background: #fff;
+    cursor: pointer;
+}
+.upload__add:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+}
+.upload__add svg {
+    width: 26px;
+    height: 26px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+}
+.upload__add span {
+    font-size: 13px;
+    color: #64748b;
+}
+/* 사진 미리보기 전체 */
+.photo-preview {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+}
+/* 사진 하나 */
+.photo-preview__item {
+    width: 110px;
+    height: 110px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+}
+/* 실제 사진 */
+.photo-preview__item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+/* 삭제 버튼 */
+.photo-preview__item {
+    width: 110px;
+    height: 110px;
+    flex-shrink: 0;
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+}
+
+.photo-preview__item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.photo-preview__remove {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, .55);
+    color: #fff;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+}

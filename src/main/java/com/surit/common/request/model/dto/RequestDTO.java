@@ -3,6 +3,7 @@ package com.surit.common.request.model.dto;
 import java.sql.Timestamp;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +16,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class RequestDTO {
 
 	// ---- REPAIR_REQUESTS 컬럼 ----
@@ -28,10 +30,10 @@ public class RequestDTO {
 	private Timestamp createdAt;
 
 	// ---- 조인해서 가져오는 값 ----
-	private String  categoryName;      // COMMON_CODE.CODE_NAME
-	private String  statusName;        // COMMON_CODE.CODE_NAME
-	private String  customerName;      // USERS.NAME
-	private Long    estimateCount;     // 이 접수에 달린 견적 수
+	private String categoryName;      // COMMON_CODE.CODE_NAME
+	private String statusName;        // COMMON_CODE.CODE_NAME
+	private String customerName;      // USERS.NAME
+	private Long   estimateCount;     // 이 접수에 달린 견적 수
 
 	/**
 	 * 내가 이미 이 접수에 견적을 냈으면 그 ESTIMATE_ID, 아니면 null.
