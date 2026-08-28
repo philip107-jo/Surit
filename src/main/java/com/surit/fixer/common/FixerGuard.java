@@ -22,6 +22,7 @@ public class FixerGuard {
 
 	private final FixerMapper fixerMapper;
 
+<<<<<<< HEAD
 	/**
 	 * 승인된 기사가 아니면 예외를 던진다.
 	 * 통과하면 아무것도 반환하지 않는다 — 조용히 끝나는 게 곧 "통과" 다.
@@ -33,6 +34,10 @@ public class FixerGuard {
 	 *   (DTO 필드는 반대로 Long — DB 의 NULL 을 0 과 구분해야 하므로)
 	 */
 	public void requireApprovedFixer(long userNo) {
+=======
+	/** 승인된 기사가 아니면 예외를 던진다 */
+	public void requireApprovedFixer(Long userNo) {
+>>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5
 
 		FixerProfileDTO profile = fixerMapper.selectFixerProfile(userNo);
 

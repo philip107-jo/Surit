@@ -5,8 +5,8 @@ import java.io.IOException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.surit.user.dto.UserDTO;
 import com.surit.user.mapper.UserMapper;
+import com.surit.user.model.dto.UserDTO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,8 +26,8 @@ public class UserServiceImpl implements UserService {
 	}
 		//비밀번호 암호화 처리 -> BCryptPasswordEncoder => SecurityConfig 설정
 		//암호화 
-		String encodePwd = passwordencoder.encode(user.getPassword());
-		user.setPassword(encodePwd);//비밀번호 필드를 암호화된 값으로 변경
+		String encodePwd = passwordencoder.encode(user.getPassWord());
+		user.setPassWord(encodePwd);//비밀번호 필드를 암호화된 값으로 변경
 		mapper.insertUser(user);
 	}
 	@Override
@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
 		//평문 비밀번호 => 전달된 값 (memberPwd)
 		
 		//passwordEncoder.matches(평문, 암호문)=> 동일한 경우 true, 그렇지 않으면 false 반환
-		if(user == null || !passwordencoder.matches(userPwd, user.getPassword())) {
+		if(user == null || !passwordencoder.matches(userPwd, user.getPassWord())) {
 			throw new IllegalStateException("아이디 또는 비밀번호가 일치하지 않습니다.");
 		}
 		//회원 정보 반환
@@ -67,6 +67,9 @@ public class UserServiceImpl implements UserService {
 		mapper.insertUser(address);
 		
 	}
-	
+	@Override
+	public UserDTO getUserInfo(String userId) {
+	    return mapper.selectByUserId(userId);
+	}
 
 }

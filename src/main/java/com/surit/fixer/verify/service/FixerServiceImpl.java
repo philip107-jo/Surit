@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.surit.fixer.common.model.dto.CommonCodeDTO;
-import com.surit.fixer.common.model.mapper.CommonCodeMapper;
+import com.surit.common.model.dto.CommonCodeDTO;
+import com.surit.common.model.mapper.CommonCodeMapper;
 import com.surit.fixer.common.util.FileUploadUtil;
 import com.surit.fixer.common.util.SavedFile;
 import com.surit.fixer.verify.model.dto.FixerLicenseDTO;
@@ -59,14 +59,22 @@ public class FixerServiceImpl implements FixerService {
 	}
 
 	@Override
+<<<<<<< HEAD
 	public FixerProfileDTO getMyProfile(long userNo) {
+=======
+	public FixerProfileDTO getMyProfile(Long userNo) {
+>>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5
 		return mapper.selectFixerProfile(userNo);
 	}
 
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
+<<<<<<< HEAD
 	public void applyVerify(long userNo, FixerVerifyRequest request) throws IOException {
+=======
+	public void applyVerify(Long userNo, FixerVerifyRequest request) throws IOException {
+>>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5
 
 		// ---------- 0) 입력값 검증 ----------
 		validate(request);
@@ -175,7 +183,11 @@ public class FixerServiceImpl implements FixerService {
 	 * 실패 시 치우는 책임은 이제 applyVerify() 의 바깥 try/catch 가 진다
 	 * (사진 파일과 함께 한 곳에서 정리하기 위함).
 	 */
+<<<<<<< HEAD
 	private int saveLicenses(long userNo, FixerVerifyRequest request, List<String> savedPaths) throws IOException {
+=======
+	private int saveLicenses(Long userNo, FixerVerifyRequest request, List<String> savedPaths) throws IOException {
+>>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5
 
 		List<String>        names = request.getLicenseNames();
 		List<String>        dates = request.getLicenseIssuedAts();

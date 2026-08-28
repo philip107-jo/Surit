@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.surit.fixer.request.model.mapper.RequestMapper">
+<mapper namespace="com.surit.common.request.model.mapper.RequestMapper">
 
 	<!--
 		기사가 "볼 수 있는" 접수의 조건 — 분야 · 지역 · 차단 여부.
@@ -81,7 +81,7 @@
 
 
 	<select id="selectNearbyRequests"
-	        resultType="com.surit.fixer.request.model.dto.RepairRequestDTO">
+	        resultType="com.surit.common.request.model.dto.RequestDTO">
 		<include refid="baseColumns"/>
 		 WHERE 1 = 1
 		<!-- 새 접수 찾기 화면이므로 아직 기사를 못 정한 접수만 (접수대기 / 견적중) -->
@@ -107,7 +107,7 @@
 
 
 	<select id="selectRequestDetail"
-	        resultType="com.surit.fixer.request.model.dto.RepairRequestDTO">
+	        resultType="com.surit.common.request.model.dto.RequestDTO">
 		<include refid="baseColumns"/>
 		 WHERE r.REQUEST_ID = #{requestId}
 		<!--
@@ -132,7 +132,7 @@
 
 
 	<select id="selectPhotos"
-	        resultType="com.surit.fixer.request.model.dto.RepairPhotoDTO">
+	        resultType="com.surit.common.request.model.dto.RequestPhotoDTO">
 		SELECT PHOTO_ID,
 		       REQUEST_ID,
 		       PHOTO_PATH,
@@ -143,5 +143,33 @@
 		 WHERE REQUEST_ID = #{requestId}
 		 ORDER BY PHOTO_ORDER, PHOTO_ID
 	</select>
-
+<select id="findByUserId" resultType="com.surit.common.request.model.dto.RequestDTO">
+    SELECT
+        r.REQUEST_ID       AS requestId,
+        r.USER_NO          AS userNo,
+        r.CATEGORY_CODE    AS categoryCode,
+        cc.CODE_NAME       AS categoryName,
+        r.TITLE            AS title,
+        r.CONTENT          AS content,
+        r.SERVICE_ADDRESS  AS serviceAddress,
+        r.STATUS_CODE      AS statusCode,
+        sc.CODE_NAME       AS statusName,
+        r.CREATED_AT       AS createdAt,
+        (
+            SELECT COUNT(*)
+            FROM ESTIMATES e          <!-- 테이블명 확인 필요 -->
+            WHERE e.REQUEST_ID = r.REQUEST_ID
+        ) AS estimateCount
+    FROM REPAIR_REQUESTS r
+    LEFT JOIN COMMON_CODE cc
+           ON cc.CODE_ID = r.CATEGORY_CODE
+          AND cc.CODE_GROUP = 'CATEGORY'
+          AND cc.USE_YN = 'Y'
+    LEFT JOIN COMMON_CODE sc
+           ON sc.CODE_ID = r.STATUS_CODE
+          AND sc.CODE_GROUP = 'STATUS'
+          AND sc.USE_YN = 'Y'
+    WHERE r.USER_NO = #{userId}
+    ORDER BY r.CREATED_AT DESC
+</select>
 </mapper>

@@ -1,7 +1,8 @@
-package com.surit.fixer.request.model.dto;
+package com.surit.common.request.model.dto;
 
 import java.sql.Timestamp;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,7 +11,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class RepairPhotoDTO {
+@AllArgsConstructor
+public class RequestPhotoDTO {
 
 	private Long      photoId;
 	private Long      requestId;

@@ -3,7 +3,7 @@ package com.surit.fixer.verify.service;
 import java.io.IOException;
 import java.util.List;
 
-import com.surit.fixer.common.model.dto.CommonCodeDTO;
+import com.surit.common.model.dto.CommonCodeDTO;
 import com.surit.fixer.verify.model.dto.FixerProfileDTO;
 import com.surit.fixer.verify.model.dto.FixerVerifyRequest;
 
@@ -31,8 +31,16 @@ public interface FixerService {
 	List<CommonCodeDTO> getRegionList();
 
 	/** 내 신청 상태 (없으면 null) */
+<<<<<<< HEAD
 	FixerProfileDTO getMyProfile(long userNo);
 
 	/** 기사 인증 신청 (신규 / 재신청) */
 	void applyVerify(long userNo, FixerVerifyRequest request) throws IOException;
 }
+=======
+	FixerProfileDTO getMyProfile(Long userNo);
+
+	/** 기사 인증 신청 (신규 / 재신청) */
+	void applyVerify(Long userNo, FixerVerifyRequest request) throws IOException;
+}
+>>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5

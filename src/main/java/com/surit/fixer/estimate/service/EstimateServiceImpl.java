@@ -9,8 +9,9 @@ import com.surit.fixer.common.FixerGuard;
 import com.surit.fixer.estimate.model.dto.EstimateDTO;
 import com.surit.fixer.estimate.model.dto.EstimateForm;
 import com.surit.fixer.estimate.model.mapper.EstimateMapper;
-import com.surit.fixer.request.model.dto.RepairRequestDTO;
-import com.surit.fixer.request.model.mapper.RequestMapper;
+
+import com.surit.common.request.model.dto.RequestDTO;
+import com.surit.common.request.model.mapper.RequestMapper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,11 +39,15 @@ public class EstimateServiceImpl implements EstimateService {
 
 	@Override
 	@Transactional(readOnly = true)
+<<<<<<< HEAD
 	public RepairRequestDTO getTargetRequest(long fixerNo, long requestId) {
+=======
+	public RequestDTO getTargetRequest(Long fixerNo, Long requestId) {
+>>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5
 
 		fixerGuard.requireApprovedFixer(fixerNo);
 
-		RepairRequestDTO request = requestMapper.selectRequestDetail(fixerNo, requestId);
+		RequestDTO request = requestMapper.selectRequestDetail(fixerNo, requestId);
 
 		if (request == null) {
 			throw new IllegalStateException("견적을 낼 수 없는 접수입니다.");
@@ -53,7 +58,11 @@ public class EstimateServiceImpl implements EstimateService {
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
+<<<<<<< HEAD
 	public void submit(long fixerNo, EstimateForm form) {
+=======
+	public void submit(Long fixerNo, EstimateForm form) {
+>>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5
 
 		fixerGuard.requireApprovedFixer(fixerNo);
 
@@ -61,7 +70,7 @@ public class EstimateServiceImpl implements EstimateService {
 
 		// 내 분야/지역이 맞는 접수인지, 차단한 고객은 아닌지 확인.
 		// (열려 있는지 / 중복인지는 아래 INSERT 의 WHERE 가 다시 확인한다)
-		RepairRequestDTO target = requestMapper.selectRequestDetail(fixerNo, form.getRequestId());
+		RequestDTO target = requestMapper.selectRequestDetail(fixerNo, form.getRequestId());
 		if (target == null) {
 			throw new IllegalStateException("견적을 낼 수 없는 접수입니다.");
 		}
@@ -90,7 +99,11 @@ public class EstimateServiceImpl implements EstimateService {
 
 	@Override
 	@Transactional(readOnly = true)
+<<<<<<< HEAD
 	public List<EstimateDTO> getMyEstimates(long fixerNo) {
+=======
+	public List<EstimateDTO> getMyEstimates(Long fixerNo) {
+>>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5
 
 		fixerGuard.requireApprovedFixer(fixerNo);
 

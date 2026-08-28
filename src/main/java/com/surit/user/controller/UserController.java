@@ -1,19 +1,22 @@
 package com.surit.user.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.surit.user.dto.ApiResponse;
-import com.surit.user.dto.UserDTO;
+import com.surit.common.ApiResponse;
+import com.surit.common.request.model.dto.RequestDTO;
+import com.surit.common.request.service.RequestService;
+import com.surit.user.model.dto.UserDTO;
 import com.surit.user.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,10 +25,60 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @RequestMapping("/user")
 public class UserController {
+
 	private final UserService service;
-	public UserController (UserService service) {
+	private final RequestService requestService;   // ← 추가
+
+	public UserController(UserService service, RequestService requestService) {
 		this.service = service;
+		this.requestService = requestService;
 	}
+
+	// ... 기존 sign, login, logout, withdraw 등 메서드 그대로 ...
+
+	/**
+	 * 마이페이지 - 나의 접수 목록
+	 * GET /user/mypage
+	 */
+	@GetMapping("/mypage")
+	public String myPage(HttpSession session, Model model) {
+
+	    // 세션에는 UserDTO 가 통째로 저장돼 있음 (login() 메서드 참고)
+	    UserDTO user = (UserDTO) session.getAttribute("loginMember");
+
+	    if (user == null) {
+	        return "redirect:/user/login";
+	    }
+
+	    // 내가 등록한 접수 목록 조회
+	    List<RequestDTO> requestList = requestService.getRequestsByUserId(user.getUserNo());
+
+	    // 상태별 카운트 계산
+	    int waitingCnt = 0, estimatingCnt = 0, matchedCnt = 0, doneCnt = 0, canceledCnt = 0;
+	    for (RequestDTO req : requestList) {
+	        String statusCode = req.getStatusCode();
+	        if (statusCode == null) continue;
+	        switch (statusCode) {
+	            case "REQ_01": waitingCnt++; break;
+	            case "REQ_02": estimatingCnt++; break;
+	            case "REQ_03": matchedCnt++; break;
+	            case "REQ_04": doneCnt++; break;
+	            case "REQ_05": canceledCnt++; break;
+	            default: break;
+	        }
+	    }
+
+	    model.addAttribute("user", user);
+	    model.addAttribute("requestList", requestList);
+	    model.addAttribute("waitingCnt", waitingCnt);
+	    model.addAttribute("estimatingCnt", estimatingCnt);
+	    model.addAttribute("matchedCnt", matchedCnt);
+	    model.addAttribute("doneCnt", doneCnt);
+	    model.addAttribute("canceledCnt", canceledCnt);
+
+	    return "user/mypage";
+	}
+
 	
 	
 	@GetMapping("/sign")
@@ -36,10 +89,6 @@ public class UserController {
 	@GetMapping("/login")
 	public String loginForm() {
 		return "user/login";
-	}
-	@GetMapping("/mypage")
-	public String mypage() {
-		return "user/mypage";
 	}
 	
 	@PostMapping("/sign")
@@ -119,5 +168,6 @@ public class UserController {
 	return "redirect:/";
 	}
 	
-
+	
+	 
 }

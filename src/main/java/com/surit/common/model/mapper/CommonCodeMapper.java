@@ -1,10 +1,10 @@
-package com.surit.fixer.common.model.mapper;
+package com.surit.common.model.mapper;
 
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.surit.fixer.common.model.dto.CommonCodeDTO;
+import com.surit.common.model.dto.CommonCodeDTO;
 
 @Mapper
 public interface CommonCodeMapper {

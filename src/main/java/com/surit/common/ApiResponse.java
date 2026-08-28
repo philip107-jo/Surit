@@ -1,4 +1,4 @@
-package com.surit.user.dto;
+package com.surit.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

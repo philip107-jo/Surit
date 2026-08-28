@@ -32,9 +32,31 @@
 	<c:otherwise>
 
 		<c:if test="${profile.approvalStatus eq 'REJECTED'}">
-			<p style="color:red;">
-				이전 신청이 거절되었습니다. 내용을 보완해서 다시 신청해주세요.
-			</p>
+			<div style="border:1px solid #f0b8b8; background:#fff5f5; padding:12px 16px; margin-bottom:16px;">
+
+				<p style="color:red; font-weight:bold; margin:0 0 8px;">
+					이전 신청이 거절되었습니다. 내용을 보완해서 다시 신청해주세요.
+				</p>
+
+				<%-- 관리자가 REJECT_REASON 을 안 적었거나, 이 컬럼이 생기기 전에
+				     거절된 건이면 null 이다. 그래서 반드시 empty 검사를 먼저 한다.
+				     검사 없이 출력하면 빈 상자만 덩그러니 남는다. --%>
+				<c:choose>
+					<c:when test="${not empty profile.rejectReason}">
+						<p style="margin:0 0 4px; font-weight:bold;">거절 사유</p>
+						<%-- 관리자가 쓴 글이므로 반드시 c:out 으로 이스케이프한다.
+						     pre + pre-wrap : 줄바꿈은 살리고 가로 스크롤은 안 생기게. --%>
+						<pre style="white-space:pre-wrap; word-break:break-all;
+						            margin:0; font-family:inherit; font-size:inherit;"><c:out value="${profile.rejectReason}"/></pre>
+					</c:when>
+					<c:otherwise>
+						<p style="margin:0; color:#888;">
+							등록된 거절 사유가 없습니다. 자격증과 사진을 다시 확인해주세요.
+						</p>
+					</c:otherwise>
+				</c:choose>
+
+			</div>
 		</c:if>
 
 		<form action="/fixer/verify" method="post" enctype="multipart/form-data">

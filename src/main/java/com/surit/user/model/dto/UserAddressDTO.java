@@ -1,4 +1,4 @@
-package com.surit.user.dto;
+package com.surit.user.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,10 +13,10 @@ import lombok.ToString;
 @ToString
 	
 public class UserAddressDTO {
-	 private int addressId;
-	 private int userNo;
+	 private Long addressId;
+	 private Long userNo;
 	 private String zipCode;
 	 private String address;
 	 private String addressDetail;
-	 private int isDefault; 
+	 private Long isDefault; 
 }

@@ -1,12 +1,12 @@
-package com.surit.fixer.request.model.mapper;
+package com.surit.common.request.model.mapper;
 
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import com.surit.fixer.request.model.dto.RepairPhotoDTO;
-import com.surit.fixer.request.model.dto.RepairRequestDTO;
+import com.surit.common.request.model.dto.RequestDTO;
+import com.surit.common.request.model.dto.RequestPhotoDTO;
 
 @Mapper
 public interface RequestMapper {
@@ -21,7 +21,11 @@ public interface RequestMapper {
 	 * @param categoryCode 분야 필터 (없으면 null)
 	 * @param keyword      제목/내용 검색어 (없으면 null)
 	 */
+<<<<<<< HEAD:src/main/java/com/surit/fixer/request/model/mapper/RequestMapper.java
 	List<RepairRequestDTO> selectNearbyRequests(@Param("userNo") long userNo,
+=======
+	List<RequestDTO> selectNearbyRequests(@Param("userNo") Long userNo,
+>>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5:src/main/java/com/surit/common/request/model/mapper/RequestMapper.java
 	                                           @Param("categoryCode") String categoryCode,
 	                                           @Param("keyword") String keyword);
 
@@ -33,9 +37,19 @@ public interface RequestMapper {
 	 * 남의 접수 내용이 다 보일 수 있다. 그래서 상세 SQL 에도 목록과 똑같은
 	 * "볼 수 있는 조건" 을 붙이고, 조건에 안 맞으면 null 이 돌아오게 한다.
 	 */
+<<<<<<< HEAD:src/main/java/com/surit/fixer/request/model/mapper/RequestMapper.java
 	RepairRequestDTO selectRequestDetail(@Param("userNo") long userNo,
 	                                     @Param("requestId") long requestId);
+=======
+	RequestDTO selectRequestDetail(@Param("userNo") Long userNo,
+	                                     @Param("requestId") Long requestId);
+>>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5:src/main/java/com/surit/common/request/model/mapper/RequestMapper.java
 
 	/** 접수에 딸린 사진 목록 */
-	List<RepairPhotoDTO> selectPhotos(@Param("requestId") long requestId);
+	List<RequestPhotoDTO> selectPhotos(@Param("requestId") Long requestId);
+	
+	List<RequestDTO> findByUserId(Long userNo);
+
+	Long insertRequest(RequestDTO request);
+
 }

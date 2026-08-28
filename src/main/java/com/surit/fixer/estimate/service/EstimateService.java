@@ -2,9 +2,9 @@ package com.surit.fixer.estimate.service;
 
 import java.util.List;
 
+import com.surit.common.request.model.dto.RequestDTO;
 import com.surit.fixer.estimate.model.dto.EstimateDTO;
 import com.surit.fixer.estimate.model.dto.EstimateForm;
-import com.surit.fixer.request.model.dto.RepairRequestDTO;
 
 /*
  * ─── 숫자 타입 규칙 (팀 합의) ────────────────────────────────
@@ -24,6 +24,7 @@ import com.surit.fixer.request.model.dto.RepairRequestDTO;
 public interface EstimateService {
 
 	/** 견적 작성 화면에 띄울 접수 정보 (볼 수 없는 접수면 예외) */
+<<<<<<< HEAD
 	RepairRequestDTO getTargetRequest(long fixerNo, long requestId);
 
 	/** 견적 제출 */
@@ -31,4 +32,13 @@ public interface EstimateService {
 
 	/** 내가 낸 견적 목록 */
 	List<EstimateDTO> getMyEstimates(long fixerNo);
+=======
+	RequestDTO getTargetRequest(Long fixerNo, Long requestId);
+
+	/** 견적 제출 */
+	void submit(Long fixerNo, EstimateForm form);
+
+	/** 내가 낸 견적 목록 */
+	List<EstimateDTO> getMyEstimates(Long fixerNo);
+>>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5
 }

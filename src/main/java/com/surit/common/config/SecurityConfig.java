@@ -1,4 +1,4 @@
-package com.surit.user.config;
+package com.surit.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,7 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 @Configuration
-public class UserConfig {
+public class SecurityConfig {
 
 	/*
 	 * Sprinf Security 설정 클래스
@@ -21,7 +21,7 @@ public class UserConfig {
 	 *    --> 현재 프로젝트에서는 스프링 시큐리티의 기본 로그인/인가 기능을 사용하지 않고
 	 *    HttpSession 을 직접 관리하는 방식으로 로그인을 구현할 것임
 	 *    => 이 클래스를 통해 시큐리티의 기본 기능을 전부 비활성화하고, 로그인 검사 여부는 별도의 인터셉터를 통해 처리할 것임
-	 *    
+	 *    //
 
 
 		/*

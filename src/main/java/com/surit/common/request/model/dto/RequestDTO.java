@@ -1,8 +1,9 @@
-package com.surit.fixer.request.model.dto;
+package com.surit.common.request.model.dto;
 
 import java.sql.Timestamp;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,7 +16,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class RepairRequestDTO {
+@AllArgsConstructor
+public class RequestDTO {
 
 	// ---- REPAIR_REQUESTS 컬럼 ----
 	private Long      requestId;
@@ -31,7 +33,11 @@ public class RepairRequestDTO {
 	private String  categoryName;      // COMMON_CODE.CODE_NAME
 	private String  statusName;        // COMMON_CODE.CODE_NAME
 	private String  customerName;      // USERS.NAME
+<<<<<<< HEAD:src/main/java/com/surit/fixer/request/model/dto/RepairRequestDTO.java
 	private Long    estimateCount;     // 이 접수에 달린 견적 수
+=======
+	private Long estimateCount;     // 이 접수에 달린 견적 수
+>>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5:src/main/java/com/surit/common/request/model/dto/RequestDTO.java
 
 	/**
 	 * 내가 이미 이 접수에 견적을 냈으면 그 ESTIMATE_ID, 아니면 null.
@@ -41,5 +47,5 @@ public class RepairRequestDTO {
 	private Long myEstimateId;
 
 	// ---- 상세 화면에서만 채운다 ----
-	private List<RepairPhotoDTO> photos;
+	private List<RequestPhotoDTO> photos;
 }

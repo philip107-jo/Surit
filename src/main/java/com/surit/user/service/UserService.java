@@ -2,7 +2,7 @@ package com.surit.user.service;
 
 import java.io.IOException;
 
-import com.surit.user.dto.UserDTO;
+import com.surit.user.model.dto.UserDTO;
 
 public interface UserService {
 
@@ -20,5 +20,7 @@ public interface UserService {
 	
 	//회원 주소 가입
 	void insertAddress(UserDTO address);
-
+	
+	UserDTO getUserInfo(String userId);
+	
 }
