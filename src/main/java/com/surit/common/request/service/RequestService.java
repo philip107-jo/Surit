@@ -9,6 +9,7 @@ public interface RequestService {
 
 	/** 검색 화면의 분야 셀렉트 박스 */
 	List<CommonCodeDTO> getCategoryList();
+	List<CommonCodeDTO> getVisitTimeList();
 
 	/** 내 주변 새 접수 목록 */
 	List<RequestDTO> getNearbyRequests(Long userNo, String categoryCode, String keyword);
@@ -19,7 +20,7 @@ public interface RequestService {
 
 	void createRequest(RequestDTO request);
 	 
-	void createRequest(RequestDTO request);
+
 	/**
 	 * 매칭 화면용 접수 정보 조회 (내 접수가 맞는지 확인 포함)
 	*/

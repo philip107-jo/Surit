@@ -235,7 +235,38 @@
         useGeneratedKeys="true"
         keyProperty="requestId"
         keyColumn="REQUEST_ID">
-    INSERT INTO REPAIR_REQUESTS (USER_NO, CATEGORY_CODE, TITLE, CONTENT, SERVICE_ADDRESS, STATUS_CODE)
-    VALUES (#{userNo}, #{categoryCode}, #{title}, #{content}, #{serviceAddress}, 'REQ_01')
+
+    INSERT INTO REPAIR_REQUESTS
+    (
+        USER_NO,
+        CATEGORY_CODE,
+        TITLE,
+        CONTENT,
+        SERVICE_ADDRESS,
+        STATUS_CODE,
+        VISIT_DATE,
+        VISIT_TIME_CODE
+    )
+
+    VALUES
+    (
+        #{userNo},
+        #{categoryCode},
+        #{title},
+        #{content},
+        #{serviceAddress},
+        'REQ_01',
+
+        CASE
+            WHEN #{visitDate} IS NULL OR #{visitDate} = ''
+            THEN NULL
+            ELSE TO_DATE(#{visitDate}, 'YYYY-MM-DD')
+        END,
+
+        #{visitTimeCode}
+    )
+
 </insert>
+
+
 </mapper>
