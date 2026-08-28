@@ -18,7 +18,11 @@ public class FixerVerifyRequest {
 
 	// → FIXER_PROFILE
 	private String  intro;
+<<<<<<< HEAD
+	private Long    careerYears;
+=======
 	private Long careerYears;
+>>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5
 
 	// → FIXER_PROFILE.FIXER_PHOTO_URL (고객 확인용 사진, 필수 1장)
 	private MultipartFile photoFile;

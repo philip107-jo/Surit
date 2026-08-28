@@ -59,14 +59,22 @@ public class FixerServiceImpl implements FixerService {
 	}
 
 	@Override
+<<<<<<< HEAD
+	public FixerProfileDTO getMyProfile(long userNo) {
+=======
 	public FixerProfileDTO getMyProfile(Long userNo) {
+>>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5
 		return mapper.selectFixerProfile(userNo);
 	}
 
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
+<<<<<<< HEAD
+	public void applyVerify(long userNo, FixerVerifyRequest request) throws IOException {
+=======
 	public void applyVerify(Long userNo, FixerVerifyRequest request) throws IOException {
+>>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5
 
 		// ---------- 0) 입력값 검증 ----------
 		validate(request);
@@ -175,7 +183,11 @@ public class FixerServiceImpl implements FixerService {
 	 * 실패 시 치우는 책임은 이제 applyVerify() 의 바깥 try/catch 가 진다
 	 * (사진 파일과 함께 한 곳에서 정리하기 위함).
 	 */
+<<<<<<< HEAD
+	private int saveLicenses(long userNo, FixerVerifyRequest request, List<String> savedPaths) throws IOException {
+=======
 	private int saveLicenses(Long userNo, FixerVerifyRequest request, List<String> savedPaths) throws IOException {
+>>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5
 
 		List<String>        names = request.getLicenseNames();
 		List<String>        dates = request.getLicenseIssuedAts();
@@ -259,6 +271,8 @@ public class FixerServiceImpl implements FixerService {
 		if (r.getCategoryCodes() == null || r.getCategoryCodes().isEmpty()) {
 			throw new IllegalStateException("수리 가능 분야를 최소 1개 선택해주세요.");
 		}
+		// Long 은 null 이 될 수 있으므로 반드시 null 검사를 먼저 한다.
+		// 순서를 바꾸면 자동 언박싱에서 NullPointerException 이 난다.
 		if (r.getCareerYears() == null || r.getCareerYears() < 0) {
 			throw new IllegalStateException("경력(년)을 올바르게 입력해주세요.");
 		}

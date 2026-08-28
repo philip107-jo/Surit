@@ -104,11 +104,21 @@ table{border-collapse:collapse;width:100%}
 .logo__badge--admin{background:var(--danger)}
 
 .gnb{display:flex;gap:34px}
-.gnb a{position:relative;font-size:17px;font-weight:600;color:var(--g-600);padding:6px 0}
+.gnb a{position:relative;font-size:17px;font-weight:600;color:var(--g-600);padding:6px 0;
+  transition:color .15s}
+
+/* 밑줄 막대 — 평소엔 투명하게 자리만 잡아둔다.
+   이렇게 해두면 hover 할 때 글자가 밀리지 않는다. */
+.gnb a::after{content:"";position:absolute;left:0;right:0;bottom:-23px;
+  height:3px;border-radius:2px;background:transparent;transition:background .15s}
+
+/* 마우스를 올렸을 때 : 파란 글씨 + 연한 파란 밑줄 */
 .gnb a:hover{color:var(--p-600)}
+.gnb a:hover::after{background:var(--p-200)}
+
+/* 지금 보고 있는 페이지 : 파란 글씨 + 굵게 + 진한 파란 밑줄 */
 .gnb a.is-active{color:var(--p-600);font-weight:700}
-.gnb a.is-active::after{content:"";position:absolute;left:0;right:0;bottom:-23px;
-  height:3px;border-radius:2px;background:var(--p-500)}
+.gnb a.is-active::after{background:var(--p-500)}
 
 .header-right{margin-left:auto;display:flex;align-items:center;gap:18px}
 .icon-btn{position:relative;width:42px;height:42px;border-radius:12px;

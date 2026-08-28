@@ -28,7 +28,11 @@ public class RequestServiceImpl implements RequestService {
 
 	@Override
 	@Transactional(readOnly = true)   // 조회만 하니까 readOnly. 커밋 처리를 안 해서 조금 가볍다
+<<<<<<< HEAD:src/main/java/com/surit/fixer/request/service/RequestServiceImpl.java
+	public List<RepairRequestDTO> getNearbyRequests(long userNo, String categoryCode, String keyword) {
+=======
 	public List<RequestDTO> getNearbyRequests(Long userNo, String categoryCode, String keyword) {
+>>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5:src/main/java/com/surit/common/request/service/RequestServiceImpl.java
 
 		fixerGuard.requireApprovedFixer(userNo);
 
@@ -37,7 +41,11 @@ public class RequestServiceImpl implements RequestService {
 
 	@Override
 	@Transactional(readOnly = true)
+<<<<<<< HEAD:src/main/java/com/surit/fixer/request/service/RequestServiceImpl.java
+	public RepairRequestDTO getRequestDetail(long userNo, long requestId) {
+=======
 	public RequestDTO getRequestDetail(Long userNo, Long requestId) {
+>>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5:src/main/java/com/surit/common/request/service/RequestServiceImpl.java
 
 		fixerGuard.requireApprovedFixer(userNo);
 

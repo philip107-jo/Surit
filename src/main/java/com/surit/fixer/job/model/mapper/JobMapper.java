@@ -15,12 +15,21 @@ public interface JobMapper {
 	 *
 	 * @param statusCode 상태 필터 (없으면 null → 전체)
 	 */
+<<<<<<< HEAD
+	List<JobDTO> selectMyJobs(@Param("fixerNo") long fixerNo,
+	                          @Param("statusCode") String statusCode);
+
+	/** 내 작업 상세 (내 작업이 아니면 null) */
+	JobDTO selectMyJob(@Param("fixerNo") long fixerNo,
+	                   @Param("requestId") long requestId);
+=======
 	List<JobDTO> selectMyJobs(@Param("fixerNo") Long fixerNo,
 	                          @Param("statusCode") String statusCode);
 
 	/** 내 작업 상세 (내 작업이 아니면 null) */
 	JobDTO selectMyJob(@Param("fixerNo") Long fixerNo,
 	                   @Param("requestId") Long requestId);
+>>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5
 
 	/**
 	 * 수리 완료 처리 (REQ_03 → REQ_04).
@@ -31,6 +40,11 @@ public interface JobMapper {
 	 *
 	 * @return 1 이면 성공, 0 이면 조건 불일치
 	 */
+<<<<<<< HEAD
+	int completeJob(@Param("fixerNo") long fixerNo,
+	                @Param("requestId") long requestId);
+=======
 	Long completeJob(@Param("fixerNo") Long fixerNo,
 	                @Param("requestId") Long requestId);
+>>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5
 }
