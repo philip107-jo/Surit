@@ -50,7 +50,13 @@
 				<input type="number" name="careerYears" min="0" max="70" required value="${profile.careerYears}">
 			</p>
 
-			<h3>2. 활동 지역 (1개 이상)</h3>
+			<h3>2. 본인 확인용 사진 (필수 · jpg/png)</h3>
+			<p>
+				얼굴이 나온 사진 1장을 첨부해주세요. 고객이 기사님을 확인할 수 있도록 공개되는 사진입니다.<br>
+				<input type="file" name="photoFile" accept=".jpg,.jpeg,.png" required>
+			</p>
+
+			<h3>3. 활동 지역 (1개 이상)</h3>
 			<c:forEach var="region" items="${regionList}">
 				<label class="region">
 					<input type="checkbox" name="regionCodes" value="${region.codeId}">
@@ -58,7 +64,7 @@
 				</label>
 			</c:forEach>
 
-			<h3>3. 수리 가능 분야 (1개 이상)</h3>
+			<h3>4. 수리 가능 분야 (1개 이상)</h3>
 			<c:forEach var="category" items="${categoryList}">
 				<label>
 					<input type="checkbox" name="categoryCodes" value="${category.codeId}">
@@ -66,7 +72,7 @@
 				</label><br>
 			</c:forEach>
 
-			<h3>4. 자격증 (1개 이상 · 증빙파일은 jpg/png/pdf)</h3>
+			<h3>5. 자격증 (1개 이상 · 증빙파일은 jpg/png/pdf)</h3>
 			<c:forEach var="i" begin="1" end="3">
 				<fieldset style="margin-bottom:8px;">
 					<legend>자격증 ${i}</legend>

@@ -22,6 +22,6 @@ public class UserDTO {
 	private String phone;
 	private String userRole;
 	private String status;
-	private Timestamp createdAt;
+	private Timestamp createdAt; 
 	
 }

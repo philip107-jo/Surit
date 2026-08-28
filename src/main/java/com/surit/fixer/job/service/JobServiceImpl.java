@@ -20,7 +20,7 @@ public class JobServiceImpl implements JobService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<JobDTO> getMyJobs(int fixerNo, String statusCode) {
+	public List<JobDTO> getMyJobs(long fixerNo, String statusCode) {
 
 		fixerGuard.requireApprovedFixer(fixerNo);
 
@@ -29,7 +29,7 @@ public class JobServiceImpl implements JobService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public JobDTO getMyJob(int fixerNo, long requestId) {
+	public JobDTO getMyJob(long fixerNo, long requestId) {
 
 		fixerGuard.requireApprovedFixer(fixerNo);
 
@@ -43,7 +43,7 @@ public class JobServiceImpl implements JobService {
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public void complete(int fixerNo, long requestId) {
+	public void complete(long fixerNo, long requestId) {
 
 		fixerGuard.requireApprovedFixer(fixerNo);
 

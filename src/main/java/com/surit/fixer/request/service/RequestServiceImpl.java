@@ -28,7 +28,7 @@ public class RequestServiceImpl implements RequestService {
 
 	@Override
 	@Transactional(readOnly = true)   // 조회만 하니까 readOnly. 커밋 처리를 안 해서 조금 가볍다
-	public List<RepairRequestDTO> getNearbyRequests(int userNo, String categoryCode, String keyword) {
+	public List<RepairRequestDTO> getNearbyRequests(long userNo, String categoryCode, String keyword) {
 
 		fixerGuard.requireApprovedFixer(userNo);
 
@@ -37,7 +37,7 @@ public class RequestServiceImpl implements RequestService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public RepairRequestDTO getRequestDetail(int userNo, long requestId) {
+	public RepairRequestDTO getRequestDetail(long userNo, long requestId) {
 
 		fixerGuard.requireApprovedFixer(userNo);
 

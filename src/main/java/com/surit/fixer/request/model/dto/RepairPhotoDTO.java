@@ -16,6 +16,6 @@ public class RepairPhotoDTO {
 	private Long      requestId;
 	private String    photoPath;
 	private String    photoType;
-	private Integer   photoOrder;
+	private Long      photoOrder;
 	private Timestamp createdAt;
 }

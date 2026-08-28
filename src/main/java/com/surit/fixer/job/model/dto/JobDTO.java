@@ -1,6 +1,5 @@
 package com.surit.fixer.job.model.dto;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 import lombok.Getter;
@@ -33,8 +32,8 @@ public class JobDTO {
 	private String customerPhone;
 
 	// ---- 내 견적 ----
-	private Long       estimateId;
-	private BigDecimal estimatedPrice;
-	private Integer    estimatedDuration;
+	private Long estimateId;
+	private Long estimatedPrice;      // 원 단위 정수 (소수점 없음)
+	private Long estimatedDuration;
 	private String     estimateContent;
 }

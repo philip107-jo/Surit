@@ -1,6 +1,5 @@
 package com.surit.fixer.estimate.model.dto;
 
-import java.math.BigDecimal;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,8 +18,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class EstimateForm {
 
-	private Long       requestId;
-	private BigDecimal estimatedPrice;
-	private Integer    estimatedDuration;   // 예상 소요 시간(분)
+	private Long requestId;
+	private Long estimatedPrice;      // 원 단위 정수 (소수점 없음)
+	private Long estimatedDuration;   // 예상 소요 시간(분)
 	private String     content;
 }

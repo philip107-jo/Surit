@@ -1,6 +1,5 @@
 package com.surit.fixer.estimate.service;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -19,9 +18,18 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EstimateServiceImpl implements EstimateService {
 
+	/*
+	 * 금액을 BigDecimal 이 아니라 long(원 단위 정수) 으로 다루는 이유 :
+	 *  1) 원화만 지원하므로 소수점이 나올 일이 없다
+	 *  2) 세금·할인·포인트처럼 나눗셈이 들어가는 계산이 없다
+	 *     (기사가 예상 금액을 제시하고 고객이 확인하는 흐름뿐)
+	 *  3) 이 DTO 를 쓰는 다른 기능에서 BigDecimal 전용 연산 메소드를
+	 *     따로 써야 하는 부담이 생긴다
+	 *  → 팀 합의로 전부 Long 통일
+	 */
 	/** 견적 금액 상한. 실수로 0 을 몇 개 더 붙이는 걸 막는다 */
-	private static final BigDecimal MAX_PRICE = new BigDecimal("100000000");   // 1억
-	private static final int        MAX_DURATION_MIN = 60 * 24 * 30;           // 30일
+	private static final long MAX_PRICE        = 100_000_000L;   // 1억 원
+	private static final long MAX_DURATION_MIN = 60L * 24 * 30;  // 30일(분)
 
 	private final EstimateMapper mapper;
 	private final RequestMapper  requestMapper;
@@ -30,7 +38,7 @@ public class EstimateServiceImpl implements EstimateService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public RepairRequestDTO getTargetRequest(int fixerNo, long requestId) {
+	public RepairRequestDTO getTargetRequest(long fixerNo, long requestId) {
 
 		fixerGuard.requireApprovedFixer(fixerNo);
 
@@ -45,7 +53,7 @@ public class EstimateServiceImpl implements EstimateService {
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public void submit(int fixerNo, EstimateForm form) {
+	public void submit(long fixerNo, EstimateForm form) {
 
 		fixerGuard.requireApprovedFixer(fixerNo);
 
@@ -82,7 +90,7 @@ public class EstimateServiceImpl implements EstimateService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<EstimateDTO> getMyEstimates(int fixerNo) {
+	public List<EstimateDTO> getMyEstimates(long fixerNo) {
 
 		fixerGuard.requireApprovedFixer(fixerNo);
 
@@ -96,19 +104,21 @@ public class EstimateServiceImpl implements EstimateService {
 			throw new IllegalStateException("접수 번호가 없습니다.");
 		}
 
-		BigDecimal price = form.getEstimatedPrice();
+		// null 검사를 먼저 한 뒤에 비교한다.
+		// Long 은 참조형이라 값이 없으면 null 이고, 그 상태로 < > 비교를 하면
+		// 자동 언박싱 과정에서 NullPointerException 이 난다.
+		Long price = form.getEstimatedPrice();
 		if (price == null) {
 			throw new IllegalStateException("예상 금액을 입력해주세요.");
 		}
-		// compareTo 로 비교한다. equals 는 100 과 100.0 을 다르다고 본다.
-		if (price.compareTo(BigDecimal.ZERO) < 0) {
+		if (price < 0) {
 			throw new IllegalStateException("예상 금액은 0원 이상이어야 합니다.");
 		}
-		if (price.compareTo(MAX_PRICE) > 0) {
+		if (price > MAX_PRICE) {
 			throw new IllegalStateException("예상 금액이 너무 큽니다. 다시 확인해주세요.");
 		}
 
-		Integer duration = form.getEstimatedDuration();
+		Long duration = form.getEstimatedDuration();
 		if (duration == null || duration <= 0) {
 			throw new IllegalStateException("예상 소요 시간(분)을 입력해주세요.");
 		}
