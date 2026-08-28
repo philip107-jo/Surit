@@ -1,5 +1,7 @@
 package com.surit.common.request.controller;
 
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +13,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.surit.common.request.model.dto.RequestDTO;
 import com.surit.common.request.service.RequestService;
+import com.surit.fixer.estimate.model.dto.EstimateDTO;
 import com.surit.user.SessionConst;
 import com.surit.user.model.dto.UserDTO;
 
@@ -117,7 +120,7 @@ public class RequestController {
         return "fixer/requestDetail";
     }
     /**고객 수리 접수 페이지 **/
-    @GetMapping("/request")
+    @GetMapping("/request/request")
     public String requestPage(
             @RequestParam(value = "cat", required = false) String cat,
             Model model) {
@@ -166,7 +169,7 @@ public class RequestController {
 
         return "request/request";
     }
-    @PostMapping("/request")
+    @PostMapping("/request/request")
     public String createRequest(
             @ModelAttribute RequestDTO request,
             HttpSession session,
@@ -176,12 +179,11 @@ public class RequestController {
                 (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
 
         if (loginMember == null) {
-            return "redirect:/user/login?redirectURL=/request";
+            return "redirect:/user/login?redirectURL=/request/request";   // 수정
         }
 
         try {
 
-            // 로그인한 회원 번호를 접수 DTO에 넣기
             request.setUserNo(
                     Long.valueOf(loginMember.getUserNo())
             );
@@ -193,7 +195,7 @@ public class RequestController {
                     "수리 접수가 완료되었습니다."
             );
 
-            return "redirect:/request";
+            return "redirect:/request/request";   // 수정
 
         } catch (IllegalStateException e) {
 
@@ -202,7 +204,73 @@ public class RequestController {
                     e.getMessage()
             );
 
-            return "redirect:/request";
+            return "redirect:/request/request";   // 이건 이미 맞음
         }
     }
+    /**
+     * 기사 매칭 · 선택 화면
+     * GET /request/matching/{requestId}
+     *
+     * 이 접수에 들어온 견적(기사) 목록을 보여주고, 고객이 그중 하나를 고른다.
+     */
+    @GetMapping("/request/matching/{requestId}")
+    public String matching(
+            @PathVariable("requestId") Long requestId,
+            HttpSession session,
+            Model model,
+            RedirectAttributes ra) {
+     
+        UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
+     
+        if (loginMember == null) {
+            return "redirect:/user/login?redirectURL=/request/matching/" + requestId;
+        }
+     
+        try {
+            // 내 접수가 맞는지 확인 + 접수 정보
+            RequestDTO request = service.getRequestForMatching(loginMember.getUserNo(), requestId);
+     
+            // 이 접수에 들어온 견적 목록
+            List<EstimateDTO> estimateList = service.getEstimatesForMatching(requestId);
+     
+            model.addAttribute("request", request);
+            model.addAttribute("estimateList", estimateList);
+     
+        } catch (IllegalStateException e) {
+            ra.addFlashAttribute("message", e.getMessage());
+            return "redirect:/user/mypage";
+        }
+     
+        return "request/matching";
+    }
+     
+    /**
+     * 기사(견적) 선택 확정
+     * POST /request/matching/select
+     */
+    @PostMapping("/request/matching/select")
+    public String selectEstimate(
+            @RequestParam("requestId") Long requestId,
+            @RequestParam("estimateId") Long estimateId,
+            HttpSession session,
+            RedirectAttributes ra) {
+     
+        UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
+     
+        if (loginMember == null) {
+            return "redirect:/user/login?redirectURL=/request/matching/" + requestId;
+        }
+     
+        try {
+            service.selectEstimate(loginMember.getUserNo(), requestId, estimateId);
+            ra.addFlashAttribute("message", "기사님을 선택했습니다.");
+     
+        } catch (IllegalStateException e) {
+            ra.addFlashAttribute("message", e.getMessage());
+            return "redirect:/request/matching/" + requestId;
+        }
+     
+        return "redirect:/user/mypage";
+    }
+     
 }

@@ -111,7 +111,7 @@
 
     <div class="card" style="max-width:840px;margin:0 auto">
 		<form id="request-form"
-		      action="/request"
+		      action="/request/request"
 		      method="post"
 		      enctype="multipart/form-data">
 

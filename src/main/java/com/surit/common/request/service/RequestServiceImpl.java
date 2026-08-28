@@ -10,6 +10,7 @@ import com.surit.common.model.mapper.CommonCodeMapper;
 import com.surit.common.request.model.dto.RequestDTO;
 import com.surit.common.request.model.mapper.RequestMapper;
 import com.surit.fixer.common.FixerGuard;
+import com.surit.fixer.estimate.model.dto.EstimateDTO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -73,4 +74,48 @@ public class RequestServiceImpl implements RequestService {
 	public List<RequestDTO> getRequestsByUserId(Long userNo) {
 	    return mapper.findByUserId(userNo);
 	}
+
+	@Override
+	public void createRequest(RequestDTO request) {
+		// TODO Auto-generated method stub
+		
+	}
+
+@Override
+@Transactional(readOnly = true)
+public RequestDTO getRequestForMatching(Long userNo, Long requestId) {
+ 
+    RequestDTO request = mapper.selectRequestForCustomer(userNo, requestId);
+ 
+    if (request == null) {
+        // 없는 접수이거나 내 접수가 아님. 이유는 구분해서 알려주지 않는다.
+        throw new IllegalStateException("볼 수 없는 접수입니다.");
+    }
+ 
+    return request;
+}
+ 
+@Override
+@Transactional(readOnly = true)
+public List<EstimateDTO> getEstimatesForMatching(Long requestId) {
+    return mapper.selectEstimatesByRequestId(requestId);
+}
+ 
+@Override
+@Transactional
+public void selectEstimate(Long userNo, Long requestId, Long estimateId) {
+ 
+    // 1. 내 접수가 맞는지 다시 한 번 확인 (URL 조작 방지)
+    RequestDTO request = mapper.selectRequestForCustomer(userNo, requestId);
+    if (request == null) {
+        throw new IllegalStateException("볼 수 없는 접수입니다.");
+    }
+ 
+    // 2. 접수 상태를 매칭완료로 변경 + 선택된 견적 기록
+    //    ⚠ updateSelectedEstimate 는 REPAIR_REQUESTS 에 선택 견적을 저장할
+    //      컬럼이 있다는 가정. 실제 스키마 확인 후 조정 필요.
+    mapper.updateRequestStatus(requestId, "REQ_03");
+    mapper.updateSelectedEstimate(requestId, estimateId);
+}
+ 
 }
