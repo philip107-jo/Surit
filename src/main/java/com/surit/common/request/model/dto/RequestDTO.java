@@ -33,11 +33,8 @@ public class RequestDTO {
 	private String  categoryName;      // COMMON_CODE.CODE_NAME
 	private String  statusName;        // COMMON_CODE.CODE_NAME
 	private String  customerName;      // USERS.NAME
-<<<<<<< HEAD:src/main/java/com/surit/fixer/request/model/dto/RepairRequestDTO.java
-	private Long    estimateCount;     // 이 접수에 달린 견적 수
-=======
-	private Long estimateCount;     // 이 접수에 달린 견적 수
->>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5:src/main/java/com/surit/common/request/model/dto/RequestDTO.java
+ Long estimateCount;     // 이 접수에 달린 견적 수
+
 
 	/**
 	 * 내가 이미 이 접수에 견적을 냈으면 그 ESTIMATE_ID, 아니면 null.

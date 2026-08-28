@@ -16,15 +16,12 @@ import lombok.RequiredArgsConstructor;
 public class JobServiceImpl implements JobService {
 
 	private final JobMapper  mapper;
-	private final FixerGuard fixerGuard;
+	private final FixerGuard fixerGuard;	
 
 	@Override
 	@Transactional(readOnly = true)
-<<<<<<< HEAD
-	public List<JobDTO> getMyJobs(long fixerNo, String statusCode) {
-=======
+
 	public List<JobDTO> getMyJobs(Long fixerNo, String statusCode) {
->>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5
 
 		fixerGuard.requireApprovedFixer(fixerNo);
 
@@ -33,11 +30,9 @@ public class JobServiceImpl implements JobService {
 
 	@Override
 	@Transactional(readOnly = true)
-<<<<<<< HEAD
-	public JobDTO getMyJob(long fixerNo, long requestId) {
-=======
+
 	public JobDTO getMyJob(Long fixerNo, Long requestId) {
->>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5
+
 
 		fixerGuard.requireApprovedFixer(fixerNo);
 
@@ -51,11 +46,9 @@ public class JobServiceImpl implements JobService {
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-<<<<<<< HEAD
-	public void complete(long fixerNo, long requestId) {
-=======
+
 	public void complete(Long fixerNo, Long requestId) {
->>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5
+
 
 		fixerGuard.requireApprovedFixer(fixerNo);
 

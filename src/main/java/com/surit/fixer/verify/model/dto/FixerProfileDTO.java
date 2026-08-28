@@ -12,14 +12,7 @@ import lombok.ToString;
 @Getter @Setter @NoArgsConstructor @ToString
 public class FixerProfileDTO {
 
-<<<<<<< HEAD
-	private Long    userNo;          // USER_NO (PK, USERS 참조)
-	private String  intro;           // INTRO
-	private Long    careerYears;     // CAREER_YEARS (숫자! 예전엔 문자열이었음)
-	private String  approvalStatus;  // PENDING / APPROVED / REJECTED
-	private String  photoUrl;        // FIXER_PHOTO_URL (고객 확인용 사진, 파일 경로)
-}
-=======
+
 	private Long userNo;          // USER_NO (PK, USERS 참조)
 	private String  intro;           // INTRO
 	private Long careerYears;     // CAREER_YEARS (숫자! 예전엔 문자열이었음)
@@ -30,4 +23,4 @@ public class FixerProfileDTO {
 		
 	}
 }
->>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5
+

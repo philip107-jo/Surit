@@ -39,11 +39,8 @@ public class EstimateServiceImpl implements EstimateService {
 
 	@Override
 	@Transactional(readOnly = true)
-<<<<<<< HEAD
-	public RepairRequestDTO getTargetRequest(long fixerNo, long requestId) {
-=======
+
 	public RequestDTO getTargetRequest(Long fixerNo, Long requestId) {
->>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5
 
 		fixerGuard.requireApprovedFixer(fixerNo);
 
@@ -58,12 +55,8 @@ public class EstimateServiceImpl implements EstimateService {
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-<<<<<<< HEAD
-	public void submit(long fixerNo, EstimateForm form) {
-=======
-	public void submit(Long fixerNo, EstimateForm form) {
->>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5
 
+	public void submit(Long fixerNo, EstimateForm form) {
 		fixerGuard.requireApprovedFixer(fixerNo);
 
 		validate(form);
@@ -99,11 +92,9 @@ public class EstimateServiceImpl implements EstimateService {
 
 	@Override
 	@Transactional(readOnly = true)
-<<<<<<< HEAD
-	public List<EstimateDTO> getMyEstimates(long fixerNo) {
-=======
+
 	public List<EstimateDTO> getMyEstimates(Long fixerNo) {
->>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5
+
 
 		fixerGuard.requireApprovedFixer(fixerNo);
 

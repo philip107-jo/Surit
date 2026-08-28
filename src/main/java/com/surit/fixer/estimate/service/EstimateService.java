@@ -24,15 +24,7 @@ import com.surit.fixer.estimate.model.dto.EstimateForm;
 public interface EstimateService {
 
 	/** 견적 작성 화면에 띄울 접수 정보 (볼 수 없는 접수면 예외) */
-<<<<<<< HEAD
-	RepairRequestDTO getTargetRequest(long fixerNo, long requestId);
 
-	/** 견적 제출 */
-	void submit(long fixerNo, EstimateForm form);
-
-	/** 내가 낸 견적 목록 */
-	List<EstimateDTO> getMyEstimates(long fixerNo);
-=======
 	RequestDTO getTargetRequest(Long fixerNo, Long requestId);
 
 	/** 견적 제출 */
@@ -40,5 +32,5 @@ public interface EstimateService {
 
 	/** 내가 낸 견적 목록 */
 	List<EstimateDTO> getMyEstimates(Long fixerNo);
->>>>>>> 718f7fe4d56ce2dc5f6840629fa877ded9b6d8e5
+
 }
