@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.surit.fixer.mypage.mapper.FixerMyPageMapper">
+
+    <!-- ========================================== -->
+    <!-- 1. 수리 정보 관리 (카테고리 & 지역)           -->
+    <!-- ========================================== -->
+
+    <delete id="deleteFixerCategories">
+        DELETE FROM FIXER_CATEGORY WHERE USER_NO = #{fixerNo}
+    </delete>
+
+    <insert id="insertFixerCategories">
+        INSERT ALL
+        <foreach collection="categoryCodes" item="code">
+            INTO FIXER_CATEGORY (USER_NO, CATEGORY_CODE) VALUES (#{fixerNo}, #{code})
+        </foreach>
+        SELECT * FROM DUAL
+    </insert>
+
+    <delete id="deleteFixerRegions">
+        DELETE FROM FIXER_REGION WHERE USER_NO = #{fixerNo}
+    </delete>
+
+    <insert id="insertFixerRegions">
+        INSERT ALL
+        <foreach collection="regionCodes" item="code">
+            INTO FIXER_REGION (USER_NO, REGION_CODE) VALUES (#{fixerNo}, #{code})
+        </foreach>
+        SELECT * FROM DUAL
+    </insert>
+
+
+    <!-- ========================================== -->
+    <!-- 2. 주소 관리                                -->
+    <!-- ========================================== -->
+
+    <select id="selectAddresses" resultType="com.surit.fixer.mypage.model.dto.FixerAddressDTO">
+        SELECT
+            ADDRESS_ID AS addressId,
+            USER_NO AS fixerNo,
+            ALIAS AS alias,
+            ZIPCODE AS zipcode,
+            BASE_ADDRESS AS baseAddress,
+            DETAIL_ADDRESS AS detailAddress,
+            IS_DEFAULT AS isDefault
+        FROM FIXER_ADDRESS
+        WHERE USER_NO = #{fixerNo}
+        ORDER BY IS_DEFAULT DESC, ADDRESS_ID ASC
+    </select>
+
+    <select id="countAddresses" resultType="int">
+        SELECT COUNT(*) FROM FIXER_ADDRESS WHERE USER_NO = #{fixerNo}
+    </select>
+
+    <update id="resetDefaultAddress">
+        UPDATE FIXER_ADDRESS
+        SET IS_DEFAULT = 'N'
+        WHERE USER_NO = #{fixerNo}
+    </update>
+
+    <insert id="insertAddress">
+        INSERT INTO FIXER_ADDRESS (
+            USER_NO, ALIAS, ZIPCODE, BASE_ADDRESS, DETAIL_ADDRESS, IS_DEFAULT
+        ) VALUES (
+                     #{fixerNo}, #{alias}, #{zipcode}, #{baseAddress}, #{detailAddress}, NVL(#{isDefault}, 'N')
+                 )
+    </insert>
+
+    <delete id="deleteAddress">
+        DELETE FROM FIXER_ADDRESS
+        WHERE USER_NO = #{fixerNo} AND ADDRESS_ID = #{addressId}
+    </delete>
+
+</mapper>
