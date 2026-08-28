@@ -67,6 +67,9 @@ public class UserServiceImpl implements UserService {
 		mapper.insertUser(address);
 		
 	}
-	
+	@Override
+	public UserDTO getUserInfo(String userId) {
+	    return mapper.selectByUserId(userId);
+	}
 
 }

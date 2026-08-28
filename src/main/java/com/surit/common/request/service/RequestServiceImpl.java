@@ -61,38 +61,13 @@ public class RequestServiceImpl implements RequestService {
 		}
 		return s.trim();
 	}
+	// ==========================================================
+	// [2] 파일: com.surit.common.request.service.RequestServiceImpl (구현체)
+	// 클래스 내부에 아래 메서드 추가 (기존에 requestMapper 필드가 이미 주입되어 있다는 전제)
+	// ==========================================================
+	 
 	@Override
-	@Transactional(rollbackFor = Exception.class)
-	public void createRequest(RequestDTO request) {
-
-	    if (request.getCategoryCode() == null
-	            || request.getCategoryCode().isBlank()) {
-	        throw new IllegalStateException("수리 분야를 선택해주세요.");
-	    }
-
-	    if (request.getTitle() == null
-	            || request.getTitle().isBlank()) {
-	        throw new IllegalStateException("제목을 입력해주세요.");
-	    }
-
-	    if (request.getServiceAddress() == null
-	            || request.getServiceAddress().isBlank()) {
-	        throw new IllegalStateException("방문 주소를 입력해주세요.");
-	    }
-
-	    request.setTitle(request.getTitle().trim());
-	    request.setServiceAddress(request.getServiceAddress().trim());
-
-	    if (request.getContent() != null) {
-	        request.setContent(request.getContent().trim());
-	    }
-
-	    request.setStatusCode("RECEIVED");
-
-	    Long result = mapper.insertRequest(request);
-
-	    if (result == 0) {
-	        throw new IllegalStateException("수리 접수 등록에 실패했습니다.");
-	    }
+	public List<RequestDTO> getRequestsByUserId(Long userNo) {
+	    return mapper.findByUserId(userNo);
 	}
 }
