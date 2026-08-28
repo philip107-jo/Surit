@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.surit.request.model.mapper.RequestMapper">
+<mapper namespace="com.surit.common.request.model.mapper.RequestMapper">
 
 	<!--
 		기사가 "볼 수 있는" 접수의 조건 — 분야 · 지역 · 차단 여부.
@@ -81,7 +81,7 @@
 
 
 	<select id="selectNearbyRequests"
-	        resultType="com.surit.request.model.dto.RepairRequestDTO">
+	        resultType="com.surit.common.request.model.dto.RequestDTO">
 		<include refid="baseColumns"/>
 		 WHERE 1 = 1
 		<!-- 새 접수 찾기 화면이므로 아직 기사를 못 정한 접수만 (접수대기 / 견적중) -->
@@ -107,7 +107,7 @@
 
 
 	<select id="selectRequestDetail"
-	        resultType="com.surit.request.model.dto.RepairRequestDTO">
+	        resultType="com.surit.common.request.model.dto.RequestDTO">
 		<include refid="baseColumns"/>
 		 WHERE r.REQUEST_ID = #{requestId}
 		<!--
@@ -132,7 +132,7 @@
 
 
 	<select id="selectPhotos"
-	        resultType="com.surit.request.model.dto.RepairPhotoDTO">
+	        resultType="com.surit.common.request.model.dto.RequestPhotoDTO">
 		SELECT PHOTO_ID,
 		       REQUEST_ID,
 		       PHOTO_PATH,

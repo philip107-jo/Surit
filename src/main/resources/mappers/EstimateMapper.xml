@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.surit.estimate.model.mapper.EstimateMapper">
+<mapper namespace="com.surit.fixer.estimate.model.mapper.EstimateMapper">
 
 	<!--
 		INSERT ... SELECT ... FROM DUAL WHERE ...  형태.
@@ -15,7 +15,7 @@
 		CREATED_AT 도 DEFAULT SYSDATE 라서 생략.
 	-->
 	<insert id="insertEstimate"
-	        parameterType="com.surit.estimate.model.dto.EstimateDTO">
+	        parameterType="com.surit.fixer.estimate.model.dto.EstimateDTO">
 		INSERT INTO ESTIMATES (
 			REQUEST_ID, FIXER_NO, ESTIMATED_PRICE, ESTIMATED_DURATION, CONTENT, STATUS
 		)
@@ -64,7 +64,7 @@
 
 
 	<select id="selectMyEstimates"
-	        resultType="com.surit.estimate.model.dto.EstimateDTO">
+	        resultType="com.surit.fixer.estimate.model.dto.EstimateDTO">
 		SELECT e.ESTIMATE_ID,
 		       e.REQUEST_ID,
 		       e.FIXER_NO,
