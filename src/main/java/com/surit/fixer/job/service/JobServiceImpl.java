@@ -69,4 +69,6 @@ public class JobServiceImpl implements JobService {
 		}
 		return s.trim();
 	}
+
+
 }

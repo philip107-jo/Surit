@@ -172,4 +172,28 @@
     WHERE r.USER_NO = #{userId}
     ORDER BY r.CREATED_AT DESC
 </select>
+
+<insert id="insertRequest"
+        parameterType="com.surit.common.request.model.dto.RequestDTO">
+
+    INSERT INTO REPAIR_REQUESTS
+    (
+        USER_NO,
+        CATEGORY_CODE,
+        TITLE,
+        CONTENT,
+        SERVICE_ADDRESS,
+        STATUS_CODE
+    )
+    VALUES
+    (
+        #{userNo},
+        #{categoryCode},
+        #{title},
+        #{content},
+        #{serviceAddress},
+        #{statusCode}
+    )
+
+</insert>
 </mapper>

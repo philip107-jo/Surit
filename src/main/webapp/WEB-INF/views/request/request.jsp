@@ -216,12 +216,7 @@
 				       value="${not empty selectedCategoryCode
 				                ? selectedCategoryCode
 				                : categoryList[0].codeId}">
-                
-				<input type="hidden"
-				       id="category-code"
-				       name="categoryCode"
-				       value="${not empty categoryList ? categoryList[0].codeId : ''}"
-				       required>
+     
             </div>
 
             <div class="form-sec">

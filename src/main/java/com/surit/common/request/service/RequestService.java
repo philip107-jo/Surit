@@ -15,6 +15,8 @@ public interface RequestService {
 	/** 접수 상세 (볼 수 없는 접수면 예외) */
 	RequestDTO getRequestDetail(Long userNo, Long requestId);
 	List<RequestDTO> getRequestsByUserId(Long userNo);
+
+	void createRequest(RequestDTO request);
 	 
 
 
