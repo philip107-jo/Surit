@@ -188,7 +188,7 @@
 
 </div>
 </main>
-
+<script src="/js/common.js"></script>
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />
 
 </body>

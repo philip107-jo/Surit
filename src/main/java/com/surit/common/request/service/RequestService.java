@@ -18,7 +18,6 @@ public interface RequestService {
 	RequestDTO getRequestDetail(Long userNo, Long requestId);
 	List<RequestDTO> getRequestsByUserId(Long userNo);
 
-	void createRequest(RequestDTO request);
 	 
 
 	/**
