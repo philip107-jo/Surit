@@ -68,7 +68,7 @@ public class EstimateServiceImpl implements EstimateService {
 
 		EstimateDTO estimate = new EstimateDTO();
 		estimate.setRequestId(form.getRequestId());
-		estimate.setFixerNo(fixerNo);                       // 폼이 아니라 세션에서 온 값
+		estimate.setFixerNo(fixerNo);                       // 폼이 아니라 세션에서 온 값 폼으로 할시 개발자 도구로 바꾸면 남의이름으로 견적 가능
 		estimate.setEstimatedPrice(form.getEstimatedPrice());
 		estimate.setEstimatedDuration(form.getEstimatedDuration());
 		estimate.setContent(form.getContent());

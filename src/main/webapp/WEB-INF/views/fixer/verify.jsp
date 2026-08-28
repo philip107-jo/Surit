@@ -109,7 +109,7 @@
 				<div class="card">
 					<div class="card__head">
 						<h2 class="card__title">본인 확인용 사진<span class="req">*</span></h2>
-						<span class="muted" style="font-size:15px">jpg · png</span>
+						<span class="muted" style="font-size:15px">jpg · png · 10MB 이하</span>
 					</div>
 					<div class="field" style="margin-bottom:0">
 						<input class="input" type="file" name="photoFile" accept=".jpg,.jpeg,.png" required>
@@ -117,7 +117,7 @@
 							required 는 브라우저 기능이라 개발자도구로 지우면 그냥 통과한다.
 							DB 컬럼도 nullable 이라, 진짜 방어는 서비스의 validate() 가 한다.
 						--%>
-						<div class="field__help">얼굴이 나온 사진 1장. 고객이 기사님을 확인할 수 있도록 공개되는 사진입니다.</div>
+						<div class="field__help">얼굴이 나온 사진 1장. 고객이 기사님을 확인할 수 있도록 공개되는 사진입니다. <b>파일 1개당 10MB까지</b> 올릴 수 있습니다.</div>
 					</div>
 				</div>
 
@@ -161,7 +161,7 @@
 				<div class="card">
 					<div class="card__head">
 						<h2 class="card__title">자격증<span class="req">*</span></h2>
-						<span class="muted" style="font-size:15px">1개 이상 · 증빙파일 jpg · png · pdf</span>
+						<span class="muted" style="font-size:15px">1개 이상 · 증빙파일 jpg · png · pdf · 각 10MB 이하</span>
 					</div>
 
 					<%--
@@ -196,10 +196,20 @@
 
 					<div class="field__help" style="margin-top:14px">
 						자격증명을 적은 칸만 저장됩니다. 3개를 다 채우지 않아도 됩니다.
+						증빙파일은 <b>1개당 10MB까지</b> 올릴 수 있습니다.
 					</div>
 				</div>
 
 				<div class="card card--flat">
+					<%--
+						용량 초과 파일은 여기서 먼저 막는다.
+						서버까지 올라가면 멀티파트 파싱 단계에서 끊겨 413 이 뜨는데,
+						그 단계는 컨트롤러 이전이라 예외 핸들러가 안내 화면으로 못 바꿔준다.
+					--%>
+					<div id="fileSizeAlert" class="note note--warn" style="display:none; margin-bottom:22px">
+						<svg><use href="#i-alert"/></svg>
+						<span id="fileSizeAlertText"></span>
+					</div>
 					<div class="note note--gray" style="margin-bottom:22px">
 						<svg><use href="#i-shield"/></svg>
 						<span>제출하신 자격증은 자격 확인 용도로만 사용하고 <b>고객에게 공개되지 않습니다.</b>
@@ -210,6 +220,50 @@
 				</div>
 
 			</form>
+
+			<script>
+			(function () {
+				// application.properties 의 spring.servlet.multipart.max-file-size 와 같은 값이어야 한다.
+				var MAX_MB = 10;
+				var MAX_BYTES = MAX_MB * 1024 * 1024;
+
+				var form  = document.querySelector('form[action="/fixer/verify"]');
+				var box   = document.getElementById('fileSizeAlert');
+				var text  = document.getElementById('fileSizeAlertText');
+				if (!form || !box || !text) return;
+
+				function tooBig() {
+					var over = [];
+					var inputs = form.querySelectorAll('input[type=file]');
+					for (var i = 0; i < inputs.length; i++) {
+						var f = inputs[i].files && inputs[i].files[0];
+						if (f && f.size > MAX_BYTES) {
+							over.push(f.name + ' (' + (f.size / 1024 / 1024).toFixed(1) + 'MB)');
+						}
+					}
+					return over;
+				}
+
+				function check() {
+					var over = tooBig();
+					if (over.length === 0) { box.style.display = 'none'; return true; }
+					text.innerHTML = '<b>파일 1개당 ' + MAX_MB + 'MB까지</b> 올릴 수 있습니다. '
+					               + '아래 파일을 빼거나 용량을 줄여주세요.<br>' + over.join('<br>');
+					box.style.display = '';
+					box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+					return false;
+				}
+
+				// 파일을 고르는 즉시 알려준다. 제출까지 기다리게 하지 않는다.
+				form.addEventListener('change', function (e) {
+					if (e.target && e.target.type === 'file') check();
+				});
+
+				form.addEventListener('submit', function (e) {
+					if (!check()) e.preventDefault();
+				});
+			})();
+			</script>
 
 		</c:otherwise>
 	</c:choose>
