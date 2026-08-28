@@ -2,25 +2,23 @@ package com.surit.user.service;
 
 import java.io.IOException;
 
+import com.surit.user.model.dto.UserAddressDTO;
 import com.surit.user.model.dto.UserDTO;
 
 public interface UserService {
 
-	// 회원 가입
-	void sign(UserDTO user) throws IOException;
-	
+	// 회원 가입 (기본 주소도 같이 받음)
+	void sign(UserDTO user, UserAddressDTO address) throws IOException;
+
 	// 아이디 중복체크
 	boolean isUserIdCheck(String userId);
-	
+
 	// 로그인
 	UserDTO login(String userId, String password);
-	
+
 	// 회원 탈퇴
 	void withdraw(String userId);
-	
-	//회원 주소 가입
-	void insertAddress(UserDTO address);
-	
+
+	// 마이페이지 등에서 쓸 회원 정보 단건 조회
 	UserDTO getUserInfo(String userId);
-	
 }

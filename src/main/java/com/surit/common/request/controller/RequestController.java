@@ -117,8 +117,11 @@ public class RequestController {
     @GetMapping("/request/request")
     public String requestPage(
             @RequestParam(value = "cat", required = false) String cat,
-            Model model) {
-
+            Model model, HttpSession session) {
+    	UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
+    	if (loginMember == null) {
+    	    return "redirect:/user/login?redirectURL=/request/request";
+    	}
         String selectedCategoryCode = null;
 
         if (cat != null) {

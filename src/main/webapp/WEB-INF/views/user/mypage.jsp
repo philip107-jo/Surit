@@ -168,6 +168,6 @@
 </main>
 
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />
-
+<script src="/js/common.js"></script>
 </body>
 </html>
