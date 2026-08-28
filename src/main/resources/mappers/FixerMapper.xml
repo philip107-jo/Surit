@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.surit.fixer.verify.model.mapper.FixerMapper">
+<mapper namespace="com.surit.verify.model.mapper.FixerMapper">
 
 	<!-- ================= 조회 ================= -->
 
@@ -19,7 +19,7 @@
 	     거절된 적이 없거나 관리자가 사유를 안 적었으면 null 이므로
 	     화면에서 empty 검사를 하고 출력한다. -->
 	<select id="selectFixerProfile" parameterType="long"
-	        resultType="com.surit.fixer.verify.model.dto.FixerProfileDTO">
+	        resultType="com.surit.verify.model.dto.FixerProfileDTO">
 		SELECT USER_NO, INTRO, CAREER_YEARS, APPROVAL_STATUS,
 		       FIXER_PHOTO_URL AS PHOTO_URL,
 		       REJECT_REASON
@@ -28,7 +28,7 @@
 	</select>
 
 	<select id="selectLicensesByUserNo" parameterType="long"
-	        resultType="com.surit.fixer.verify.model.dto.FixerLicenseDTO">
+	        resultType="com.surit.verify.model.dto.FixerLicenseDTO">
 		SELECT LICENSE_ID, USER_NO, LICENSE_NAME, UPLOAD_URL, ISSUED_AT
 		  FROM FIXER_LICENSE
 		 WHERE USER_NO = #{userNo}
@@ -39,7 +39,7 @@
 
 	<!-- 신규 신청 : 상태는 무조건 PENDING 으로 시작 -->
 	<insert id="insertFixerProfile"
-	        parameterType="com.surit.fixer.verify.model.dto.FixerProfileDTO">
+	        parameterType="com.surit.verify.model.dto.FixerProfileDTO">
 		INSERT INTO FIXER_PROFILE (
 			USER_NO, INTRO, CAREER_YEARS, APPROVAL_STATUS, FIXER_PHOTO_URL
 		) VALUES (
@@ -57,7 +57,7 @@
 	     안 지우면 재신청 건에 지난번 거절 사유가 그대로 붙어 있어서,
 	     관리자도 기사도 옛 심사 결과를 현재 것으로 오해하게 된다. -->
 	<update id="updateFixerProfile"
-	        parameterType="com.surit.fixer.verify.model.dto.FixerProfileDTO">
+	        parameterType="com.surit.verify.model.dto.FixerProfileDTO">
 		UPDATE FIXER_PROFILE
 		   SET INTRO           = #{intro},
 		       CAREER_YEARS    = #{careerYears},
@@ -71,7 +71,7 @@
 
 	<!-- LICENSE_ID 는 IDENTITY 라 컬럼에서 아예 뺀다 (DB가 채워줌) -->
 	<insert id="insertFixerLicense"
-	        parameterType="com.surit.fixer.verify.model.dto.FixerLicenseDTO">
+	        parameterType="com.surit.verify.model.dto.FixerLicenseDTO">
 		INSERT INTO FIXER_LICENSE (
 			USER_NO, LICENSE_NAME, UPLOAD_URL, ISSUED_AT
 		) VALUES (
