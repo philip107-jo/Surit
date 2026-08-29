@@ -4,20 +4,16 @@ import java.util.List;
 
 import com.surit.common.model.dto.CommonCodeDTO;
 import com.surit.common.request.model.dto.RequestDTO;
-
 /*
- * ─── 숫자 타입 규칙 (팀 합의) ────────────────────────────────
- *  · DTO 필드      : Long  (참조형)
- *      값이 없는 상태를 null 로 표현해야 하기 때문.
- *      원시형으로 바꾸면 DB 의 NULL 이 0 으로 들어와서
- *      "값 없음" 과 "0" 을 구분할 수 없게 된다.
+ * ─── 숫자 타입 규칙 ──────────────────────────────────────────
+ *  · DTO 필드 : Long (참조형)
+ *      DB 의 NULL 을 null 로 받아야 "값 없음" 과 "0" 이 구분된다.
  *
- *  · 메서드 파라미터 : long  (원시형)
- *      여기 들어오는 번호는 항상 세션이나 URL 에서 오는 값이라
- *      null 일 수가 없다. 원시형으로 두면 그 사실이 타입으로 보장되고,
- *      null 이 넘어와 언박싱에서 NPE 가 나는 경로 자체가 막힌다.
- *      또한 UserDTO.getUserNo() 가 int 라서 int → long 확대변환으로
- *      그대로 넘길 수 있다. (자바는 int → Long 은 자동변환하지 않는다)
+ *  · 메서드 파라미터 : long (원시형)
+ *      여기 들어오는 번호는 세션이나 URL 에서 오는 값이라 null 일 수 없다.
+ *      원시형으로 두면 그 사실이 타입으로 보장되고, 서비스 안에서
+ *      실수로 null 검사를 빠뜨릴 여지가 사라진다.
+ *      호출부에서 UserDTO.getUserNo() (Long) 가 언박싱되어 전달된다.
  * ────────────────────────────────────────────────────────────
  */
 public interface RequestService {

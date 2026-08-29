@@ -119,7 +119,7 @@ public class RequestController {
 
 		try {
 			// 로그인한 회원 번호는 폼이 아니라 세션에서 넣는다 (폼은 조작 가능)
-			request.setUserNo(Long.valueOf(loginMember.getUserNo()));
+			request.setUserNo(loginMember.getUserNo());
 			service.createRequest(request);
 			ra.addFlashAttribute("message", "수리 접수가 완료되었습니다.");
 		} catch (IllegalStateException e) {
