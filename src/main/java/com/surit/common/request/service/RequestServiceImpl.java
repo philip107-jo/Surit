@@ -136,4 +136,36 @@ public void selectEstimate(Long userNo, Long requestId, Long estimateId) {
 	        throw new IllegalStateException("수리 접수 등록에 실패했습니다.");
 	    }
 	}
+	@Override
+	@Transactional(readOnly = true)
+	public RequestDTO getRequestDetailForCustomer(Long userNo, Long requestId) {
+	 
+	    RequestDTO request = mapper.selectRequestForCustomer(userNo, requestId);
+	 
+	    if (request == null) {
+	        throw new IllegalStateException("볼 수 없는 접수입니다.");
+	    }
+	 
+	    return request;
+	}
+	 
+	@Override
+	@Transactional(readOnly = true)
+	public EstimateDTO getSelectedEstimate(Long requestId) {
+	    return mapper.selectSelectedEstimateByRequestId(requestId);
+	}
+	 
+	@Override
+	@Transactional
+	public void cancelRequest(Long userNo, Long requestId) {
+	 
+	    // 내 접수가 맞는지 확인 (URL 조작 방지)
+	    RequestDTO request = mapper.selectRequestForCustomer(userNo, requestId);
+	    if (request == null) {
+	        throw new IllegalStateException("볼 수 없는 접수입니다.");
+	    }
+	 
+	    mapper.updateRequestStatus(requestId, "REQ_05");
+	}
+	 
 }

@@ -118,20 +118,34 @@
                     </div>
 
                     <div class="field">
-                        <label class="field__label" for="zipcode">우편번호</label>
-                        <input type="text" id="zipcode" name="zipCode" class="input" autocomplete="off">
+                        <label class="field__label">지역 선택<span class="req">*</span></label>
+
+                        <button type="button" class="btn btn--ghost btn--block" id="region-toggle-btn" onclick="toggleRegionSelect()">
+                            <span id="region-selected-label">지역을 선택해주세요</span>
+                            <svg class="ico" style="margin-left:auto"><use href="#i-chevd"/></svg>
+                        </button>
+
+                        <div id="region-select-panel" style="display:none;margin-top:10px;padding:16px;
+                             border:1.5px solid var(--g-300);border-radius:var(--r-md);
+                             max-height:260px;overflow-y:auto">
+                            <c:forEach var="region" items="${regionList}">
+                                <label class="check" style="display:block;margin-bottom:12px">
+                                    <input type="radio" name="regionRadio" value="${region.codeId}"
+                                           data-region-name="${region.codeName}">
+                                    <c:out value="${region.codeName}"/>
+                                </label>
+                            </c:forEach>
+                        </div>
                     </div>
 
                     <div class="field">
-                        <label class="field__label" for="address">주소<span class="req">*</span></label>
-                        <input type="text" id="address" name="address" class="input"
-                            placeholder="예: 서울 강남구 테헤란로 123" autocomplete="off" required>
+                        <label class="field__label" for="address-detail">상세주소<span class="req">*</span></label>
+                        <input type="text" id="address-detail" name="addressDetail" class="input"
+                               placeholder="예: 테헤란로 123, 101동 1502호" autocomplete="off" required>
                     </div>
 
-                    <div class="field">
-                        <label class="field__label" for="address-detail">상세주소</label>
-                        <input type="text" id="address-detail" name="addressDetail" class="input" autocomplete="off">
-                    </div>
+                    <!-- 실제 제출되는 최종 주소 (지역명 + 상세주소를 JS로 합쳐서 채움) -->
+                    <input type="hidden" id="address" name="address">
 
                     <div class="field">
                         <input type="hidden" id="is-default" name="isDefault" value="Y">

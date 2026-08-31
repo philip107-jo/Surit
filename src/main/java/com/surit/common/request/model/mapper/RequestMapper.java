@@ -64,4 +64,5 @@ public interface RequestMapper {
 	 */
 	Long updateSelectedEstimate(@Param("requestId") Long requestId,
 	                            @Param("estimateId") Long estimateId);
+	EstimateDTO selectSelectedEstimateByRequestId(@Param("requestId") Long requestId);
 }

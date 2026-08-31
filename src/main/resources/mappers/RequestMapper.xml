@@ -268,5 +268,32 @@
 
 </insert>
 
+<!--
+============================================================
+파일: resources/mappers/RequestMapper.xml
+기존 <mapper> 태그 안에 아래 <select> 추가
+ 
+selectEstimatesByRequestId 와 거의 같은데, STATUS='SELECTED' 조건만 추가돼서
+단건(고객이 선택 확정한 견적)만 가져온다.
+============================================================
+-->
+ 
+<select id="selectSelectedEstimateByRequestId" resultType="com.surit.fixer.estimate.model.dto.EstimateDTO">
+    SELECT
+        e.ESTIMATE_ID          AS estimateId,
+        e.REQUEST_ID           AS requestId,
+        e.FIXER_NO             AS fixerNo,
+        u.NAME                 AS fixerName,
+        e.ESTIMATED_PRICE      AS estimatedPrice,
+        e.ESTIMATED_DURATION   AS estimatedDuration,
+        e.CONTENT               AS content,
+        e.STATUS                AS status,
+        e.CREATED_AT             AS createdAt
+    FROM ESTIMATES e
+    LEFT JOIN USERS u ON u.USER_NO = e.FIXER_NO
+    WHERE e.REQUEST_ID = #{requestId}
+      AND e.STATUS = 'SELECTED'
+</select>
+ 
 
 </mapper>

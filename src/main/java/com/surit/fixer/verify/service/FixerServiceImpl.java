@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.surit.common.model.dto.CommonCodeDTO;
 import com.surit.common.model.mapper.CommonCodeMapper;
+import com.surit.fixer.common.FixerGuard;
 import com.surit.fixer.common.util.FileUploadUtil;
 import com.surit.fixer.common.util.SavedFile;
 import com.surit.fixer.verify.model.dto.FixerLicenseDTO;
@@ -26,10 +27,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FixerServiceImpl implements FixerService {
 
-	// APPROVAL_STATUS 에 CHECK 제약이 없으므로 자바 쪽에서 오타를 막는다
-	public static final String PENDING  = "PENDING";
-	public static final String APPROVED = "APPROVED";
-	public static final String REJECTED = "REJECTED";
+	// 승인 상태 문자열은 FixerGuard 한 곳에만 둔다.
+	// 여러 클래스에 복사해두면 규칙이 바뀔 때 한 곳을 빠뜨리기 쉽다.
 
 	private final FixerMapper      mapper;
 	private final CommonCodeMapper codeMapper;
@@ -59,7 +58,6 @@ public class FixerServiceImpl implements FixerService {
 	}
 
 	@Override
-
 	public FixerProfileDTO getMyProfile(Long userNo) {
 		return mapper.selectFixerProfile(userNo);
 	}
@@ -67,7 +65,6 @@ public class FixerServiceImpl implements FixerService {
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-
 	public void applyVerify(Long userNo, FixerVerifyRequest request) throws IOException {
 
 		// ---------- 0) 입력값 검증 ----------
@@ -79,9 +76,9 @@ public class FixerServiceImpl implements FixerService {
 
 		if (profile == null) {
 			isNew = true;
-		} else if (PENDING.equals(profile.getApprovalStatus())) {
+		} else if (FixerGuard.PENDING.equals(profile.getApprovalStatus())) {
 			throw new IllegalStateException("이미 심사 중인 신청이 있습니다.");
-		} else if (APPROVED.equals(profile.getApprovalStatus())) {
+		} else if (FixerGuard.APPROVED.equals(profile.getApprovalStatus())) {
 			throw new IllegalStateException("이미 인증된 기사입니다.");
 		} else {
 			isNew = false;   // REJECTED → 재신청
@@ -177,7 +174,6 @@ public class FixerServiceImpl implements FixerService {
 	 * 실패 시 치우는 책임은 이제 applyVerify() 의 바깥 try/catch 가 진다
 	 * (사진 파일과 함께 한 곳에서 정리하기 위함).
 	 */
-
 	private int saveLicenses(Long userNo, FixerVerifyRequest request, List<String> savedPaths) throws IOException {
 
 		List<String>        names = request.getLicenseNames();
