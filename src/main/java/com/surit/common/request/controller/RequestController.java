@@ -57,6 +57,10 @@ public class RequestController {
                 "categoryList",
                 service.getCategoryList()
             );
+            model.addAttribute(
+            	    "visitTimeList",
+            	    service.getVisitTimeList()
+            	);
 
             model.addAttribute("categoryCode", categoryCode);
             model.addAttribute("keyword", keyword);
@@ -125,9 +129,7 @@ public class RequestController {
         String selectedCategoryCode = null;
 
         if (cat != null) {
-
             switch (cat) {
-
                 case "lock":
                     selectedCategoryCode = "CAT_10";
                     break;
@@ -154,11 +156,19 @@ public class RequestController {
             }
         }
 
+        // 카테고리 목록
         model.addAttribute(
             "categoryList",
             service.getCategoryList()
         );
 
+        // 방문 시간대 목록
+        model.addAttribute(
+            "visitTimeList",
+            service.getVisitTimeList()
+        );
+
+        // 메인에서 선택한 카테고리
         model.addAttribute(
             "selectedCategoryCode",
             selectedCategoryCode
@@ -277,7 +287,13 @@ public class RequestController {
 
     /** /request 주소로 접근 시 /request/request 로 리다이렉트 */
     @GetMapping("/request")
-    public String index() {
+    public String index(
+            @RequestParam(value = "cat", required = false) String cat) {
+
+        if (cat != null && !cat.isBlank()) {
+            return "redirect:/request/request?cat=" + cat;
+        }
+
         return "redirect:/request/request";
     }
 }

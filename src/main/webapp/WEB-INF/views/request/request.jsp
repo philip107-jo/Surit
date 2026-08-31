@@ -280,35 +280,129 @@
                 </div>
             </div>
 
-            <div class="form-sec">
-                <div class="form-sec__head">
-                    <span class="form-sec__no">4</span>
-                    <div><div class="form-sec__title">언제 방문할까요?</div></div>
-                </div>
+			<!-- 4. 방문 날짜 / 시간 -->
+			<div class="form-sec">
 
-                <div class="opt-grid" id="when-select">
-                    <button type="button" class="opt opt--accent is-on" data-select="when" data-use-yn="Y">
-                        <span class="opt__radio"></span>
-                        <span class="opt__body">
-                            <span class="opt__title">지금 바로</span>
-                            <span class="opt__desc">가장 먼저 신청한 기사님과 연결</span>
-                        </span>
-                    </button>
-                    <button type="button" class="opt" data-select="when" data-use-yn="N">
-                        <span class="opt__radio"></span>
-                        <span class="opt__body">
-                            <span class="opt__title">날짜 지정</span>
-                            <span class="opt__desc">원하는 날짜와 시간대 선택</span>
-                        </span>
-                    </button>
-                </div>
-                <input type="hidden" id="request-use-yn" name="useYn" value="Y">
+			    <div class="form-sec__head">
+			        <span class="form-sec__no">4</span>
 
-                <div class="field" id="visit-datetime-field" style="margin-top:16px;display:none">
-                    <label class="field__label" for="visit-preferred-at">희망 방문 일시</label>
-                    <input type="datetime-local" id="visit-preferred-at" name="visitPreferredAt" class="input">
-                </div>
-            </div>
+			        <div>
+			            <div class="form-sec__title">
+			                언제 방문할까요?
+			            </div>
+			        </div>
+			    </div>
+
+			    <!-- 지금 바로 / 날짜 지정 -->
+			    <div class="opt-grid" id="when-select">
+
+			        <!-- 지금 바로 -->
+			        <button type="button"
+			                class="opt opt--accent is-on"
+			                data-use-yn="Y">
+
+			            <span class="opt__radio"></span>
+
+			            <span class="opt__body">
+			                <span class="opt__title">
+			                    지금 바로
+			                </span>
+
+			                <span class="opt__desc">
+			                    가장 먼저 신청한 기사님과 연결
+			                </span>
+			            </span>
+
+			        </button>
+
+			        <!-- 날짜 지정 -->
+			        <button type="button"
+			                class="opt"
+			                data-use-yn="N">
+
+			            <span class="opt__radio"></span>
+
+			            <span class="opt__body">
+			                <span class="opt__title">
+			                    날짜 지정
+			                </span>
+
+			                <span class="opt__desc">
+			                    원하는 날짜와 시간대 선택
+			                </span>
+			            </span>
+
+			        </button>
+
+			    </div>
+
+			    <!-- 날짜 지정 선택 시 표시 -->
+			    <div id="visit-option-area"
+			         style="display:none; margin-top:20px;">
+
+			        <!-- 날짜 -->
+			        <div class="field">
+
+			            <label class="field__label"
+			                   for="visit-date">
+			                희망 방문 날짜
+			            </label>
+
+			            <input type="date"
+			                   id="visit-date"
+			                   name="visitDate"
+			                   class="input">
+
+			        </div>
+
+			        <!-- 시간대 -->
+					<div class="field" style="margin-top:20px;">
+					    <label class="field__label" for="visit-time-code">
+					        희망 시간대
+					    </label>
+
+					    <div style="position: relative; width: 100%;">
+
+					        <select id="visit-time-code"
+					                name="visitTimeCode"
+					                class="input"
+					                style="
+					                    width: 100%;
+					                    appearance: none;
+					                    -webkit-appearance: none;
+					                    -moz-appearance: none;
+					                    padding-right: 55px;
+					                ">
+
+					            <option value="">시간대를 선택해주세요</option>
+
+					            <c:forEach var="time" items="${visitTimeList}">
+					                <option value="${time.codeId}">
+					                    ${time.codeName}
+					                </option>
+					            </c:forEach>
+
+					        </select>
+
+					        <!-- 직접 만든 화살표 -->
+					        <span style="
+					            position: absolute;
+					            right: 20px;
+					            top: 50%;
+					            transform: translateY(-50%);
+					            pointer-events: none;
+					            font-size: 13px;
+					            color: #222;
+					        ">
+					            ▼
+					        </span>
+
+					    </div>
+					</div>
+
+			    </div>
+
+			</div>
 
             <div class="form-sec">
                 <label class="check" style="margin-bottom:26px">
@@ -329,6 +423,127 @@
     </div>
 </div>
 </main>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const whenButtons =
+        document.querySelectorAll("#when-select .opt");
+
+    const visitArea =
+        document.getElementById("visit-option-area");
+
+    const visitDate =
+        document.getElementById("visit-date");
+
+    const visitTimeCode =
+        document.getElementById("visit-time-code");
+
+    const form =
+        document.getElementById("request-form");
+
+
+    // 오늘 이전 날짜 선택 금지
+    const today = new Date();
+
+    const yyyy = today.getFullYear();
+
+    const mm =
+        String(today.getMonth() + 1)
+        .padStart(2, "0");
+
+    const dd =
+        String(today.getDate())
+        .padStart(2, "0");
+
+    visitDate.min =
+        yyyy + "-" + mm + "-" + dd;
+
+
+    // 지금 바로 / 날짜 지정
+    whenButtons.forEach(function (button) {
+
+        button.addEventListener("click", function () {
+
+            // 기존 선택 해제
+            whenButtons.forEach(function (btn) {
+                btn.classList.remove("is-on");
+            });
+
+            // 현재 선택
+            this.classList.add("is-on");
+
+
+            // 날짜 지정
+            if (this.dataset.useYn === "N") {
+
+                visitArea.style.display = "block";
+
+                visitDate.required = true;
+                visitTimeCode.required = true;
+            }
+
+            // 지금 바로
+            else {
+
+                visitArea.style.display = "none";
+
+                visitDate.required = false;
+                visitTimeCode.required = false;
+
+                visitDate.value = "";
+                visitTimeCode.value = "";
+            }
+
+        });
+
+    });
+
+
+    // 접수 제출 검증
+    form.addEventListener("submit", function (event) {
+
+        const selectedWhen =
+            document.querySelector(
+                "#when-select .opt.is-on"
+            );
+
+        // 날짜 지정인 경우
+        if (
+            selectedWhen &&
+            selectedWhen.dataset.useYn === "N"
+        ) {
+
+            if (!visitDate.value) {
+
+                event.preventDefault();
+
+                alert(
+                    "희망 방문 날짜를 선택해주세요."
+                );
+
+                visitDate.focus();
+
+                return;
+            }
+
+            if (!visitTimeCode.value) {
+
+                event.preventDefault();
+
+                alert(
+                    "희망 시간대를 선택해주세요."
+                );
+
+                visitTimeCode.focus();
+
+                return;
+            }
+        }
+
+    });
+
+});
+</script>
 
 <script src="/js/common.js"></script>
 <jsp:include page="/WEB-INF/views/common/footer.jsp"/>

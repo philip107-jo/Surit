@@ -26,6 +26,11 @@ public class RequestServiceImpl implements RequestService {
 	public List<CommonCodeDTO> getCategoryList() {
 		return codeMapper.selectByGroup("CATEGORY");
 	}
+	@Override
+	public List<CommonCodeDTO> getVisitTimeList() {
+	    return codeMapper.selectByGroup("VISIT_TIME");
+	    
+	}
 
 	@Override
 	@Transactional(readOnly = true)   // 조회만 하니까 readOnly. 커밋 처리를 안 해서 조금 가볍다
