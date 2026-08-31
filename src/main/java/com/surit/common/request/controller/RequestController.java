@@ -196,10 +196,6 @@ public class RequestController {
 
         return "request/request";
     }
-    @GetMapping("/mypage/address")
-    public String addressForm() {
-        return "mypage/mypage-address";
-    }
 
     @PostMapping("/request/request")
     public String createRequest(

@@ -262,4 +262,8 @@ public class MypageController {
 
         return "redirect:/user/mypage/address";
     }
+    @GetMapping("/support")
+    public String support() {
+        return "user/support";
+    }
 }

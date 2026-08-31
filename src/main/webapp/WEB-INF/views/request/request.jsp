@@ -326,7 +326,7 @@
 
 							   <button type="button"
 							           class="address-add"
-							           onclick="location.href='${pageContext.request.contextPath}/mypage/address/new'">
+							           onclick="location.href='${pageContext.request.contextPath}/user/mypage/address'">
 							       + 새 주소 추가하기
 							   </button>
 					</div>
