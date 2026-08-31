@@ -40,6 +40,16 @@ USER_ROLE 은 명시적으로 넣어줌. STATUS 는 기본값(ACTIVE) 그대로 
         #{userId}, #{email}, #{password}, #{name}, #{phone}, #{userRole}
     )
 </insert>
+ <update id="updateUser" parameterType="com.surit.user.model.dto.UserDTO">
+    UPDATE USERS
+       SET NAME = #{name},
+           PHONE = #{phone},
+           EMAIL = #{email}
+           <if test="password != null">
+               , PASSWORD = #{password}
+           </if>
+     WHERE USER_ID = #{userId}
+</update>
  
 </mapper>
 

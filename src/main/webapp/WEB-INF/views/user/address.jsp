@@ -202,22 +202,6 @@
 
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />
 <script src="${pageContext.request.contextPath}/js/common.js"></script>
-<script>
-function toggleAddressEdit(addressId) {
-  var view = document.getElementById('address-view-' + addressId);
-  var edit = document.getElementById('address-edit-' + addressId);
-  var editing = edit.style.display !== 'none';
-  edit.style.display = editing ? 'none' : 'block';
-  view.style.display = editing ? 'flex' : 'none';
-}
 
-function toggleAddressAdd() {
-  var form = document.getElementById('address-add-form');
-  var btn = document.getElementById('add-address-btn');
-  var opening = form.style.display === 'none';
-  form.style.display = opening ? 'block' : 'none';
-  btn.style.display = opening ? 'none' : 'flex';
-}
-</script>
 </body>
 </html>

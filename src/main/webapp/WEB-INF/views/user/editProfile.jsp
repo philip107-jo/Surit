@@ -16,9 +16,7 @@
 <main>
 <div class="container">
 
-  <div class="page-head page-head--plain">
-    <h1>마이페이지</h1>
-  </div>
+  <div class="page-head page-head--plain"><h1>마이페이지</h1></div>
 
   <div class="with-side">
     <nav class="side-nav">
@@ -34,13 +32,20 @@
       <a href="${pageContext.request.contextPath}/user/mypage/reviews">
         <svg class="ico"><use href="#i-star"/></svg>내가 쓴 리뷰
       </a>
-      <a href="${pageContext.request.contextPath}/support">
+      <a href="${pageContext.request.contextPath}/user/mypage/support">
         <svg class="ico"><use href="#i-chat"/></svg>고객센터
       </a>
     </nav>
 
     <div>
       <div class="sec-head" style="margin-bottom:20px"><h2>내 정보 수정</h2></div>
+
+      <c:if test="${not empty message}">
+        <div class="note note--ok" style="margin-bottom:20px">
+          <svg class="ico"><use href="#i-check"/></svg>
+          <p><c:out value="${message}"/></p>
+        </div>
+      </c:if>
 
       <div class="card" style="max-width:560px">
         <form method="post" action="${pageContext.request.contextPath}/user/mypage/profile">
@@ -57,25 +62,27 @@
 
           <div class="field">
             <label class="field__label" for="p-email">이메일<span class="req">*</span></label>
-            <input type="email" id="p-email" name="email" class="input" value="${user.email}" required>
+            <input type="email" id="p-email" name="email" class="input" value="${user.email}" requir'
+'>
           </div>
 
           <div class="field">
-            <label class="field__label" for="p-phone">전화번호</label>
-            <input type="tel" id="p-phone" name="phone" class="input" value="${user.phone}" placeholder="010-0000-0000">
+            <label class="field__label" for="p-phone">전화번호<span class="req">*</span></label>
+            <input type="text" id="p-phone" name="phone" class="input" value="${user.phone}" placeholder="01012345678" required>
           </div>
 
           <hr style="border:0;border-top:1px solid var(--g-200);margin:28px 0">
 
           <div class="field">
             <label class="field__label" for="p-pwd">새 비밀번호</label>
-            <input type="password" id="p-pwd" name="passWord" class="input" placeholder="변경할 때만 입력하세요">
+            <input type="password" id="p-pwd" name="password" class="input" placeholder="변경할 때만 입력하세요">
             <div class="field__help">비밀번호를 바꾸지 않으려면 비워두세요.</div>
           </div>
 
           <div class="field">
             <label class="field__label" for="p-pwd-confirm">새 비밀번호 확인</label>
-            <input type="password" id="p-pwd-confirm" name="passWordConfirm" class="input">
+            <input type="password" id="p-pwd-confirm" class="input">
+            <p id="check-pwd-result" class="field__help" aria-live="polite"></p>
           </div>
 
           <button type="submit" class="btn btn--primary btn--block" style="margin-top:8px">저장</button>
@@ -88,6 +95,6 @@
 </main>
 
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />
-<script src="/js/common.js"></script>
+<script src="${pageContext.request.contextPath}/js/common.js"></script>
 </body>
 </html>
