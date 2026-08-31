@@ -7,7 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import com.surit.fixer.mypage.service.FixerMypageService;
+import com.surit.fixer.mypage.service.FixerMyPageService;
 
 import java.util.List;
 
@@ -15,9 +15,9 @@ import java.util.List;
 @Controller
 @RequestMapping("/fixer/mypage")
 @RequiredArgsConstructor
-public class FixerMypageController {
+public class FixerMyPageController {
 
-    private final FixerMypageService FixerMypageService;
+    private final FixerMyPageService FixerMypageService;
 
     // ==========================================
     // 1. 수리 정보 관리 (partner-mypage.html)

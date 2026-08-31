@@ -4,6 +4,8 @@ package com.surit.fixer.mypage.mapper;
 import java.util.List;
 
 import com.surit.fixer.mypage.model.dto.FixerAddressDTO;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface FixerMyPageMapper {

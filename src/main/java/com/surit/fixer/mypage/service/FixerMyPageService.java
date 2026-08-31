@@ -10,7 +10,7 @@ import com.surit.fixer.mypage.mapper.FixerMyPageMapper;
 
 @Service
 @RequiredArgsConstructor
-public class FixerMypageService {
+public class FixerMyPageService {
 
     private final FixerMyPageMapper myPageMapper;
 
