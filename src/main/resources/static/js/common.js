@@ -119,6 +119,14 @@ document.addEventListener('click', function (e) {
         var ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
         return ok ? null : '이메일 형식이 올바르지 않습니다';
       }
+    },
+    {
+      inputId: 'address',
+      resultId: null,
+      validate: function (v) {
+        if (!v) return '지역과 상세주소를 모두 입력해주세요';
+        return null;
+      }
     }
   ];
 
@@ -224,6 +232,41 @@ document.addEventListener('click', function (e) {
   checkbox.addEventListener('change', function () {
     hidden.value = checkbox.checked ? 'Y' : 'N';
   });
+})();
+
+/* 회원가입 : 지역 선택 토글 + 지역명/상세주소 합쳐서 hidden input(address) 채우기 */
+function toggleRegionSelect() {
+  var panel = document.getElementById('region-select-panel');
+  if (!panel) return;
+  panel.style.display = (panel.style.display === 'none') ? 'block' : 'none';
+}
+
+(function () {
+  var panel = document.getElementById('region-select-panel');
+  var addressDetail = document.getElementById('address-detail');
+  var addressHidden = document.getElementById('address');
+  var selectedLabel = document.getElementById('region-selected-label');
+  if (!panel || !addressHidden) return;
+
+  function updateAddress() {
+    var checked = panel.querySelector('input[name="regionRadio"]:checked');
+    var regionName = checked ? checked.dataset.regionName : '';
+    if (checked && selectedLabel) selectedLabel.textContent = regionName;
+
+    var detail = addressDetail ? addressDetail.value : '';
+    addressHidden.value = (regionName + ' ' + detail).trim();
+  }
+
+  panel.addEventListener('change', function (e) {
+    if (e.target.name === 'regionRadio') {
+      updateAddress();
+      panel.style.display = 'none';   // 지역 고르면 자동으로 패널 닫기
+    }
+  });
+
+  if (addressDetail) {
+    addressDetail.addEventListener('input', updateAddress);
+  }
 })();
 
 /* 수리 접수 : 카테고리 카드 선택 -> hidden input(categoryCode) 동기화 */
