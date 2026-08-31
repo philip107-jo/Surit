@@ -33,6 +33,6 @@ public interface RequestService {
 	 * 접수 상태를 매칭완료(REQ_03)로 바꾸고, 선택된 견적을 표시한다.
 	 */
 	void selectEstimate(Long userNo, Long requestId, Long estimateId);
-
+	void createRequest(RequestDTO request);
 
 }
