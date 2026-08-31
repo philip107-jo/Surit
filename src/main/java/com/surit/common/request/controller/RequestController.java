@@ -227,6 +227,60 @@ public class RequestController {
         return "redirect:/user/mypage";
     }
 
+    /**
+     * 접수 상세 (고객용, 매칭완료 이후 단계)
+     * GET /request/{requestId}
+     */
+    @GetMapping("/request/{requestId}")
+    public String requestDetail(@PathVariable("requestId") Long requestId,
+                                 HttpSession session,
+                                 Model model,
+                                 RedirectAttributes ra) {
+
+        UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
+        if (loginMember == null) {
+            return "redirect:/user/login?redirectURL=/request/" + requestId;
+        }
+
+        try {
+            RequestDTO request = service.getRequestDetailForCustomer(loginMember.getUserNo(), requestId);
+            EstimateDTO selectedEstimate = service.getSelectedEstimate(requestId);
+
+            model.addAttribute("request", request);
+            model.addAttribute("selectedEstimate", selectedEstimate);
+
+        } catch (IllegalStateException e) {
+            ra.addFlashAttribute("message", e.getMessage());
+            return "redirect:/user/mypage";
+        }
+
+        return "request/detail";
+    }
+
+    /**
+     * 접수 취소
+     * POST /request/{requestId}/cancel
+     */
+    @PostMapping("/request/{requestId}/cancel")
+    public String cancelRequest(@PathVariable("requestId") Long requestId,
+                                 HttpSession session,
+                                 RedirectAttributes ra) {
+
+        UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
+        if (loginMember == null) {
+            return "redirect:/user/login?redirectURL=/request/" + requestId;
+        }
+
+        try {
+            service.cancelRequest(loginMember.getUserNo(), requestId);
+            ra.addFlashAttribute("message", "접수가 취소되었습니다.");
+        } catch (IllegalStateException e) {
+            ra.addFlashAttribute("message", e.getMessage());
+        }
+
+        return "redirect:/user/mypage";
+    }
+
     /** /request 주소로 접근 시 /request/request 로 리다이렉트 (cat 파라미터는 그대로 이어줌) */
     @GetMapping("/request")
     public String index(@RequestParam(value = "cat", required = false) String cat) {

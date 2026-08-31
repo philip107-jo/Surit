@@ -261,13 +261,17 @@ public class MypageController {
     }
 
     /*
-     * 고객센터(/user/mypage/support) 는 SupportController 가 맡는다.
+     * ★★★ 고객센터(/user/mypage/support) 는 여기에 두지 않는다 ★★★
      *
-     * ★ 여기에 @GetMapping("/support") 를 다시 넣으면 안 된다.
-     *   같은 주소를 두 컨트롤러가 맡게 되어 스프링이
-     *   "Ambiguous mapping" 으로 서버 시동 자체를 거부한다.
+     * SupportController 가 이미 같은 주소를 맡고 있다.
+     * 여기에 @GetMapping("/support") 를 다시 넣으면 스프링이
      *
-     *   SupportController 쪽은 FAQ 뿐 아니라 로그인 확인과
-     *   내 문의 내역(rooms)까지 같이 담아주므로 그쪽이 맞다.
+     *   Ambiguous mapping. Cannot map 'mypageController' method
+     *   ... There is already 'supportController' bean method ... mapped.
+     *
+     * 를 내면서 서버 시동 자체를 거부한다. (2026-08-31 두 번 겪음)
+     *
+     * SupportController 쪽은 로그인 확인 + FAQ + 내 문의 내역(rooms) 까지
+     * 같이 담아주므로 그쪽이 맞다. 머지할 때 이 메서드가 되살아나지 않게 주의.
      */
 }

@@ -1,5 +1,7 @@
 package com.surit.chat.controller;
 
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +22,57 @@ public class ChatController {
 
 	/** 이 키로 세션에 담아두면 WebSocket 핸드셰이크 때 그대로 넘어간다 */
 	public static final String CHAT_USER_NO = "CHAT_USER_NO";
+
+
+	/**
+	 * 헤더의 [채팅] 메뉴가 오는 곳.
+	 * GET /chat
+	 *
+	 * 채팅은 "방"이 있어야 열리는데 이 주소에는 방 번호가 없다.
+	 * 그래서 내 채팅방 중 가장 최근 것으로 돌려보낸다.
+	 *
+	 * ★ 직접 화면을 그리지 않고 redirect 하는 이유
+	 *   각 방의 진짜 주소(/orders/{id}/chat, /user/mypage/support/{id})로 보내면
+	 *   거기서 하는 권한 검사와 session.setAttribute(CHAT_USER_NO, ...) 가
+	 *   그대로 실행된다. 여기서 화면을 직접 그리면 그 두 가지를 또 짜야 하고,
+	 *   특히 세션 심는 걸 빠뜨리면 화면은 뜨는데 메시지가 안 나간다.
+	 *   주소창에도 지금 보고 있는 방이 남아서 새로고침·즐겨찾기가 정상 동작한다.
+	 */
+	@GetMapping("/chat")
+	public String chatHome(HttpSession session, Model model) {
+
+		Long myNo = ChatLoginResolver.resolveUserNo(session);
+
+		if (myNo == null) {
+			return "redirect:/user/login?redirectURL=/chat";
+		}
+
+		List<ChatRoomDTO> rooms = chatService.getMyRooms(myNo);
+
+		// 목록은 ROOM_ID 내림차순이라 첫 번째가 가장 최근 방이다
+		if (!rooms.isEmpty()) {
+			ChatRoomDTO recent = rooms.get(0);
+
+			// REQUEST_ID 가 있으면 기사와의 접수 채팅, 없으면 고객센터 문의방
+			if (recent.getRequestId() != null) {
+				return "redirect:/orders/" + recent.getRequestId() + "/chat";
+			}
+			return "redirect:/user/mypage/support/" + recent.getRoomId();
+		}
+
+		// 방이 하나도 없을 때 : 빈 화면 + 왼쪽 목록(수릿 문의하기 카드)만 보여준다
+		model.addAttribute("myNo",      myNo);
+		model.addAttribute("showSide",  true);
+		model.addAttribute("sideRooms", rooms);
+		model.addAttribute("backUrl",   "/user/mypage");
+		model.addAttribute("backText",  "마이페이지로 돌아가기");
+		model.addAttribute("msg",
+				"아직 대화 중인 채팅이 없습니다. "
+				+ "기사님이 배정되면 채팅이 열리고, "
+				+ "왼쪽 [수릿 문의하기] 로 고객센터에 바로 물어볼 수 있습니다.");
+
+		return "chat/chat";
+	}
 
 	/*
 	 * 2026-08-31 : 임시 테스트용 뒷문(?testUserNo=회원번호) 제거.

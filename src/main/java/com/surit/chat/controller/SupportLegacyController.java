@@ -20,9 +20,11 @@ public class SupportLegacyController {
 		return "redirect:/user/mypage/support";
 	}
 
-	/** user/support.jsp 의 옛 버튼이 가리키던 주소 */
-	@GetMapping("/chat")
-	public String legacyChat() {
-		return "redirect:/user/mypage/support";
-	}
+	/*
+	 * /chat 은 여기서 뺐다. (2026-08-31)
+	 *
+	 * 헤더의 [채팅] 메뉴가 이 주소를 쓰는데, 고객센터 FAQ 로 보내면
+	 * "채팅 눌렀는데 왜 FAQ 가 뜨지" 가 된다.
+	 * 지금은 ChatController#chatHome 이 맡아서 내 최근 채팅방으로 보낸다.
+	 */
 }
