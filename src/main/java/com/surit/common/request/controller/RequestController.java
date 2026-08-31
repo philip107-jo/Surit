@@ -22,6 +22,11 @@ import com.surit.user.model.dto.UserDTO;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
+/*
+ * 클래스에 @RequestMapping 을 안 붙인 이유 :
+ * 기사용(/fixer/requests)과 고객용(/request/...)이 한 컨트롤러에 같이 있어서
+ * 공통 접두어가 없다. 그래서 메서드마다 전체 주소를 적는다.
+ */
 @Controller
 @RequiredArgsConstructor
 public class RequestController {
@@ -31,47 +36,25 @@ public class RequestController {
 
     /** F-15 내 주변 새 접수 조회 */
     @GetMapping("/fixer/requests")
-    public String list(
-            @RequestParam(value = "categoryCode", required = false) String categoryCode,
-            @RequestParam(value = "keyword", required = false) String keyword,
-            HttpSession session,
-            Model model,
-            RedirectAttributes ra) {
+    public String list(@RequestParam(value = "categoryCode", required = false) String categoryCode,
+                        @RequestParam(value = "keyword", required = false) String keyword,
+                        HttpSession session,
+                        Model model,
+                        RedirectAttributes ra) {
 
-        UserDTO loginMember =
-                (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
-
+        UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
         if (loginMember == null) {
             return "redirect:/user/login?redirectURL=/fixer/requests";
         }
 
         try {
-
-            model.addAttribute(
-                "requestList",
-                service.getNearbyRequests(
-                    Long.valueOf(loginMember.getUserNo()),
-                    categoryCode,
-                    keyword
-                )
-            );
-
-            model.addAttribute(
-                "categoryList",
-                service.getCategoryList()
-            );
-            model.addAttribute(
-            	    "visitTimeList",
-            	    service.getVisitTimeList()
-            	);
-
+            model.addAttribute("requestList", service.getNearbyRequests(loginMember.getUserNo(), categoryCode, keyword));
+            model.addAttribute("categoryList", service.getCategoryList());
             model.addAttribute("categoryCode", categoryCode);
             model.addAttribute("keyword", keyword);
-
         } catch (IllegalStateException e) {
             // 아직 인증 안 된 기사 → 신청 화면으로
             ra.addFlashAttribute("message", e.getMessage());
-
             return "redirect:/fixer/verify";
         }
 
@@ -79,149 +62,98 @@ public class RequestController {
     }
 
     /**
-     * 접수 상세.
+     * 접수 상세 (기사용).
      *
      * @PathVariable 에 이름을 꼭 적는다.
      * 컴파일 옵션(-parameters)이 없으면 자바가 파라미터 이름을 안 남겨서
      * "Name for argument of type [long] not specified" 예외가 난다.
      */
     @GetMapping("/fixer/requests/{requestId}")
-    public String detail(
-            @PathVariable("requestId") Long requestId,
-            HttpSession session,
-            Model model,
-            RedirectAttributes ra) {
+    public String detail(@PathVariable("requestId") Long requestId,
+                          HttpSession session,
+                          Model model,
+                          RedirectAttributes ra) {
 
-        UserDTO loginMember =
-                (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
-
+        UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
         if (loginMember == null) {
             return "redirect:/user/login?redirectURL=/fixer/requests/" + requestId;
         }
 
         try {
             // 모델 이름을 "request" 로 하면 JSP 의 내장 객체 request 와 헷갈리니까 repair 로 둔다
-
-            model.addAttribute(
-                "repair",
-                service.getRequestDetail(
-                    Long.valueOf(loginMember.getUserNo()),
-                    requestId
-                )
-            );
-
+            model.addAttribute("repair", service.getRequestDetail(loginMember.getUserNo(), requestId));
         } catch (IllegalStateException e) {
-
             ra.addFlashAttribute("message", e.getMessage());
-
             return "redirect:/fixer/requests";
         }
 
         return "fixer/requestDetail";
     }
 
-    /** 고객 수리 접수 페이지 */
+    /**
+     * 고객 수리 접수 페이지
+     * GET /request/request
+     */
     @GetMapping("/request/request")
-    public String requestPage(
-            @RequestParam(value = "cat", required = false) String cat,
-            Model model, HttpSession session) {
-    	UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
-    	if (loginMember == null) {
-    	    return "redirect:/user/login?redirectURL=/request/request";
-    	}
-        String selectedCategoryCode = null;
+    public String requestPage(@RequestParam(value = "cat", required = false) String cat,
+                               HttpSession session,
+                               Model model) {
 
+        UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
+        if (loginMember == null) {
+            return "redirect:/user/login?redirectURL=/request/request";
+        }
+
+        String selectedCategoryCode = null;
         if (cat != null) {
             switch (cat) {
-                case "lock":
-                    selectedCategoryCode = "CAT_10";
-                    break;
-
-                case "fridge":
-                    selectedCategoryCode = "CAT_02";
-                    break;
-
-                case "pc":
-                    selectedCategoryCode = "CAT_01";
-                    break;
-
-                case "pipe":
-                    selectedCategoryCode = "CAT_05";
-                    break;
-
-                case "elec":
-                    selectedCategoryCode = "CAT_06";
-                    break;
-
-                case "etc":
-                    selectedCategoryCode = "CAT_07";
-                    break;
+                case "lock":   selectedCategoryCode = "CAT_10"; break;
+                case "fridge": selectedCategoryCode = "CAT_02"; break;
+                case "pc":     selectedCategoryCode = "CAT_01"; break;
+                case "pipe":   selectedCategoryCode = "CAT_05"; break;
+                case "elec":   selectedCategoryCode = "CAT_06"; break;
+                case "etc":    selectedCategoryCode = "CAT_07"; break;
             }
         }
 
         // 카테고리 목록
-        model.addAttribute(
-            "categoryList",
-            service.getCategoryList()
-        );
+        model.addAttribute("categoryList", service.getCategoryList());
 
         // 방문 시간대 목록
-        model.addAttribute(
-            "visitTimeList",
-            service.getVisitTimeList()
-        );
+        model.addAttribute("visitTimeList", service.getVisitTimeList());
 
         // 메인에서 선택한 카테고리
-        model.addAttribute(
-            "selectedCategoryCode",
-            selectedCategoryCode
-        );
-        // 로그인 회원
-        UserDTO loginMember1 =
-                (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
+        model.addAttribute("selectedCategoryCode", selectedCategoryCode);
 
-        // 저장된 주소 목록
-        if (loginMember1 != null) {
-
-            List<UserAddressDTO> addressList =
-                    userAddressMapper.selectAddressesByUserNo(
-                        Long.valueOf(loginMember1.getUserNo())
-                    );
-
-            model.addAttribute(
-                "addressList",
-                addressList
-            );
-        }
+        // 저장된 주소 목록 (로그인 확인은 위에서 이미 끝났으니 loginMember 그대로 재사용)
+        List<UserAddressDTO> addressList =
+                userAddressMapper.selectAddressesByUserNo(loginMember.getUserNo());
+        model.addAttribute("addressList", addressList);
 
         return "request/request";
     }
 
+    /**
+     * 고객 수리 접수 등록
+     * POST /request/request
+     */
     @PostMapping("/request/request")
-    public String createRequest(
-            @ModelAttribute RequestDTO request,
-            HttpSession session,
-            RedirectAttributes ra) {
+    public String createRequest(@ModelAttribute RequestDTO request,
+                                 HttpSession session,
+                                 RedirectAttributes ra) {
 
-        UserDTO loginMember =
-                (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
-
+        UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
         if (loginMember == null) {
             return "redirect:/user/login?redirectURL=/request/request";
         }
 
         try {
-
-            request.setUserNo(
-                    Long.valueOf(loginMember.getUserNo())
-            );
+            // 로그인한 회원 번호는 폼이 아니라 세션에서 넣는다 (폼은 조작 가능)
+            request.setUserNo(loginMember.getUserNo());
 
             service.createRequest(request);
 
-            ra.addFlashAttribute(
-                    "message",
-                    "수리 접수가 완료되었습니다."
-            );
+            ra.addFlashAttribute("message", "수리 접수가 완료되었습니다.");
 
             // 방금 생성된 접수의 매칭 화면으로 이동
             // service.createRequest() 실행 후 request 객체에 requestId 가 자동으로 채워져 있어야 함
@@ -229,12 +161,7 @@ public class RequestController {
             return "redirect:/request/matching/" + request.getRequestId();
 
         } catch (IllegalStateException e) {
-
-            ra.addFlashAttribute(
-                    "message",
-                    e.getMessage()
-            );
-
+            ra.addFlashAttribute("message", e.getMessage());
             return "redirect:/request/request";
         }
     }
@@ -246,14 +173,12 @@ public class RequestController {
      * 이 접수에 들어온 견적(기사) 목록을 보여주고, 고객이 그중 하나를 고른다.
      */
     @GetMapping("/request/matching/{requestId}")
-    public String matching(
-            @PathVariable("requestId") Long requestId,
-            HttpSession session,
-            Model model,
-            RedirectAttributes ra) {
+    public String matching(@PathVariable("requestId") Long requestId,
+                            HttpSession session,
+                            Model model,
+                            RedirectAttributes ra) {
 
         UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
-
         if (loginMember == null) {
             return "redirect:/user/login?redirectURL=/request/matching/" + requestId;
         }
@@ -281,14 +206,12 @@ public class RequestController {
      * POST /request/matching/select
      */
     @PostMapping("/request/matching/select")
-    public String selectEstimate(
-            @RequestParam("requestId") Long requestId,
-            @RequestParam("estimateId") Long estimateId,
-            HttpSession session,
-            RedirectAttributes ra) {
+    public String selectEstimate(@RequestParam("requestId") Long requestId,
+                                  @RequestParam("estimateId") Long estimateId,
+                                  HttpSession session,
+                                  RedirectAttributes ra) {
 
         UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
-
         if (loginMember == null) {
             return "redirect:/user/login?redirectURL=/request/matching/" + requestId;
         }
@@ -296,7 +219,6 @@ public class RequestController {
         try {
             service.selectEstimate(loginMember.getUserNo(), requestId, estimateId);
             ra.addFlashAttribute("message", "기사님을 선택했습니다.");
-
         } catch (IllegalStateException e) {
             ra.addFlashAttribute("message", e.getMessage());
             return "redirect:/request/matching/" + requestId;
@@ -305,10 +227,9 @@ public class RequestController {
         return "redirect:/user/mypage";
     }
 
-    /** /request 주소로 접근 시 /request/request 로 리다이렉트 */
+    /** /request 주소로 접근 시 /request/request 로 리다이렉트 (cat 파라미터는 그대로 이어줌) */
     @GetMapping("/request")
-    public String index(
-            @RequestParam(value = "cat", required = false) String cat) {
+    public String index(@RequestParam(value = "cat", required = false) String cat) {
 
         if (cat != null && !cat.isBlank()) {
             return "redirect:/request/request?cat=" + cat;

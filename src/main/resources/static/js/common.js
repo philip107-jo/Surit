@@ -379,3 +379,95 @@ if (defaultAddress) {
         defaultAddress.dataset.address;
 		}
 		}
+		/* ============================================================
+		   수리 접수 폼 (request.jsp) 전용 로직
+		   ============================================================ */
+
+		/* 방문 주소 카드 선택 -> hidden input(serviceAddress) 채우기 */
+		document.addEventListener('click', function (e) {
+		  var card = e.target.closest('.address-card');
+		  if (!card) return;
+
+		  document.querySelectorAll('.address-card').forEach(function (c) {
+		    c.classList.remove('is-on');
+		  });
+		  card.classList.add('is-on');
+
+		  var hidden = document.getElementById('service-address');
+		  if (hidden) {
+		    hidden.value = card.dataset.address || '';
+		  }
+		});
+
+		/* 수리 접수 폼: 방문 일시 선택("지금 바로" / "날짜 지정") + 제출 검증 */
+		document.addEventListener('DOMContentLoaded', function () {
+
+		  var form = document.getElementById('request-form');
+		  if (!form) return;   // 이 페이지가 아니면 아무것도 안 함
+
+		  var whenButtons = document.querySelectorAll('#when-select .opt');
+		  var visitArea = document.getElementById('visit-option-area');
+		  var visitDate = document.getElementById('visit-date');
+		  var visitTimeCode = document.getElementById('visit-time-code');
+
+		  // 오늘 이전 날짜 선택 금지
+		  if (visitDate) {
+		    var today = new Date();
+		    var yyyy = today.getFullYear();
+		    var mm = String(today.getMonth() + 1).padStart(2, '0');
+		    var dd = String(today.getDate()).padStart(2, '0');
+		    visitDate.min = yyyy + '-' + mm + '-' + dd;
+		  }
+
+		  // 지금 바로 / 날짜 지정 토글
+		  whenButtons.forEach(function (button) {
+		    button.addEventListener('click', function () {
+
+		      whenButtons.forEach(function (btn) { btn.classList.remove('is-on'); });
+		      this.classList.add('is-on');
+
+		      if (this.dataset.useYn === 'N') {
+		        visitArea.style.display = 'block';
+		        visitDate.required = true;
+		        visitTimeCode.required = true;
+		      } else {
+		        visitArea.style.display = 'none';
+		        visitDate.required = false;
+		        visitTimeCode.required = false;
+		        visitDate.value = '';
+		        visitTimeCode.value = '';
+		      }
+		    });
+		  });
+
+		  // 접수 제출 시 방문 주소 / 날짜 지정 검증
+		  form.addEventListener('submit', function (event) {
+
+		    var serviceAddress = document.getElementById('service-address');
+		    if (serviceAddress && !serviceAddress.value) {
+		      event.preventDefault();
+		      alert('방문 주소를 선택해주세요.');
+		      return;
+		    }
+
+		    var selectedWhen = document.querySelector('#when-select .opt.is-on');
+
+		    if (selectedWhen && selectedWhen.dataset.useYn === 'N') {
+
+		      if (!visitDate.value) {
+		        event.preventDefault();
+		        alert('희망 방문 날짜를 선택해주세요.');
+		        visitDate.focus();
+		        return;
+		      }
+
+		      if (!visitTimeCode.value) {
+		        event.preventDefault();
+		        alert('희망 시간대를 선택해주세요.');
+		        visitTimeCode.focus();
+		        return;
+		      }
+		    }
+		  });
+
+		});
