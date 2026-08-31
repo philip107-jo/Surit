@@ -4,10 +4,9 @@
 <div class="container">
     <h2>현장 수리 완료 및 결제</h2>
 
-    <!-- 파일 업로드를 위해 enctype="multipart/form-data"는 무조건 필수입니다! -->
     <form id="paymentForm" action="/fixer/payment/complete" method="post" enctype="multipart/form-data">
 
-        <!-- 백엔드로 넘겨줄 예약 번호 (숨김 처리) -->
+        <!-- 서비스 제공 확인을 위한 예약번호 조회-->
         <input type="hidden" name="requestId" value="${booking.requestId}">
 
         <hr>
@@ -15,7 +14,6 @@
         <div style="display: flex; gap: 20px; margin-bottom: 20px;">
             <div>
                 <label>수리 전 사진 <span style="color:red">*</span></label><br>
-                <!-- accept="image/*" 로 모바일에서 갤러리나 카메라가 열리게 유도 -->
                 <input type="file" name="beforePhoto" accept="image/*" required>
             </div>
             <div>
@@ -37,14 +35,14 @@
             </tr>
             </thead>
             <tbody id="receiptBody">
-            <!-- 첫 번째 항목 (기본 1줄) -->
+            <!-- 첫 번째 항목 -->
             <tr class="receipt-row">
-                <!-- name="details[0].itemName" 형태로 백엔드 List<PaymentDetailDTO>에 매핑 -->
+
                 <td><input type="text" name="details[0].itemName" placeholder="예: 부품 교체" required></td>
                 <td><input type="number" name="details[0].quantity" class="qty input-sm" value="1" min="1" onchange="calcTotal()"></td>
                 <td><input type="number" name="details[0].unitPrice" class="price input-sm" value="0" min="0" onchange="calcTotal()"></td>
                 <td class="row-total">0</td>
-                <td></td> <!-- 첫 줄은 삭제 불가 -->
+                <td></td>
             </tr>
             </tbody>
         </table>
@@ -53,7 +51,7 @@
         <hr>
         <div style="font-size: 20px; text-align: right;">
             <strong>총 결제 금액: <span id="displayTotal" style="color: blue;">0</span> 원</strong>
-            <!-- 백엔드로 실제로 날아가는 총액 데이터 -->
+
             <input type="hidden" name="totalAmount" id="totalAmount" value="0">
         </div>
 
@@ -72,20 +70,16 @@
     </form>
 </div>
 
-<!-- ========================================== -->
-<!-- 🚀 자바스크립트 영역 (JS)                    -->
-<!-- ========================================== -->
+
 <script>
-    // 항목이 추가될 때마다 백엔드 리스트 매핑용 인덱스를 1씩 증가시킵니다.
     let rowIndex = 1;
 
-    // 1. 영수증 내역 추가 함수
+    // 결제 내역 추가
     function addRow() {
         const tbody = document.getElementById('receiptBody');
         const tr = document.createElement('tr');
         tr.className = 'receipt-row';
 
-        // 새로운 HTML 줄을 삽입 (백틱 ` 기호 사용)
         tr.innerHTML = `
             <td><input type="text" name="details[\${rowIndex}].itemName" placeholder="예: 출장비" required></td>
             <td><input type="number" name="details[\${rowIndex}].quantity" class="qty input-sm" value="1" min="1" onchange="calcTotal()"></td>
@@ -96,38 +90,36 @@
 
         tbody.appendChild(tr);
         rowIndex++;
-        calcTotal(); // 항목이 추가되면 총액 다시 계산
+        calcTotal(); // 항목이 추가후 금액 다시 계산
     }
 
-    // 2. 영수증 내역 삭제 함수
+    // 2. 결제 내역 삭제
     function removeRow(btn) {
         const tr = btn.closest('tr');
-        tr.remove(); // 해당 줄 삭제
+        tr.remove();
         calcTotal(); // 삭제 후 총액 다시 계산
     }
 
-    // 3. 수량과 단가를 곱해서 총 결제 금액을 계산하는 함수
+    // 3. 총 결제 금액 계산
     function calcTotal() {
         let total = 0;
         const rows = document.querySelectorAll('.receipt-row');
 
         rows.forEach(row => {
-            // 빈 값이면 0으로 처리
             const qty = parseInt(row.querySelector('.qty').value) || 0;
             const price = parseInt(row.querySelector('.price').value) || 0;
 
             const rowTotal = qty * price;
-            row.querySelector('.row-total').innerText = rowTotal.toLocaleString(); // 콤마 찍어서 표시
+            row.querySelector('.row-total').innerText = rowTotal.toLocaleString();
 
             total += rowTotal;
         });
 
-        // 총액 화면 업데이트 및 hidden input 값 설정
         document.getElementById('displayTotal').innerText = total.toLocaleString();
         document.getElementById('totalAmount').value = total;
     }
 
-    // 4. 최종 전송(Submit) 방어 코드
+    // 최종 결정 체크
     function submitPayment() {
         const total = document.getElementById('totalAmount').value;
 

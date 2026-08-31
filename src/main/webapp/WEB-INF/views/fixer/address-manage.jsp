@@ -39,15 +39,13 @@
     </form>
 </div>
 
-<!-- ========================================== -->
-<!-- 🚀 자바스크립트 영역 (JS)                    -->
-<!-- ========================================== -->
+
 <script>
     function saveAddress() {
         const addressInput = document.getElementById('address');
         const detailAddressInput = document.getElementById('detailAddress');
 
-        // 1. 빈 값 검사 (유효성 체크)
+        // 빈 값 검사
         if (addressInput.value.trim() === '') {
             alert('기본 주소를 입력해 주세요.');
             addressInput.focus();
@@ -60,7 +58,7 @@
             return;
         }
 
-        // 2. 저장 확인 및 제출
+        // 저장 확인 및 제출
         if (confirm('이 주소로 활동 지역을 설정하시겠습니까?')) {
             document.getElementById('addressForm').submit();
         }
