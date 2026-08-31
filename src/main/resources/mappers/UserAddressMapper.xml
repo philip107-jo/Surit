@@ -2,7 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.surit.user.mapper.UserAddressMapper">
 
-    <select id="selectAddressesByUserNo" resultType="com.surit.user.model.dto.UserAddressDTO">
+
+<select id="selectAddressesByUserNo"
+        resultType="com.surit.user.model.dto.UserAddressDTO">
+
+    SELECT *
+    FROM (
         SELECT
             ADDRESS_ID     AS addressId,
             USER_NO        AS userNo,
@@ -13,9 +18,13 @@
             IS_DEFAULT     AS isDefault
         FROM USER_ADDRESS
         WHERE USER_NO = #{userNo}
-        ORDER BY DECODE(IS_DEFAULT, 'Y', 0, 1), ADDRESS_ID DESC
-    </select>
+        ORDER BY
+            DECODE(IS_DEFAULT, 'Y', 0, 1),
+            ADDRESS_ID DESC
+    )
+    WHERE ROWNUM &lt;= 3
 
+</select>
     <select id="selectAddressById" resultType="com.surit.user.model.dto.UserAddressDTO">
         SELECT
             ADDRESS_ID     AS addressId,

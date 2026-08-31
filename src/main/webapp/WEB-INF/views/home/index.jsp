@@ -133,5 +133,5 @@
         </div>
     </div>
 </section>
-<script src="/js/common.js"></script>
+<script src="${pageContext.request.contextPath}/js/common.js"></script>
 <jsp:include page="/WEB-INF/views/common/footer.jsp"/>

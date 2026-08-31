@@ -15,6 +15,8 @@ import com.surit.common.request.model.dto.RequestDTO;
 import com.surit.common.request.service.RequestService;
 import com.surit.fixer.estimate.model.dto.EstimateDTO;
 import com.surit.user.SessionConst;
+import com.surit.user.mapper.UserAddressMapper;
+import com.surit.user.model.dto.UserAddressDTO;
 import com.surit.user.model.dto.UserDTO;
 
 import jakarta.servlet.http.HttpSession;
@@ -25,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class RequestController {
 
     private final RequestService service;
+    private final UserAddressMapper userAddressMapper;
 
     /** F-15 내 주변 새 접수 조회 */
     @GetMapping("/fixer/requests")
@@ -173,6 +176,23 @@ public class RequestController {
             "selectedCategoryCode",
             selectedCategoryCode
         );
+        // 로그인 회원
+        UserDTO loginMember1 =
+                (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
+
+        // 저장된 주소 목록
+        if (loginMember1 != null) {
+
+            List<UserAddressDTO> addressList =
+                    userAddressMapper.selectAddressesByUserNo(
+                        Long.valueOf(loginMember1.getUserNo())
+                    );
+
+            model.addAttribute(
+                "addressList",
+                addressList
+            );
+        }
 
         return "request/request";
     }

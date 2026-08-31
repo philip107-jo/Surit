@@ -347,4 +347,35 @@ function toggleAddressAdd() {
   var opening = form.style.display === 'none';
   form.style.display = opening ? 'block' : 'none';
   btn.style.display = opening ? 'none' : 'flex';
-}
+
+const addressCards =
+    document.querySelectorAll(".address-card");
+
+const serviceAddress =
+    document.getElementById("service-address");
+
+addressCards.forEach(function(card) {
+
+    card.addEventListener("click", function() {
+
+        addressCards.forEach(function(item) {
+            item.classList.remove("is-on");
+        });
+
+        this.classList.add("is-on");
+
+        serviceAddress.value =
+            this.dataset.address;
+    });
+
+});
+
+// 기본주소가 있으면 처음부터 serviceAddress에 넣기
+const defaultAddress =
+    document.querySelector(".address-card.is-on");
+
+if (defaultAddress) {
+    serviceAddress.value =
+        defaultAddress.dataset.address;
+		}
+		}

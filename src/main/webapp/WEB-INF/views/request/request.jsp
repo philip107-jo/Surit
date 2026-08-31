@@ -267,18 +267,69 @@
 
 					</div>
 
-            <div class="form-sec">
-                <div class="form-sec__head">
-                    <span class="form-sec__no">3</span>
-                    <div><div class="form-sec__title">어디로 방문할까요?</div></div>
-                </div>
+					<!-- 3. 방문 주소 -->
+					<div class="form-sec">
 
-                <div class="field">
-                    <label class="field__label" for="service-address">방문 주소<span class="req">*</span></label>
-                    <input type="text" id="service-address" name="serviceAddress" class="input"
-                        placeholder="예: 서울 강남구 테헤란로 123, 101동 1502호" required>
-                </div>
-            </div>
+					    <div class="form-sec__head">
+					        <span class="form-sec__no">3</span>
+
+					        <div>
+					            <div class="form-sec__title">
+					                어디로 방문할까요?
+					            </div>
+					        </div>
+					    </div>
+
+					    <div class="address-list">
+
+					        <c:forEach var="addr"
+					                   items="${addressList}"
+					                   varStatus="status"
+					                   end="2">
+
+					            <button type="button"
+					                    class="address-card ${addr.isDefault eq 'Y' ? 'is-on' : ''}"
+					                    data-address="${addr.address} ${addr.addressDetail}">
+
+					                <span class="address-radio"></span>
+
+					                <span class="address-card__body">
+
+					                    <strong>
+					                        <c:choose>
+					                            <c:when test="${addr.isDefault eq 'Y'}">
+					                                기본 주소
+					                            </c:when>
+					                            <c:otherwise>
+					                                주소 ${status.index + 1}
+					                            </c:otherwise>
+					                        </c:choose>
+					                    </strong>
+
+					                    <span class="address-card__text">
+					                        ${addr.address}
+					                        ${addr.addressDetail}
+					                    </span>
+
+					                </span>
+
+					            </button>
+
+					        </c:forEach>
+
+					    </div>
+
+					    <!-- 실제 접수 시 넘어갈 주소 -->
+					    <input type="hidden"
+					           id="service-address"
+					           name="serviceAddress">
+
+							   <button type="button"
+							           class="address-add"
+							           onclick="location.href='${pageContext.request.contextPath}/user/mypage/address'">
+							       + 새 주소 추가하기
+							   </button>
+					</div>
 
 			<!-- 4. 방문 날짜 / 시간 -->
 			<div class="form-sec">
@@ -292,6 +343,8 @@
 			            </div>
 			        </div>
 			    </div>
+				
+				
 
 			    <!-- 지금 바로 / 날짜 지정 -->
 			    <div class="opt-grid" id="when-select">

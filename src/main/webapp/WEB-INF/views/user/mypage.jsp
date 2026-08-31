@@ -152,7 +152,7 @@
                     </c:choose>
                   </td>
                   <td class="right">
-                    <a class="btn btn--ghost btn--sm" href="${pageContext.request.contextPath}/request/${req.requestId}">상세 보기</a>
+                   <a class="btn btn--ghost btn--sm" href="${pageContext.request.contextPath}/request/matching/${req.requestId}">상세 보기</a>
                   </td>
                 </tr>
               </c:forEach>
