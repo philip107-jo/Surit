@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!doctype html>
 <html lang="ko">
 <head>
@@ -11,13 +12,35 @@
 </head>
 <body>
 
+<%-- header.jsp 에 없을 수 있는 아이콘만 추가로 정의 (중복 정의돼도 문제없음) --%>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M14.5 5.5l4 4"/></symbol>
+<symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V5h6v2"/><path d="M6 7l1 13h10l1-13"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></symbol>
+<symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-13.7-5.3L3 9"/><path d="M4 13a8 8 0 0 0 13.7 5.3L21 15"/><path d="M3 4v5h5"/><path d="M21 20v-5h-5"/></symbol>
+</defs>
+</svg>
+
 <jsp:include page="/WEB-INF/views/common/header.jsp" />
 
 <main>
 <div class="container">
 
-  <div class="page-head page-head--plain">
-    <h1>마이페이지</h1>
+  <div class="page-head page-head--plain"><h1>주소 관리</h1></div>
+
+  <div class="profile-box">
+    <span class="avatar avatar--xl"><svg><use href="#i-user"/></svg></span>
+    <div>
+      <div class="profile-box__name"><c:out value="${user.name}"/> 고객님</div>
+      <div class="profile-box__mail"><c:out value="${user.email}"/></div>
+    </div>
+    <div class="btn-row">
+      <a class="btn btn--ghost" href="${pageContext.request.contextPath}/user/mypage/profile">내 정보 수정</a>
+      <a class="btn btn--dark" href="${pageContext.request.contextPath}/fixer/verify">
+        <svg class="ico"><use href="#i-refresh"/></svg>기사로 전환
+      </a>
+    </div>
   </div>
 
   <div class="with-side">
@@ -34,20 +57,19 @@
       <a href="${pageContext.request.contextPath}/user/mypage/reviews">
         <svg class="ico"><use href="#i-star"/></svg>내가 쓴 리뷰
       </a>
-      <a href="${pageContext.request.contextPath}/support">
+      <a href="${pageContext.request.contextPath}/user/mypage/support">
         <svg class="ico"><use href="#i-chat"/></svg>고객센터
       </a>
     </nav>
 
     <div>
-      <div class="sec-head sec-head--row" style="margin-bottom:20px">
-        <h2>주소 관리</h2>
-        <a class="btn btn--primary btn--sm" href="${pageContext.request.contextPath}/user/mypage/address/form">
-          <svg class="ico"><use href="#i-plus"/></svg>주소 추가
-        </a>
+      <div class="sec-head sec-head--row" style="margin-bottom:24px">
+        <div>
+          <h2>주소 관리</h2>
+          <p>주소는 최대 3개까지 등록할 수 있습니다. (${fn:length(addressList)} / 3)</p>
+        </div>
       </div>
 
-      
       <c:choose>
         <c:when test="${empty addressList}">
           <div class="empty">
@@ -57,35 +79,145 @@
         </c:when>
         <c:otherwise>
           <c:forEach var="addr" items="${addressList}">
-            <div class="list-card">
+
+            <%-- 평소엔 보이는 조회 화면 --%>
+            <div class="list-card" id="address-view-${addr.addressId}">
+              <span class="tile tile--sm t-blue"><svg><use href="#i-home"/></svg></span>
               <div class="list-card__body">
-                <div class="list-card__title">
-                  <c:out value="${addr.address}"/>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <b style="font-size:19px">
+                    <c:choose>
+                      <c:when test="${not empty addr.addressName}"><c:out value="${addr.addressName}"/></c:when>
+                      <c:otherwise><c:out value="${addr.address}"/></c:otherwise>
+                    </c:choose>
+                  </b>
                   <c:if test="${addr.isDefault == 'Y'}">
                     <span class="badge badge--primary">기본 주소</span>
                   </c:if>
                 </div>
-                <div class="list-card__meta">
+                <div class="list-card__meta" style="margin-top:6px">
+                  <c:if test="${not empty addr.addressName}">
+                    <c:out value="${addr.address}"/><br>
+                  </c:if>
+                  <c:if test="${not empty addr.zipCode}">(<c:out value="${addr.zipCode}"/>) </c:if>
                   <c:out value="${addr.addressDetail}"/>
                 </div>
               </div>
               <div class="btn-row">
-                <a class="btn btn--ghost btn--sm" href="${pageContext.request.contextPath}/user/mypage/address/form?addressId=${addr.addressId}">수정</a>
+                <button type="button" class="btn btn--ghost btn--sm" onclick="toggleAddressEdit(${addr.addressId})">
+                  <svg class="ico"><use href="#i-edit"/></svg>수정
+                </button>
                 <form method="post" action="${pageContext.request.contextPath}/user/mypage/address/${addr.addressId}/delete" style="display:inline">
-                  <button type="submit" class="btn btn--danger btn--sm">삭제</button>
+                  <button type="submit" class="btn btn--danger btn--sm">
+                    <svg class="ico"><use href="#i-trash"/></svg>삭제
+                  </button>
                 </form>
               </div>
             </div>
+
+            <%-- "수정" 누르면 위 조회 화면 대신 이게 보임 --%>
+            <div class="card card--sm" id="address-edit-${addr.addressId}" style="display:none">
+              <form method="post" action="${pageContext.request.contextPath}/user/mypage/address/${addr.addressId}">
+                <div class="field">
+                  <label class="field__label">별명</label>
+                  <input type="text" name="nickname" class="input" value="${addr.addressName}" placeholder="예: 집, 사무실, 부모님댁">
+                </div>
+                <div class="field-row">
+                  <div class="field" style="flex:0 0 160px">
+                    <label class="field__label">우편번호</label>
+                    <input type="text" name="zipCode" class="input" value="${addr.zipCode}">
+                  </div>
+                  <div class="field" style="flex:1">
+                    <label class="field__label">주소<span class="req">*</span></label>
+                    <input type="text" name="address" class="input" value="${addr.address}" required>
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="field__label">상세주소</label>
+                  <input type="text" name="addressDetail" class="input" value="${addr.addressDetail}">
+                </div>
+                <div class="field">
+                  <label class="field__label">기본 주소 설정</label>
+                  <select name="isDefault" class="select">
+                    <option value="N" ${addr.isDefault == 'N' ? 'selected' : ''}>일반 주소</option>
+                    <option value="Y" ${addr.isDefault == 'Y' ? 'selected' : ''}>기본 주소로 설정</option>
+                  </select>
+                </div>
+                <div class="btn-row">
+                  <button type="button" class="btn btn--ghost" onclick="toggleAddressEdit(${addr.addressId})">취소</button>
+                  <button type="submit" class="btn btn--primary">저장</button>
+                </div>
+              </form>
+            </div>
+
           </c:forEach>
         </c:otherwise>
       </c:choose>
+
+      <c:if test="${fn:length(addressList) < 3}">
+        <button type="button" class="btn btn--ghost btn--block btn--lg" style="margin-top:18px" id="add-address-btn"
+                onclick="toggleAddressAdd()">
+          <svg class="ico"><use href="#i-plus"/></svg>새 주소 추가하기
+        </button>
+
+        <div class="card card--sm" id="address-add-form" style="display:none;margin-top:14px">
+          <form method="post" action="${pageContext.request.contextPath}/user/mypage/address">
+            <div class="field">
+              <label class="field__label">별명</label>
+              <input type="text" name="addressName" class="input" placeholder="예: 집, 사무실, 부모님댁">
+            </div>
+            <div class="field-row">
+              <div class="field" style="flex:0 0 160px">
+                <label class="field__label">우편번호</label>
+                <input type="text" name="zipCode" class="input">
+              </div>
+              <div class="field" style="flex:1">
+                <label class="field__label">주소<span class="req">*</span></label>
+                <input type="text" name="address" class="input" placeholder="예: 서울 강남구 테헤란로 123" required>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field__label">상세주소</label>
+              <input type="text" name="addressDetail" class="input" placeholder="예: 101동 1502호">
+            </div>
+            <div class="field">
+              <label class="field__label">기본 주소 설정</label>
+              <select name="isDefault" class="select">
+                <option value="N">일반 주소</option>
+                <option value="Y">기본 주소로 설정</option>
+              </select>
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn--ghost" onclick="toggleAddressAdd()">취소</button>
+              <button type="submit" class="btn btn--primary">추가하기</button>
+            </div>
+          </form>
+        </div>
+      </c:if>
     </div>
   </div>
-
 </div>
+
 </main>
 
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />
-<script src="/js/common.js"></script>
+<script src="${pageContext.request.contextPath}/js/common.js"></script>
+<script>
+function toggleAddressEdit(addressId) {
+  var view = document.getElementById('address-view-' + addressId);
+  var edit = document.getElementById('address-edit-' + addressId);
+  var editing = edit.style.display !== 'none';
+  edit.style.display = editing ? 'none' : 'block';
+  view.style.display = editing ? 'flex' : 'none';
+}
+
+function toggleAddressAdd() {
+  var form = document.getElementById('address-add-form');
+  var btn = document.getElementById('add-address-btn');
+  var opening = form.style.display === 'none';
+  form.style.display = opening ? 'block' : 'none';
+  btn.style.display = opening ? 'none' : 'flex';
+}
+</script>
 </body>
 </html>

@@ -2,12 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.surit.user.mapper.UserAddressMapper">
 
-    <!-- ⚠ 테이블명 USER_ADDRESS 는 추정치. 실제 이름 확인 후 전체 교체 필요 -->
-
     <select id="selectAddressesByUserNo" resultType="com.surit.user.model.dto.UserAddressDTO">
         SELECT
             ADDRESS_ID     AS addressId,
             USER_NO        AS userNo,
+            ADDRESS_NAME   AS addressName,
             ZIP_CODE       AS zipCode,
             ADDRESS        AS address,
             ADDRESS_DETAIL AS addressDetail,
@@ -21,6 +20,7 @@
         SELECT
             ADDRESS_ID     AS addressId,
             USER_NO        AS userNo,
+            ADDRESS_NAME   AS addressName,
             ZIP_CODE       AS zipCode,
             ADDRESS        AS address,
             ADDRESS_DETAIL AS addressDetail,
@@ -31,13 +31,14 @@
     </select>
 
     <insert id="insertAddress" useGeneratedKeys="true" keyProperty="addressId" keyColumn="ADDRESS_ID">
-        INSERT INTO USER_ADDRESS (USER_NO, ZIP_CODE, ADDRESS, ADDRESS_DETAIL, IS_DEFAULT)
-        VALUES (#{userNo}, #{zipCode}, #{address}, #{addressDetail}, #{isDefault})
+        INSERT INTO USER_ADDRESS (USER_NO, ADDRESS_NAME, ZIP_CODE, ADDRESS, ADDRESS_DETAIL, IS_DEFAULT)
+        VALUES (#{userNo}, #{addressName}, #{zipCode}, #{address}, #{addressDetail}, #{isDefault})
     </insert>
 
     <update id="updateAddress">
         UPDATE USER_ADDRESS
-           SET ZIP_CODE = #{zipCode},
+           SET ADDRESS_NAME = #{addressName},
+               ZIP_CODE = #{zipCode},
                ADDRESS = #{address},
                ADDRESS_DETAIL = #{addressDetail},
                IS_DEFAULT = #{isDefault}
