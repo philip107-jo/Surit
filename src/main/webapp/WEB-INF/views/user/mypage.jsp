@@ -152,7 +152,14 @@
                     </c:choose>
                   </td>
                   <td class="right">
-                   <a class="btn btn--ghost btn--sm" href="${pageContext.request.contextPath}/request/matching/${req.requestId}">상세 보기</a>
+                    <c:choose>
+                      <c:when test="${req.statusCode == 'REQ_01' || req.statusCode == 'REQ_02'}">
+                        <a class="btn btn--ghost btn--sm" href="${pageContext.request.contextPath}/request/matching/${req.requestId}">상세 보기</a>
+                      </c:when>
+                      <c:otherwise>
+                        <a class="btn btn--ghost btn--sm" href="${pageContext.request.contextPath}/request/${req.requestId}">상세 보기</a>
+                      </c:otherwise>
+                    </c:choose>
                   </td>
                 </tr>
               </c:forEach>
@@ -168,6 +175,6 @@
 </main>
 
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />
-<script src="/js/common.js"></script>
+
 </body>
 </html>

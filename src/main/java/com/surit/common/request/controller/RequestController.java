@@ -224,7 +224,7 @@ public class RequestController {
             return "redirect:/request/matching/" + requestId;
         }
 
-        return "redirect:/user/mypage";
+        return "redirect:/request/" + requestId;
     }
 
     /**
@@ -254,7 +254,7 @@ public class RequestController {
             return "redirect:/user/mypage";
         }
 
-        return "request/detail";
+        return "user/request-detail";
     }
 
     /**

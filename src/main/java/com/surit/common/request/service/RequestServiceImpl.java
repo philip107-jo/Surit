@@ -102,16 +102,12 @@ public List<EstimateDTO> getEstimatesForMatching(Long requestId) {
 public void selectEstimate(Long userNo, Long requestId, Long estimateId) {
  
     // 1. 내 접수가 맞는지 다시 한 번 확인 (URL 조작 방지)
-    RequestDTO request = mapper.selectRequestForCustomer(userNo, requestId);
-    if (request == null) {
-        throw new IllegalStateException("볼 수 없는 접수입니다.");
-    }
- 
-    // 2. 접수 상태를 매칭완료로 변경 + 선택된 견적 기록
-    //    ⚠ updateSelectedEstimate 는 REPAIR_REQUESTS 에 선택 견적을 저장할
-    //      컬럼이 있다는 가정. 실제 스키마 확인 후 조정 필요.
-    mapper.updateRequestStatus(requestId, "REQ_03");
-    mapper.updateSelectedEstimate(requestId, estimateId);
+	RequestDTO request = mapper.selectRequestForCustomer(userNo, requestId);
+	if (request == null) {
+	    throw new IllegalStateException("볼 수 없는 접수입니다.");
+	}
+	mapper.updateRequestStatus(requestId, "REQ_03");   // 여기까진 실행 안 됐을 수도 있고
+	mapper.updateSelectedEstimate(requestId, estimateId);   // 이건 실행됐음 (선택됨 뱃지로 확인됨)
 }
  
 	@Transactional

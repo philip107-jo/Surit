@@ -225,11 +225,12 @@
     </update>
      
     <!-- 견적 상태 변경 (선택 시 STATUS = 'SELECTED') -->
-    <update id="updateEstimateStatus">
-        UPDATE ESTIMATES
-           SET STATUS = #{status}
-         WHERE ESTIMATE_ID = #{estimateId}
-    </update>
+<update id="updateSelectedEstimate">
+    UPDATE ESTIMATES
+       SET STATUS = 'SELECTED'
+     WHERE REQUEST_ID  = #{requestId}
+       AND ESTIMATE_ID = #{estimateId}
+</update>
 
   <insert id="insertRequest"
         useGeneratedKeys="true"
