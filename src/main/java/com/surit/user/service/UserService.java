@@ -21,4 +21,10 @@ public interface UserService {
 
 	// 마이페이지 등에서 쓸 회원 정보 단건 조회
 	UserDTO getUserInfo(String userId);
+	/**
+	 * 내 정보 수정 (이름/전화번호/이메일).
+	 * 비밀번호는 form.getPassword() 가 비어있지 않을 때만 변경한다.
+
+	 */
+	UserDTO updateUserInfo(UserDTO form);
 }
