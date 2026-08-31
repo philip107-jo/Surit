@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.surit.common.request.model.dto.RequestDTO;
 import com.surit.common.request.model.dto.RequestPhotoDTO;
+import com.surit.fixer.estimate.model.dto.EstimateDTO;
 
 @Mapper
 public interface RequestMapper {
@@ -44,4 +45,23 @@ public interface RequestMapper {
 
 	/** 고객 기능 — 접수 등록 */
 	Long insertRequest(RequestDTO request);
+
+	/** 고객 기준 접수 단건 조회 (내 접수가 아니면 null) */
+	RequestDTO selectRequestForCustomer(@Param("userNo") Long userNo,
+	                                     @Param("requestId") Long requestId);
+
+	/** 특정 접수에 들어온 견적 목록 (기사 정보 포함) */
+	List<EstimateDTO> selectEstimatesByRequestId(@Param("requestId") Long requestId);
+
+	/** 접수 상태 코드 변경 */
+	Long updateRequestStatus(@Param("requestId") Long requestId,
+	                         @Param("statusCode") String statusCode);
+
+	/**
+	 * 견적 상태 변경.
+	 * 선택된 견적은 STATUS = 'SELECTED' 로 바꾼다.
+	 * (EstimateDTO.status 는 PENDING / SELECTED 두 값만 존재)
+	 */
+	Long updateSelectedEstimate(@Param("requestId") Long requestId,
+	                            @Param("estimateId") Long estimateId);
 }

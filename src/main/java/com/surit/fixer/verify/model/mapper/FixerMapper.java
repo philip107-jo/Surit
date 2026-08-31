@@ -14,6 +14,7 @@ public interface FixerMapper {
 	// ---------- 조회 ----------
 
 	/** 기사 프로필 (신청 이력이 있는지 확인용). 없으면 null */
+
 	FixerProfileDTO selectFixerProfile(Long userNo);
 
 	/** 기사가 등록한 자격증 목록 (재신청 시 기존 파일 삭제용) */
