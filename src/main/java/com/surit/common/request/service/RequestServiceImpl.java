@@ -26,6 +26,7 @@ public class RequestServiceImpl implements RequestService {
 	/** 견적 수락 전용 Mapper (2026-08-31 추가) */
 	private final EstimateSelectMapper selectMapper;
 
+
 	@Override
 	public List<CommonCodeDTO> getCategoryList() {
 		return codeMapper.selectByGroup("CATEGORY");
@@ -46,6 +47,7 @@ public class RequestServiceImpl implements RequestService {
 	@Override
 	@Transactional(readOnly = true)
 	public RequestDTO getRequestDetail(Long userNo, Long requestId) {
+
 		fixerGuard.requireApprovedFixer(userNo);
 
 		RequestDTO request = mapper.selectRequestDetail(userNo, requestId);
@@ -60,17 +62,25 @@ public class RequestServiceImpl implements RequestService {
 		return request;
 	}
 
+	/**
+	 * 고객 기능 — 내가 올린 접수 목록
+	 *
+	 * ★ 이 메서드는 머지 때 두 벌이 생길 뻔했다.
+	 *   같은 이름·같은 파라미터의 메서드가 클래스에 두 개면 컴파일이 안 된다.
+	 *   readOnly 트랜잭션이 붙은 이 한 벌만 남긴다.
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<RequestDTO> getRequestsByUserId(Long userNo) {
+		return mapper.findByUserId(userNo);
+	}
+
 	/** 빈 문자열은 null 로 (XML 의 <if> 조건을 단순하게 유지하려고) */
 	private String trimToNull(String s) {
 		if (s == null || s.isBlank()) {
 			return null;
 		}
 		return s.trim();
-	}
-
-	@Override
-	public List<RequestDTO> getRequestsByUserId(Long userNo) {
-		return mapper.findByUserId(userNo);
 	}
 
 
@@ -144,6 +154,7 @@ public class RequestServiceImpl implements RequestService {
 	@Override
 	@Transactional
 	public void createRequest(RequestDTO request) {
+
 		// 신규 접수 상태
 		request.setStatusCode("REQ_01");
 

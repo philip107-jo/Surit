@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.surit.fixer.verify.model.mapper.FixerMapper">
@@ -14,10 +15,18 @@
 	     별칭을 주면 PHOTO_URL → photoUrl 로 정확히 맞는다. -->
 
 
-	<select id="selectFixerProfile" 
-	        parameterType="long" resultType="com.surit.fixer.verify.model.dto.FixerProfileDTO">
+	<!-- REJECT_REASON 을 같이 읽는 이유 :
+	     관리자가 거절할 때 남긴 사유를 기사 화면(verify.jsp)에 보여주기 위함.
+	     이 컬럼은 관리자 기능에서 채우고 여기서는 읽기만 한다.
+	     (재신청 시 NULL 로 비우는 것은 updateFixerProfile 의 SQL 에 직접 박혀 있다)
+	     거절된 적이 없거나 관리자가 사유를 안 적었으면 null 이므로
+	     화면에서 empty 검사를 하고 출력한다. -->
+
+	<select id="selectFixerProfile" parameterType="long"
+	        resultType="com.surit.fixer.verify.model.dto.FixerProfileDTO">
 		SELECT USER_NO, INTRO, CAREER_YEARS, APPROVAL_STATUS,
-		       FIXER_PHOTO_URL AS PHOTO_URL
+		       FIXER_PHOTO_URL AS PHOTO_URL,
+		       REJECT_REASON
 		  FROM FIXER_PROFILE
 		 WHERE USER_NO = #{userNo}
 	</select>

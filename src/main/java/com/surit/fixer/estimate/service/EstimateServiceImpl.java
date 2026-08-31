@@ -5,13 +5,12 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.surit.common.request.model.dto.RequestDTO;
+import com.surit.common.request.model.mapper.RequestMapper;
 import com.surit.fixer.common.FixerGuard;
 import com.surit.fixer.estimate.model.dto.EstimateDTO;
 import com.surit.fixer.estimate.model.dto.EstimateForm;
 import com.surit.fixer.estimate.model.mapper.EstimateMapper;
-
-import com.surit.common.request.model.dto.RequestDTO;
-import com.surit.common.request.model.mapper.RequestMapper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +27,7 @@ public class EstimateServiceImpl implements EstimateService {
 	 *     따로 써야 하는 부담이 생긴다
 	 *  → 팀 합의로 전부 Long 통일
 	 */
+
 	/** 견적 금액 상한. 실수로 0 을 몇 개 더 붙이는 걸 막는다 */
 	private static final long MAX_PRICE        = 100_000_000L;   // 1억 원
 	private static final long MAX_DURATION_MIN = 60L * 24 * 30;  // 30일(분)
@@ -36,29 +36,24 @@ public class EstimateServiceImpl implements EstimateService {
 	private final RequestMapper  requestMapper;
 	private final FixerGuard     fixerGuard;
 
-
 	@Override
 	@Transactional(readOnly = true)
-
-	public RequestDTO getTargetRequest(Long fixerNo, Long requestId) {
+	public RequestDTO getTargetRequest(long fixerNo, long requestId) {
 
 		fixerGuard.requireApprovedFixer(fixerNo);
 
 		RequestDTO request = requestMapper.selectRequestDetail(fixerNo, requestId);
-
 		if (request == null) {
 			throw new IllegalStateException("견적을 낼 수 없는 접수입니다.");
 		}
 		return request;
 	}
 
-
 	@Override
 	@Transactional(rollbackFor = Exception.class)
+	public void submit(long fixerNo, EstimateForm form) {
 
-	public void submit(Long fixerNo, EstimateForm form) {
 		fixerGuard.requireApprovedFixer(fixerNo);
-
 		validate(form);
 
 		// 내 분야/지역이 맞는 접수인지, 차단한 고객은 아닌지 확인.
@@ -70,13 +65,13 @@ public class EstimateServiceImpl implements EstimateService {
 
 		EstimateDTO estimate = new EstimateDTO();
 		estimate.setRequestId(form.getRequestId());
-		estimate.setFixerNo(fixerNo);                       // 폼이 아니라 세션에서 온 값
+		estimate.setFixerNo(fixerNo);   // 폼이 아니라 세션에서 온 값.
+		                                // 폼으로 받으면 개발자도구로 바꿔서 남의 이름으로 견적을 낼 수 있다.
 		estimate.setEstimatedPrice(form.getEstimatedPrice());
 		estimate.setEstimatedDuration(form.getEstimatedDuration());
 		estimate.setContent(form.getContent());
 
 		int inserted = mapper.insertEstimate(estimate);
-
 		if (inserted == 0) {
 			// WHERE 조건에 걸려서 안 들어갔다. 어느 조건인지 여기서 구분해준다.
 			if (mapper.countMyEstimate(form.getRequestId(), fixerNo) > 0) {
@@ -89,18 +84,13 @@ public class EstimateServiceImpl implements EstimateService {
 		mapper.updateRequestToEstimating(form.getRequestId());
 	}
 
-
 	@Override
 	@Transactional(readOnly = true)
-
-	public List<EstimateDTO> getMyEstimates(Long fixerNo) {
-
+	public List<EstimateDTO> getMyEstimates(long fixerNo) {
 
 		fixerGuard.requireApprovedFixer(fixerNo);
-
 		return mapper.selectMyEstimates(fixerNo);
 	}
-
 
 	private void validate(EstimateForm form) {
 

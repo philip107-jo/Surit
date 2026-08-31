@@ -15,12 +15,17 @@ import jakarta.servlet.http.HttpServletRequest;
  * 흰 에러 화면(Whitelabel Error Page) 대신 원래 화면으로 돌려보내며
  * 안내 메시지를 보여주기 위한 핸들러.
  *
- * basePackages 를 "com.surit.fixer" 로 좁혀서, 이 프로젝트의 다른 팀원이
+ * basePackages 로 적용 대상을 좁혀서, 이 프로젝트의 다른 팀원이
  * 만든 컨트롤러(로그인, 회원가입 등)에는 영향을 주지 않는다.
- * 만약 다른 팀원 쪽에도 똑같이 필요해지면, 그때는 이 클래스를 따로
- * 공용 위치로 옮기고 basePackages 를 넓히면 된다.
+ *
+ * 접수(request)는 고객도 쓰는 공통 기능이라 com.surit.common.request 에 있지만,
+ * 화면은 여전히 기사용(/fixer/requests)이므로 함께 포함한다.
+ * 나중에 팀 공통 예외 처리가 생기면 그때 빼면 된다.
  */
-@ControllerAdvice(basePackages = "com.surit.fixer")
+@ControllerAdvice(basePackages = {
+		"com.surit.fixer",
+		"com.surit.common.request"
+})
 public class FixerExceptionHandler {
 
 	/**

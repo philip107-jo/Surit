@@ -235,7 +235,7 @@
                 </div>
 
                 <textarea id="request-content" name="content" class="textarea"
-                    placeholder="예) 현관 도어락 버튼을 눌러도 반응이 없고 삐 소리만 납니다.&#10;건전지는 어제 새로 갈았습니다."></textarea>
+                    placeholder="예) 현관 도어락 버튼을 눌러도 반응이 없고 삐 소리만 납니다.&#10;건전지는 어제 새로 갈았습니다."required></textarea>
 
 					<div class="field__label" style="margin:26px 0 12px">
 					    사진 첨부
@@ -267,18 +267,69 @@
 
 					</div>
 
-            <div class="form-sec">
-                <div class="form-sec__head">
-                    <span class="form-sec__no">3</span>
-                    <div><div class="form-sec__title">어디로 방문할까요?</div></div>
-                </div>
+					<!-- 3. 방문 주소 -->
+					<div class="form-sec">
 
-                <div class="field">
-                    <label class="field__label" for="service-address">방문 주소<span class="req">*</span></label>
-                    <input type="text" id="service-address" name="serviceAddress" class="input"
-                        placeholder="예: 서울 강남구 테헤란로 123, 101동 1502호" required>
-                </div>
-            </div>
+					    <div class="form-sec__head">
+					        <span class="form-sec__no">3</span>
+
+					        <div>
+					            <div class="form-sec__title">
+					                어디로 방문할까요?
+					            </div>
+					        </div>
+					    </div>
+
+					    <div class="address-list">
+
+					        <c:forEach var="addr"
+					                   items="${addressList}"
+					                   varStatus="status"
+					                   end="2">
+
+					            <button type="button"
+					                    class="address-card ${addr.isDefault eq 'Y' ? 'is-on' : ''}"
+					                    data-address="${addr.address} ${addr.addressDetail}">
+
+					                <span class="address-radio"></span>
+
+					                <span class="address-card__body">
+
+					                    <strong>
+					                        <c:choose>
+					                            <c:when test="${addr.isDefault eq 'Y'}">
+					                                기본 주소
+					                            </c:when>
+					                            <c:otherwise>
+					                                주소 ${status.index + 1}
+					                            </c:otherwise>
+					                        </c:choose>
+					                    </strong>
+
+					                    <span class="address-card__text">
+					                        ${addr.address}
+					                        ${addr.addressDetail}
+					                    </span>
+
+					                </span>
+
+					            </button>
+
+					        </c:forEach>
+
+					    </div>
+
+					    <!-- 실제 접수 시 넘어갈 주소 -->
+					    <input type="hidden"
+					           id="service-address"
+					           name="serviceAddress">
+
+							   <button type="button"
+							           class="address-add"
+							           onclick="location.href='${pageContext.request.contextPath}/user/mypage/address'">
+							       + 새 주소 추가하기
+							   </button>
+					</div>
 
 			<!-- 4. 방문 날짜 / 시간 -->
 			<div class="form-sec">
@@ -292,15 +343,16 @@
 			            </div>
 			        </div>
 			    </div>
+				
+				
 
 			    <!-- 지금 바로 / 날짜 지정 -->
 			    <div class="opt-grid" id="when-select">
 
 			        <!-- 지금 바로 -->
-			        <button type="button"
-			                class="opt opt--accent is-on"
-			                data-use-yn="Y">
-
+					<button type="button"
+					        class="opt opt--accent"
+					        data-use-yn="Y">
 			            <span class="opt__radio"></span>
 
 			            <span class="opt__body">
@@ -423,127 +475,7 @@
     </div>
 </div>
 </main>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
 
-    const whenButtons =
-        document.querySelectorAll("#when-select .opt");
-
-    const visitArea =
-        document.getElementById("visit-option-area");
-
-    const visitDate =
-        document.getElementById("visit-date");
-
-    const visitTimeCode =
-        document.getElementById("visit-time-code");
-
-    const form =
-        document.getElementById("request-form");
-
-
-    // 오늘 이전 날짜 선택 금지
-    const today = new Date();
-
-    const yyyy = today.getFullYear();
-
-    const mm =
-        String(today.getMonth() + 1)
-        .padStart(2, "0");
-
-    const dd =
-        String(today.getDate())
-        .padStart(2, "0");
-
-    visitDate.min =
-        yyyy + "-" + mm + "-" + dd;
-
-
-    // 지금 바로 / 날짜 지정
-    whenButtons.forEach(function (button) {
-
-        button.addEventListener("click", function () {
-
-            // 기존 선택 해제
-            whenButtons.forEach(function (btn) {
-                btn.classList.remove("is-on");
-            });
-
-            // 현재 선택
-            this.classList.add("is-on");
-
-
-            // 날짜 지정
-            if (this.dataset.useYn === "N") {
-
-                visitArea.style.display = "block";
-
-                visitDate.required = true;
-                visitTimeCode.required = true;
-            }
-
-            // 지금 바로
-            else {
-
-                visitArea.style.display = "none";
-
-                visitDate.required = false;
-                visitTimeCode.required = false;
-
-                visitDate.value = "";
-                visitTimeCode.value = "";
-            }
-
-        });
-
-    });
-
-
-    // 접수 제출 검증
-    form.addEventListener("submit", function (event) {
-
-        const selectedWhen =
-            document.querySelector(
-                "#when-select .opt.is-on"
-            );
-
-        // 날짜 지정인 경우
-        if (
-            selectedWhen &&
-            selectedWhen.dataset.useYn === "N"
-        ) {
-
-            if (!visitDate.value) {
-
-                event.preventDefault();
-
-                alert(
-                    "희망 방문 날짜를 선택해주세요."
-                );
-
-                visitDate.focus();
-
-                return;
-            }
-
-            if (!visitTimeCode.value) {
-
-                event.preventDefault();
-
-                alert(
-                    "희망 시간대를 선택해주세요."
-                );
-
-                visitTimeCode.focus();
-
-                return;
-            }
-        }
-
-    });
-
-});
-</script>
 
 <script src="/js/common.js"></script>
 <jsp:include page="/WEB-INF/views/common/footer.jsp"/>

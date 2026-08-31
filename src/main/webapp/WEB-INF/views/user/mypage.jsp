@@ -159,8 +159,10 @@
                         <a class="btn btn--primary btn--sm"
                            href="${pageContext.request.contextPath}/orders/${req.requestId}/chat">기사와 채팅</a>
                       </c:if>
+                      <%-- 상세는 매칭 화면(/request/matching/{id})으로 간다.
+                           거기서 들어온 견적을 보고 기사를 고를 수 있다. --%>
                       <a class="btn btn--ghost btn--sm"
-                         href="${pageContext.request.contextPath}/request/${req.requestId}">상세 보기</a>
+                         href="${pageContext.request.contextPath}/request/matching/${req.requestId}">상세 보기</a>
                     </div>
                   </td>
                 </tr>

@@ -16,9 +16,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FixerGuard {
 
-	public static final String PENDING  = "PENDING";
-	public static final String APPROVED = "APPROVED";
-	public static final String REJECTED = "REJECTED";
+	public static final String PENDING  = "PENDING";   // 심사 대기
+	public static final String APPROVED = "APPROVED";  // 승인 완료 — 이 값만 통과
+	public static final String REJECTED = "REJECTED";  // 거절 (재신청 가능)
 
 	private final FixerMapper fixerMapper;
 

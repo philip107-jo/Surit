@@ -19,4 +19,5 @@ public class UserAddressDTO {
 	 private String address;
 	 private String addressDetail;
 	 private String isDefault; 
+	 private String addressName;
 }

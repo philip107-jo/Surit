@@ -123,9 +123,6 @@ public class MypageController {
     /**
      * 내 정보 저장
      * POST /user/mypage/profile
-     *
-     * ⚠ UserService 에 updateUserInfo(UserDTO) 같은 메서드가 아직 없음.
-     *   UserMapper 에 UPDATE 문 추가 후 서비스/매퍼 메서드 만들어야 함.
      */
     @PostMapping("/profile")
     public String updateProfile(UserDTO form, HttpSession session, RedirectAttributes ra) {
@@ -139,10 +136,10 @@ public class MypageController {
         form.setUserNo(loginMember.getUserNo());
         form.setUserId(loginMember.getUserId());   // 아이디는 변경 불가, 세션 값 유지
 
-        // userService.updateUserInfo(form);   // ⚠ 아직 미구현 - 이 메서드 만들어야 동작함
+        UserDTO updated = userService.updateUserInfo(form);
 
-        // 세션도 최신 정보로 갱신
-        // session.setAttribute("loginMember", updated);
+        // 세션도 최신 정보로 갱신 (안 하면 화면엔 예전 이름/이메일이 계속 보임)
+        session.setAttribute("loginMember", updated);
 
         ra.addFlashAttribute("message", "내 정보가 수정되었습니다.");
 
@@ -265,6 +262,12 @@ public class MypageController {
 
     /*
      * 고객센터(/user/mypage/support) 는 SupportController 가 맡는다.
-     * 여기에 같은 주소를 또 두면 스프링이 "매핑이 두 개다" 하고 서버 起動에 실패한다.
+     *
+     * ★ 여기에 @GetMapping("/support") 를 다시 넣으면 안 된다.
+     *   같은 주소를 두 컨트롤러가 맡게 되어 스프링이
+     *   "Ambiguous mapping" 으로 서버 시동 자체를 거부한다.
+     *
+     *   SupportController 쪽은 FAQ 뿐 아니라 로그인 확인과
+     *   내 문의 내역(rooms)까지 같이 담아주므로 그쪽이 맞다.
      */
 }
