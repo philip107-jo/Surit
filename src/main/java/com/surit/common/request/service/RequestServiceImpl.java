@@ -65,8 +65,8 @@ public class RequestServiceImpl implements RequestService {
 	/**
 	 * 고객 기능 — 내가 올린 접수 목록
 	 *
-	 * ★ 이 메서드는 머지 때 두 벌이 생길 뻔했다.
-	 *   같은 이름·같은 파라미터의 메서드가 클래스에 두 개면 컴파일이 안 된다.
+	 * ★ 머지할 때마다 두 벌이 생기려고 하는 메서드다.
+	 *   같은 이름·같은 파라미터가 클래스에 두 개면 컴파일이 안 된다.
 	 *   readOnly 트랜잭션이 붙은 이 한 벌만 남긴다.
 	 */
 	@Override
@@ -86,6 +86,13 @@ public class RequestServiceImpl implements RequestService {
 
 	/* ══════════════════════════════════════════════════════
 	   기사 매칭 (고객이 견적을 고르는 화면)
+
+	   ★ 이 세 메서드도 머지 때 옛날 버전이 통째로 다시 붙는다.
+	     옛 selectEstimate 는 updateSelectedEstimate 만 부르고
+	     ESTIMATES.STATUS 를 'SELECTED' 로 안 바꾼다.
+	     그러면 화면엔 "선택됨" 뱃지가 떠도 채팅방이 안 열린다.
+	     (selectRoomSeedByRequest 가 STATUS='SELECTED' 인 기사를 찾기 때문)
+	     아래 4단계 버전이 최신이다.
 	   ══════════════════════════════════════════════════════ */
 
 	@Override
@@ -165,37 +172,40 @@ public class RequestServiceImpl implements RequestService {
 		}
 	}
 
+
+	/* ══════════════════════════════════════════════════════
+	   고객 접수 상세 · 취소  (develop 브랜치에서 들어온 기능)
+	   ══════════════════════════════════════════════════════ */
+
 	@Override
 	@Transactional(readOnly = true)
 	public RequestDTO getRequestDetailForCustomer(Long userNo, Long requestId) {
-	 
-	    RequestDTO request = mapper.selectRequestForCustomer(userNo, requestId);
-	 
-	    if (request == null) {
-	        throw new IllegalStateException("볼 수 없는 접수입니다.");
-	    }
-	 
-	    return request;
+
+		RequestDTO request = mapper.selectRequestForCustomer(userNo, requestId);
+
+		if (request == null) {
+			throw new IllegalStateException("볼 수 없는 접수입니다.");
+		}
+
+		return request;
 	}
-	 
+
 	@Override
 	@Transactional(readOnly = true)
 	public EstimateDTO getSelectedEstimate(Long requestId) {
-	    return mapper.selectSelectedEstimateByRequestId(requestId);
+		return mapper.selectSelectedEstimateByRequestId(requestId);
 	}
-	 
+
 	@Override
 	@Transactional
 	public void cancelRequest(Long userNo, Long requestId) {
-	 
-	    // 내 접수가 맞는지 확인 (URL 조작 방지)
-	    RequestDTO request = mapper.selectRequestForCustomer(userNo, requestId);
-	    if (request == null) {
-	        throw new IllegalStateException("볼 수 없는 접수입니다.");
-	    }
-	 
-	    mapper.updateRequestStatus(requestId, "REQ_05");
-	}
-	 
-}
 
+		// 내 접수가 맞는지 확인 (URL 조작 방지)
+		RequestDTO request = mapper.selectRequestForCustomer(userNo, requestId);
+		if (request == null) {
+			throw new IllegalStateException("볼 수 없는 접수입니다.");
+		}
+
+		mapper.updateRequestStatus(requestId, "REQ_05");
+	}
+}
