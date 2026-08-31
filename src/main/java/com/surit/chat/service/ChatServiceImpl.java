@@ -21,7 +21,7 @@ public class ChatServiceImpl implements ChatService {
 	private final ChatMapper chatMapper;
 
 	private static final DateTimeFormatter FMT =
-			DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+			DateTimeFormatter.ofPattern("MM-dd HH:mm");
 
 	/* ══════════ 고객 ↔ 기사 ══════════ */
 

@@ -48,6 +48,7 @@
 				<th>금액</th>
 				<th>상태</th>
 				<th>접수일</th>
+				<th>대화</th>
 			</tr>
 
 			<c:forEach var="job" items="${jobList}">
@@ -73,6 +74,8 @@
 						</c:choose>
 					</td>
 					<td><fmt:formatDate value="${job.createdAt}" pattern="yyyy-MM-dd HH:mm"/></td>
+					<%-- 여기 목록은 이미 "내 견적이 채택된 건"만 나오므로 항상 채팅이 가능하다 --%>
+					<td><a href="/orders/${job.requestId}/chat">채팅</a></td>
 				</tr>
 			</c:forEach>
 		</table>

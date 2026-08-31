@@ -152,7 +152,16 @@
                     </c:choose>
                   </td>
                   <td class="right">
-                    <a class="btn btn--ghost btn--sm" href="${pageContext.request.contextPath}/request/${req.requestId}">상세 보기</a>
+                    <div class="btn-row">
+                      <%-- 기사가 배정된 뒤부터 채팅이 가능하다.
+                           그 전에는 대화할 상대가 없으므로 버튼을 아예 숨긴다. --%>
+                      <c:if test="${req.statusCode == 'REQ_03' or req.statusCode == 'REQ_04'}">
+                        <a class="btn btn--primary btn--sm"
+                           href="${pageContext.request.contextPath}/orders/${req.requestId}/chat">기사와 채팅</a>
+                      </c:if>
+                      <a class="btn btn--ghost btn--sm"
+                         href="${pageContext.request.contextPath}/request/${req.requestId}">상세 보기</a>
+                    </div>
                   </td>
                 </tr>
               </c:forEach>

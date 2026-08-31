@@ -34,6 +34,7 @@
 </table>
 
 <h3>고객 / 방문지</h3>
+<p><a href="/orders/${job.requestId}/chat"><b>고객과 채팅하기</b></a></p>
 <table>
 	<tr><th>고객명</th>  <td><c:out value="${job.customerName}"/></td></tr>
 	<tr><th>연락처</th>  <td><c:out value="${job.customerPhone}"/></td></tr>
