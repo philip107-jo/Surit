@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.surit.common.request.model.dto.RequestDTO;
 import com.surit.common.request.model.dto.RequestPhotoDTO;
+import com.surit.fixer.estimate.model.dto.EstimateDTO;
 
 @Mapper
 public interface RequestMapper {
@@ -44,4 +45,25 @@ public interface RequestMapper {
 
 	Long insertRequest(RequestDTO request);
 
+/** 고객 기준 접수 단건 조회 (내 접수가 아니면 null) */
+RequestDTO selectRequestForCustomer(@Param("userNo") Long userNo,
+                                     @Param("requestId") Long requestId);
+ 
+/** 특정 접수에 들어온 견적 목록 (기사 정보 포함) */
+List<EstimateDTO> selectEstimatesByRequestId(@Param("requestId") Long requestId);
+ 
+/** 접수 상태 코드 변경 */
+Long updateRequestStatus(@Param("requestId") Long requestId,
+                         @Param("statusCode") String statusCode);
+ 
+/**
+ * 선택된 견적 기록.
+ * ⚠ REPAIR_REQUESTS 에 선택 견적을 저장할 컬럼(예: SELECTED_ESTIMATE_ID)이
+ *   있다는 가정. 실제로는 ESTIMATES.STATUS 를 'SELECTED'/'REJECTED' 로
+ *   바꾸는 방식일 수도 있음 -> 스키마 확인 후 XML 쿼리 내용만 조정하면 됨
+ *   (이 인터페이스 시그니처는 그대로 둬도 됨).
+ */
+Long updateSelectedEstimate(@Param("requestId") Long requestId,
+                            @Param("estimateId") Long estimateId);
+ 
 }

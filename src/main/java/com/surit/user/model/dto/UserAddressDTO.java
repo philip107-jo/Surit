@@ -18,5 +18,5 @@ public class UserAddressDTO {
 	 private String zipCode;
 	 private String address;
 	 private String addressDetail;
-	 private Long isDefault; 
+	 private String isDefault; 
 }

@@ -64,7 +64,7 @@
       <a href="${pageContext.request.contextPath}/user/mypage/reviews">
         <svg class="ico"><use href="#i-star"/></svg>내가 쓴 리뷰
       </a>
-      <a href="${pageContext.request.contextPath}/support">
+      <a href="${pageContext.request.contextPath}/user/mypage/support">
         <svg class="ico"><use href="#i-chat"/></svg>고객센터
       </a>
     </nav>
@@ -177,6 +177,6 @@
 </main>
 
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />
-
+<script src="/js/common.js"></script>
 </body>
 </html>

@@ -21,6 +21,13 @@ public interface ChatService {
 	List<ChatRoomDTO> getSupportRooms(String filter, Long supportNo);
 	Long createSupportRoom(Long userNo, String categoryCode);
 
+	/**
+	 * [1:1 문의하기] 버튼용.
+	 * 이미 열어둔 문의방이 있으면 그 방 번호를, 없으면 새로 만들어서 돌려준다.
+	 * → 버튼을 여러 번 눌러도 방이 무한정 늘어나지 않는다.
+	 */
+	Long getOrCreateSupportRoom(Long userNo);
+
 	/* 메시지 공통 */
 	List<ChatMessageDTO> getHistory(Long roomId);
 	void saveMessage(ChatMessageDTO message);

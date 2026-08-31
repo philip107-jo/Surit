@@ -172,4 +172,101 @@
     WHERE r.USER_NO = #{userId}
     ORDER BY r.CREATED_AT DESC
 </select>
+
+ <!-- 고객 기준 접수 단건 조회 (내 접수가 아니면 결과 없음 -> null) -->
+    <select id="selectRequestForCustomer" resultType="com.surit.common.request.model.dto.RequestDTO">
+        SELECT
+            r.REQUEST_ID       AS requestId,
+            r.USER_NO          AS userNo,
+            r.CATEGORY_CODE    AS categoryCode,
+            cc.CODE_NAME       AS categoryName,
+            r.TITLE            AS title,
+            r.CONTENT          AS content,
+            r.SERVICE_ADDRESS  AS serviceAddress,
+            r.STATUS_CODE      AS statusCode,
+            sc.CODE_NAME       AS statusName,
+            r.CREATED_AT       AS createdAt
+        FROM REPAIR_REQUESTS r
+        LEFT JOIN COMMON_CODE cc
+               ON cc.CODE_ID = r.CATEGORY_CODE
+              AND cc.CODE_GROUP = 'CATEGORY'
+              AND cc.USE_YN = 'Y'
+        LEFT JOIN COMMON_CODE sc
+               ON sc.CODE_ID = r.STATUS_CODE
+              AND sc.CODE_GROUP = 'STATUS'
+              AND sc.USE_YN = 'Y'
+        WHERE r.REQUEST_ID = #{requestId}
+          AND r.USER_NO = #{userNo}
+    </select>
+     
+    <!-- 특정 접수에 들어온 견적 목록 (기사 이름 포함) -->
+    <select id="selectEstimatesByRequestId" resultType="com.surit.fixer.estimate.model.dto.EstimateDTO">
+        SELECT
+            e.ESTIMATE_ID          AS estimateId,
+            e.REQUEST_ID           AS requestId,
+            e.FIXER_NO             AS fixerNo,
+            u.NAME                 AS fixerName,
+            e.ESTIMATED_PRICE      AS estimatedPrice,
+            e.ESTIMATED_DURATION   AS estimatedDuration,
+            e.CONTENT              AS content,
+            e.STATUS               AS status,
+            e.CREATED_AT           AS createdAt
+        FROM ESTIMATES e
+        LEFT JOIN USERS u ON u.USER_NO = e.FIXER_NO
+        WHERE e.REQUEST_ID = #{requestId}
+        ORDER BY e.CREATED_AT ASC
+    </select>
+     
+    <!-- 접수 상태 코드 변경 -->
+    <update id="updateRequestStatus">
+        UPDATE REPAIR_REQUESTS
+           SET STATUS_CODE = #{statusCode}
+         WHERE REQUEST_ID = #{requestId}
+    </update>
+     
+    <!-- 견적 상태 변경 (선택 시 STATUS = 'SELECTED') -->
+    <update id="updateEstimateStatus">
+        UPDATE ESTIMATES
+           SET STATUS = #{status}
+         WHERE ESTIMATE_ID = #{estimateId}
+    </update>
+
+  <insert id="insertRequest"
+        useGeneratedKeys="true"
+        keyProperty="requestId"
+        keyColumn="REQUEST_ID">
+
+    INSERT INTO REPAIR_REQUESTS
+    (
+        USER_NO,
+        CATEGORY_CODE,
+        TITLE,
+        CONTENT,
+        SERVICE_ADDRESS,
+        STATUS_CODE,
+        VISIT_DATE,
+        VISIT_TIME_CODE
+    )
+
+    VALUES
+    (
+        #{userNo},
+        #{categoryCode},
+        #{title},
+        #{content},
+        #{serviceAddress},
+        'REQ_01',
+
+        CASE
+            WHEN #{visitDate} IS NULL OR #{visitDate} = ''
+            THEN NULL
+            ELSE TO_DATE(#{visitDate}, 'YYYY-MM-DD')
+        END,
+
+        #{visitTimeCode}
+    )
+
+</insert>
+
+
 </mapper>

@@ -41,6 +41,13 @@ public class AdminInquiryController {
 	@GetMapping("/{roomId}")
 	public String detail(@PathVariable Long roomId, HttpSession session, Model model) {
 
+		// ★ 관리자 화면에서는 고객용 헤더·푸터와 왼쪽 채팅목록을 빼고 대화창만 보여준다.
+		//   대신 나갈 길이 없어지므로 돌아가기 버튼을 항상 달아준다.
+		//   (아래 어느 경로로 빠지든 버튼이 보이도록 맨 위에서 담는다)
+		model.addAttribute("adminView", true);
+		model.addAttribute("backUrl",   "/admin/inquiries");
+		model.addAttribute("backText",  "문의 목록으로 돌아가기");
+
 		Long supportNo = chatService.getSupportUserNo();
 		if (supportNo == null) {
 			model.addAttribute("msg",

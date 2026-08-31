@@ -30,7 +30,6 @@
 					<tr>
 						<th class="num">번호</th>
 						<th>고객</th>
-						<th>유형</th>
 						<th class="ttl">최근 메시지</th>
 						<th class="center">상태</th>
 						<th class="center">건수</th>
@@ -43,7 +42,6 @@
 						<tr>
 							<td class="num">${r.roomId}</td>
 							<td><c:out value="${r.userName}"/></td>
-							<td><span class="badge badge--gray"><c:out value="${r.categoryName}"/></span></td>
 							<td class="ttl">
 								<c:choose>
 									<c:when test="${empty r.lastMessage}"><span class="muted">(내용 없음)</span></c:when>

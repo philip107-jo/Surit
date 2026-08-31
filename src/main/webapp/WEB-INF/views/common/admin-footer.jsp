@@ -22,17 +22,32 @@
 		from { opacity: 0; transform: translate(-50%, -10px); }
 		to   { opacity: 1; transform: translate(-50%, 0); }
 	}
+
+	/* 실패 알림은 빨간색 + 아이콘.
+	   성공과 실패가 같은 검은 상자로 뜨면 무심코 지나치게 된다. */
+	.toast--error { background: #DC2626; }
+	.toast__ico   { margin-right: 8px; font-weight: 700; }
 </style>
-<div class="toast" id="toast"><c:out value="${msg}"/></div>
+
+<%-- msgType 이 'error' 면 빨간 토스트. 안 넘어오면 기본(검정) --%>
+<c:set var="isErr" value="${msgType eq 'error'}"/>
+
+<div class="toast ${isErr ? 'toast--error' : ''}" id="toast">
+	<c:if test="${isErr}"><span class="toast__ico">!</span></c:if>
+	<c:out value="${msg}"/>
+</div>
 <script>
+	// 실패 알림은 읽을 시간이 더 필요하므로 오래 띄운다
+	var HOLD = ${isErr ? 4500 : 2500};
+
 	setTimeout(function () {
 		var t = document.getElementById('toast');
 		if (t) { t.classList.add('is-hide'); }
-	}, 2500);
+	}, HOLD);
 	setTimeout(function () {
 		var t = document.getElementById('toast');
 		if (t) { t.remove(); }
-	}, 3000);
+	}, HOLD + 500);
 </script>
 </c:if>
 </body>

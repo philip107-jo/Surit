@@ -49,7 +49,7 @@ public class JobController {
 
 	/** 작업 상세 */
 	@GetMapping("/{requestId}")
-	public String detail(@PathVariable("requestId") long requestId,
+	public String detail(@PathVariable("requestId") Long requestId,
 	                     HttpSession session,
 	                     Model model,
 	                     RedirectAttributes ra) {
@@ -77,7 +77,7 @@ public class JobController {
 	 * GET 으로 두면 링크를 클릭하거나 크롤러가 긁기만 해도 상태가 바뀐다.
 	 */
 	@PostMapping("/{requestId}/complete")
-	public String complete(@PathVariable("requestId") long requestId,
+	public String complete(@PathVariable("requestId") Long requestId,
 	                       HttpSession session,
 	                       RedirectAttributes ra) {
 

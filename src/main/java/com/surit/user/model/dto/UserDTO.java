@@ -17,7 +17,7 @@ public class UserDTO {
 	private Long userNo;
 	private String userId;
 	private String email;
-	private String passWord;
+	private String password;
 	private String name;
 	private String phone;
 	private String userRole;

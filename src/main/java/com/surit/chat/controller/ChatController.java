@@ -4,7 +4,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.surit.chat.dto.ChatRoomDTO;
 import com.surit.chat.service.ChatService;
@@ -22,9 +21,19 @@ public class ChatController {
 	/** 이 키로 세션에 담아두면 WebSocket 핸드셰이크 때 그대로 넘어간다 */
 	public static final String CHAT_USER_NO = "CHAT_USER_NO";
 
+	/*
+	 * 2026-08-31 : 임시 테스트용 뒷문(?testUserNo=회원번호) 제거.
+	 *   주소에 숫자 하나만 붙이면 로그인 없이 남의 채팅방을 열 수 있었다.
+	 *   메시지를 암호화해놓고 이 문이 열려 있으면 아무 의미가 없다.
+	 *   로그인 연동은 끝나 있으므로 세션만 본다.
+	 *     UserController → session.setAttribute("loginMember", UserDTO)
+	 *     ChatLoginResolver → loginMember 를 읽어 getUserNo() 호출
+	 *
+	 *   한 PC 에서 고객·기사 두 명을 테스트하려면 시크릿 창(Ctrl+Shift+N)을 쓴다.
+	 *   창마다 세션이 따로 잡힌다.
+	 */
 	@GetMapping("/orders/{requestId}/chat")
 	public String chatPage(@PathVariable Long requestId,
-	                       @RequestParam(required = false) Long testUserNo,
 	                       HttpSession session,
 	                       Model model) {
 
@@ -32,20 +41,18 @@ public class ChatController {
 
 		Long myNo = ChatLoginResolver.resolveUserNo(session);
 
-		// ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
-		//  임시 테스트용 뒷문 — 로그인 연동이 끝나면 이 3줄 반드시 삭제!
-		//  주소에 ?testUserNo=3 을 붙이면 3번 회원인 척 들어간다.
-		//  안 지우면 아무나 남의 채팅방을 열어볼 수 있다.
-		if (myNo == null && testUserNo != null) {
-			myNo = testUserNo;
-		}
-		// ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
-
 		if (myNo == null) {
-			model.addAttribute("msg",
-					"로그인이 필요합니다. (테스트: 주소 뒤에 ?testUserNo=회원번호 를 붙여보세요)");
-			return "chat/chat";
+			// 로그인 후 원래 가려던 채팅방으로 되돌아오게 한다
+			return "redirect:/user/login?redirectURL=/orders/" + requestId + "/chat";
 		}
+
+		// ★ 화면 왼쪽 채팅방 목록.
+		//   새 SQL 없이 기존 getMyRooms 를 그대로 쓴다.
+		//   아래 어느 경로로 빠지든 목록은 보여야 하므로 여기서 미리 담는다.
+		model.addAttribute("showSide",  true);
+		model.addAttribute("sideRooms", chatService.getMyRooms(myNo));
+		model.addAttribute("backUrl",   "/user/mypage");
+		model.addAttribute("backText",  "마이페이지로 돌아가기");
 
 		ChatRoomDTO room = chatService.getOrCreateRoomByRequest(requestId);
 

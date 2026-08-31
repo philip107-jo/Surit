@@ -109,6 +109,23 @@ public class ChatServiceImpl implements ChatService {
 		return chatMapper.selectLatestSupportRoomId(userNo);
 	}
 
+	/**
+	 * 마이페이지 > 고객센터 > [1:1 문의하기] 가 부르는 메서드.
+	 *
+	 * selectLatestSupportRoomId 는 내 문의방 중 가장 최근 것(MAX(ROOM_ID))을 준다.
+	 * 없으면 NULL 이 오므로, 그때만 새로 만든다.
+	 */
+	@Override
+	@Transactional
+	public Long getOrCreateSupportRoom(Long userNo) {
+
+		Long roomId = chatMapper.selectLatestSupportRoomId(userNo);
+		if (roomId != null) {
+			return roomId;                       // 진행중인 문의가 있으면 이어서
+		}
+		return createSupportRoom(userNo, null);  // 유형은 아직 안 정함 → NULL
+	}
+
 	/* ══════════ 메시지 공통 ══════════ */
 
 	@Override
