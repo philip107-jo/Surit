@@ -244,7 +244,8 @@ document.addEventListener('click', function (e) {
     hidden.value = checkbox.checked ? 'Y' : 'N';
   });
 })();
-/*사진 선택 후 브라우저 보이는 기능*/ 
+
+/* 사진 선택 후 브라우저에 미리보기 */
 const photoInput = document.getElementById("request-photos");
 const photoPreview = document.getElementById("photo-preview");
 
@@ -271,7 +272,6 @@ if (photoInput && photoPreview) {
             selectedFiles.items.add(file);
         }
 
-        // 실제 input에도 누적된 파일 목록 적용
         photoInput.files = selectedFiles.files;
 
         renderPhotoPreview();
@@ -319,10 +319,8 @@ if (photoInput && photoPreview) {
             }
         });
 
-        // 기존 DataTransfer 비우기
         selectedFiles.items.clear();
 
-        // 삭제 제외한 파일 다시 넣기
         Array.from(newTransfer.files).forEach(function (file) {
             selectedFiles.items.add(file);
         });
@@ -332,3 +330,390 @@ if (photoInput && photoPreview) {
         renderPhotoPreview();
     }
 }
+
+
+// ========================================
+// 접수 페이지 : 방문 주소 선택
+// ========================================
+
+const addressCards =
+    document.querySelectorAll(".address-card");
+
+const serviceAddress =
+    document.getElementById("service-address");
+
+addressCards.forEach(function (card) {
+
+    card.addEventListener("click", function () {
+
+        addressCards.forEach(function (item) {
+            item.classList.remove("is-on");
+        });
+
+        this.classList.add("is-on");
+
+        if (serviceAddress) {
+            serviceAddress.value =
+                this.dataset.address || "";
+        }
+    });
+});
+
+
+// 기본 주소가 있으면 자동으로 값 세팅
+const defaultAddress =
+    document.querySelector(".address-card.is-on");
+
+if (defaultAddress && serviceAddress) {
+    serviceAddress.value =
+        defaultAddress.dataset.address || "";
+}
+
+
+// ========================================
+// 주소 관리 페이지 : 수정
+// ========================================
+
+function toggleAddressEdit(addressId) {
+
+    var view =
+        document.getElementById(
+            "address-view-" + addressId
+        );
+
+    var edit =
+        document.getElementById(
+            "address-edit-" + addressId
+        );
+
+    if (!view || !edit) {
+        return;
+    }
+
+    var editing =
+        edit.style.display !== "none";
+
+    edit.style.display =
+        editing ? "none" : "block";
+
+    view.style.display =
+        editing ? "flex" : "none";
+}
+
+
+// ========================================
+// 주소 관리 페이지 : 새 주소 추가
+// ========================================
+
+function toggleAddressAdd() {
+
+    var form =
+        document.getElementById(
+            "address-add-form"
+        );
+
+    var btn =
+        document.getElementById(
+            "add-address-btn"
+        );
+
+    if (!form || !btn) {
+        return;
+    }
+
+    var opening =
+        form.style.display === "none";
+
+    form.style.display =
+        opening ? "block" : "none";
+
+    btn.style.display =
+        opening ? "none" : "flex";
+}
+
+
+// ========================================
+// 수리 접수 페이지 : 방문 일정 선택
+// ========================================
+
+(function () {
+
+    const whenSelect =
+        document.getElementById("when-select");
+
+    const visitArea =
+        document.getElementById("visit-option-area");
+
+    const visitDate =
+        document.getElementById("visit-date");
+
+    const visitTimeCode =
+        document.getElementById("visit-time-code");
+
+
+    // 접수 페이지가 아니면 실행하지 않음
+    if (
+        !whenSelect ||
+        !visitArea ||
+        !visitDate ||
+        !visitTimeCode
+    ) {
+        return;
+    }
+
+
+    // 오늘 이전 날짜 선택 금지
+    const today = new Date();
+
+    const yyyy = today.getFullYear();
+
+    const mm =
+        String(today.getMonth() + 1)
+            .padStart(2, "0");
+
+    const dd =
+        String(today.getDate())
+            .padStart(2, "0");
+
+    visitDate.min =
+        yyyy + "-" + mm + "-" + dd;
+
+
+    // 지금 바로 / 날짜 지정 클릭
+    whenSelect.addEventListener("click", function (event) {
+
+        const button =
+            event.target.closest(".opt");
+
+        if (!button) {
+            return;
+        }
+
+
+        // 기존 선택 제거
+        whenSelect
+            .querySelectorAll(".opt")
+            .forEach(function (item) {
+
+                item.classList.remove("is-on");
+
+            });
+
+
+        // 클릭한 카드 선택
+        button.classList.add("is-on");
+
+
+        // ================================
+        // 날짜 지정
+        // ================================
+
+        if (button.dataset.useYn === "N") {
+
+            visitArea.style.display = "block";
+
+            visitDate.required = true;
+            visitTimeCode.required = true;
+
+        }
+
+        // ================================
+        // 지금 바로
+        // ================================
+
+        else {
+
+            visitArea.style.display = "none";
+
+            visitDate.required = false;
+            visitTimeCode.required = false;
+
+            visitDate.value = "";
+            visitTimeCode.value = "";
+
+        }
+
+    });
+
+})();
+
+
+// ========================================
+// 수리 접수 페이지 : 최종 제출 검증
+// ========================================
+
+(function () {
+
+    const form =
+        document.getElementById("request-form");
+
+    // 접수 페이지가 아니면 실행하지 않음
+    if (!form) {
+        return;
+    }
+
+
+    form.addEventListener("submit", function (event) {
+
+        const categoryCode =
+            document.getElementById("category-code");
+
+        const title =
+            document.getElementById("request-title");
+
+        const content =
+            document.getElementById("request-content");
+
+        const serviceAddress =
+            document.getElementById("service-address");
+
+        const selectedWhen =
+            document.querySelector(
+                "#when-select .opt.is-on"
+            );
+
+        const visitDate =
+            document.getElementById("visit-date");
+
+        const visitTimeCode =
+            document.getElementById("visit-time-code");
+
+        const agreeCheckbox =
+            document.getElementById("agree-checkbox");
+
+
+        // 카테고리
+        if (
+            !categoryCode ||
+            !categoryCode.value.trim()
+        ) {
+
+            event.preventDefault();
+
+            alert("수리 카테고리를 선택해주세요.");
+
+            return;
+        }
+
+
+        // 제목
+        if (
+            !title ||
+            !title.value.trim()
+        ) {
+
+            event.preventDefault();
+
+            alert("제목을 입력해주세요.");
+
+            if (title) {
+                title.focus();
+            }
+
+            return;
+        }
+
+
+        // 증상
+        if (
+            !content ||
+            !content.value.trim()
+        ) {
+
+            event.preventDefault();
+
+            alert("증상을 입력해주세요.");
+
+            if (content) {
+                content.focus();
+            }
+
+            return;
+        }
+
+
+        // 주소
+        if (
+            !serviceAddress ||
+            !serviceAddress.value.trim()
+        ) {
+
+            event.preventDefault();
+
+            alert("방문 주소를 선택해주세요.");
+
+            return;
+        }
+
+
+        // 방문 일정 미선택
+        if (!selectedWhen) {
+
+            event.preventDefault();
+
+            alert("방문 일정을 선택해주세요.");
+
+            return;
+        }
+
+
+        // 날짜 지정 선택
+        if (selectedWhen.dataset.useYn === "N") {
+
+            if (
+                !visitDate ||
+                !visitDate.value
+            ) {
+
+                event.preventDefault();
+
+                alert(
+                    "희망 방문 날짜를 선택해주세요."
+                );
+
+                if (visitDate) {
+                    visitDate.focus();
+                }
+
+                return;
+            }
+
+
+            if (
+                !visitTimeCode ||
+                !visitTimeCode.value
+            ) {
+
+                event.preventDefault();
+
+                alert(
+                    "희망 시간대를 선택해주세요."
+                );
+
+                if (visitTimeCode) {
+                    visitTimeCode.focus();
+                }
+
+                return;
+            }
+        }
+
+
+        // 약관
+        if (
+            !agreeCheckbox ||
+            !agreeCheckbox.checked
+        ) {
+
+            event.preventDefault();
+
+            alert(
+                "개인정보 제공 및 이용약관에 동의해주세요."
+            );
+
+            return;
+        }
+
+    });
+
+})();

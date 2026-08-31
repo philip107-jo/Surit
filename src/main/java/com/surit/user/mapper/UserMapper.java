@@ -17,4 +17,6 @@ public interface UserMapper {
 	
 	//아이디 기준을 회원 삭제 -> 데이터 삭제
 	int deleteUser(String userId);
+	/** 내 정보 수정 (이름/전화번호/이메일, 비밀번호는 값이 있을 때만) */
+	int updateUser(UserDTO user);
 }

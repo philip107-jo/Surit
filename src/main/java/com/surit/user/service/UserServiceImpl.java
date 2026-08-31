@@ -5,7 +5,9 @@ import java.io.IOException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.surit.user.mapper.UserAddressMapper;
 import com.surit.user.mapper.UserMapper;
+import com.surit.user.model.dto.UserAddressDTO;
 import com.surit.user.model.dto.UserDTO;
 
 import lombok.RequiredArgsConstructor;
@@ -13,63 +15,69 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-	
-	//MemberMapper DI
+
 	private final UserMapper mapper;
-	//PasswordEncoder DI
 	private final PasswordEncoder passwordencoder;
-	
+	private final UserAddressMapper addressMapper;
+
 	@Override
-	public void sign(UserDTO user) throws IOException {
-	if(isUserIdCheck(user.getUserId())) {
-		throw new IllegalStateException("이미 사용중인 아이디입니다.");
+	public void sign(UserDTO user, UserAddressDTO address) throws IOException {
+
+	    if (isUserIdCheck(user.getUserId())) {
+	        throw new IllegalStateException("이미 사용중인 아이디입니다.");
+	    }
+
+	    String encodePwd = passwordencoder.encode(user.getPassword());
+	    user.setPassword(encodePwd);
+	    mapper.insertUser(user);
+
+	    if (address != null && address.getAddress() != null && !address.getAddress().isBlank()) {
+	        address.setUserNo(user.getUserNo());
+	        address.setIsDefault("Y");
+	        addressMapper.insertAddress(address);
+	    }
 	}
-		//비밀번호 암호화 처리 -> BCryptPasswordEncoder => SecurityConfig 설정
-		//암호화 
-		String encodePwd = passwordencoder.encode(user.getPassWord());
-		user.setPassWord(encodePwd);//비밀번호 필드를 암호화된 값으로 변경
-		mapper.insertUser(user);
-	}
+
 	@Override
 	public boolean isUserIdCheck(String userId) {
-		// TODO Auto-generated method stub
-		return mapper.countByUserId(userId) >0;
+		return mapper.countByUserId(userId) > 0;
 	}
 
 	@Override
 	public UserDTO login(String userId, String userPwd) throws IllegalStateException {
-		//아이디 기준으로 회원 정보 조회
 		UserDTO user = mapper.selectByUserId(userId);
-		//조회된 정보 중 비밀번호(암호문)와 전달된 비밀번호(평문)가 일치하는 지 확인
-		//암호화된 비밀번호 = DB에서 조회된 값(member.etMemberPwd())
-		//평문 비밀번호 => 전달된 값 (memberPwd)
-		
-		//passwordEncoder.matches(평문, 암호문)=> 동일한 경우 true, 그렇지 않으면 false 반환
-		if(user == null || !passwordencoder.matches(userPwd, user.getPassWord())) {
+
+		if (user == null || !passwordencoder.matches(userPwd, user.getPassword())) {
 			throw new IllegalStateException("아이디 또는 비밀번호가 일치하지 않습니다.");
 		}
-		//회원 정보 반환
 		return user;
 	}
 
 	@Override
 	public void withdraw(String userId) {
-		//삭제 전 아이디 기준으로 조회
 		UserDTO user = mapper.selectByUserId(userId);
-		// DB에서 해당 사용자 정보 삭제 (Mapper)
 		mapper.deleteUser(userId);
-		//프로필 이미지가 있는 경우 서버에서 이미지 파일 삭제 (FileUploadUtil)
-		
-		
+		// 프로필 이미지가 있는 경우 서버에서 이미지 파일 삭제 (FileUploadUtil)
 	}
-	@Override
-	public void insertAddress(UserDTO address) {
-		mapper.insertUser(address);
-		
-	}
+
 	@Override
 	public UserDTO getUserInfo(String userId) {
 	    return mapper.selectByUserId(userId);
 	}
-
+	@Override
+	public UserDTO updateUserInfo(UserDTO form) {
+ 
+	    // 비밀번호를 입력한 경우에만 암호화해서 넣고, 비워뒀으면 null 로 둬서
+	    // UPDATE 쿼리의 <if> 조건이 스킵되게 한다 (기존 비밀번호 유지)
+	    if (form.getPassword() != null && !form.getPassword().isBlank()) {
+	        form.setPassword(passwordencoder.encode(form.getPassword()));
+	    } else {
+	        form.setPassword(null);
+	    }
+ 
+	    mapper.updateUser(form);
+ 
+	    // 최신 정보 다시 조회해서 반환 (세션 갱신용)
+	    return mapper.selectByUserId(form.getUserId());
+	}
 }

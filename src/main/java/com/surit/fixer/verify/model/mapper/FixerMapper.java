@@ -15,10 +15,6 @@ public interface FixerMapper {
 
 	/** 기사 프로필 (신청 이력이 있는지 확인용). 없으면 null */
 
-	FixerProfileDTO selectFixerProfile(long userNo);
-
-	/** 기사가 등록한 자격증 목록 (재신청 시 기존 파일 삭제용) */
-
 	FixerProfileDTO selectFixerProfile(Long userNo);
 
 	/** 기사가 등록한 자격증 목록 (재신청 시 기존 파일 삭제용) */
@@ -32,16 +28,14 @@ public interface FixerMapper {
 
 	int insertFixerLicense(FixerLicenseDTO license);
 
-
 	int insertFixerRegion(@Param("userNo") Long userNo,
 	                      @Param("regionCode") String regionCode);
 
 	int insertFixerCategory(@Param("userNo") Long userNo,
-
 	                        @Param("categoryCode") String categoryCode);
 
-	// ---------- 삭제 (재신청 시 기존 데이터 정리) ----------
 
+	// ---------- 삭제 (재신청 시 기존 데이터 정리) ----------
 
 	int deleteLicensesByUserNo(Long userNo);
 	int deleteRegionsByUserNo(Long userNo);

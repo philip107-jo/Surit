@@ -111,7 +111,7 @@
 
     <div class="card" style="max-width:840px;margin:0 auto">
 		<form id="request-form"
-		      action="/request"
+		      action="/request/request"
 		      method="post"
 		      enctype="multipart/form-data">
 
@@ -216,12 +216,7 @@
 				       value="${not empty selectedCategoryCode
 				                ? selectedCategoryCode
 				                : categoryList[0].codeId}">
-                
-				<input type="hidden"
-				       id="category-code"
-				       name="categoryCode"
-				       value="${not empty categoryList ? categoryList[0].codeId : ''}"
-				       required>
+     
             </div>
 
             <div class="form-sec">
@@ -240,7 +235,7 @@
                 </div>
 
                 <textarea id="request-content" name="content" class="textarea"
-                    placeholder="예) 현관 도어락 버튼을 눌러도 반응이 없고 삐 소리만 납니다.&#10;건전지는 어제 새로 갈았습니다."></textarea>
+                    placeholder="예) 현관 도어락 버튼을 눌러도 반응이 없고 삐 소리만 납니다.&#10;건전지는 어제 새로 갈았습니다."required></textarea>
 
 					<div class="field__label" style="margin:26px 0 12px">
 					    사진 첨부
@@ -272,48 +267,194 @@
 
 					</div>
 
-            <div class="form-sec">
-                <div class="form-sec__head">
-                    <span class="form-sec__no">3</span>
-                    <div><div class="form-sec__title">어디로 방문할까요?</div></div>
-                </div>
+					<!-- 3. 방문 주소 -->
+					<div class="form-sec">
 
-                <div class="field">
-                    <label class="field__label" for="service-address">방문 주소<span class="req">*</span></label>
-                    <input type="text" id="service-address" name="serviceAddress" class="input"
-                        placeholder="예: 서울 강남구 테헤란로 123, 101동 1502호" required>
-                </div>
-            </div>
+					    <div class="form-sec__head">
+					        <span class="form-sec__no">3</span>
 
-            <div class="form-sec">
-                <div class="form-sec__head">
-                    <span class="form-sec__no">4</span>
-                    <div><div class="form-sec__title">언제 방문할까요?</div></div>
-                </div>
+					        <div>
+					            <div class="form-sec__title">
+					                어디로 방문할까요?
+					            </div>
+					        </div>
+					    </div>
 
-                <div class="opt-grid" id="when-select">
-                    <button type="button" class="opt opt--accent is-on" data-select="when" data-use-yn="Y">
-                        <span class="opt__radio"></span>
-                        <span class="opt__body">
-                            <span class="opt__title">지금 바로</span>
-                            <span class="opt__desc">가장 먼저 신청한 기사님과 연결</span>
-                        </span>
-                    </button>
-                    <button type="button" class="opt" data-select="when" data-use-yn="N">
-                        <span class="opt__radio"></span>
-                        <span class="opt__body">
-                            <span class="opt__title">날짜 지정</span>
-                            <span class="opt__desc">원하는 날짜와 시간대 선택</span>
-                        </span>
-                    </button>
-                </div>
-                <input type="hidden" id="request-use-yn" name="useYn" value="Y">
+					    <div class="address-list">
 
-                <div class="field" id="visit-datetime-field" style="margin-top:16px;display:none">
-                    <label class="field__label" for="visit-preferred-at">희망 방문 일시</label>
-                    <input type="datetime-local" id="visit-preferred-at" name="visitPreferredAt" class="input">
-                </div>
-            </div>
+					        <c:forEach var="addr"
+					                   items="${addressList}"
+					                   varStatus="status"
+					                   end="2">
+
+					            <button type="button"
+					                    class="address-card ${addr.isDefault eq 'Y' ? 'is-on' : ''}"
+					                    data-address="${addr.address} ${addr.addressDetail}">
+
+					                <span class="address-radio"></span>
+
+					                <span class="address-card__body">
+
+					                    <strong>
+					                        <c:choose>
+					                            <c:when test="${addr.isDefault eq 'Y'}">
+					                                기본 주소
+					                            </c:when>
+					                            <c:otherwise>
+					                                주소 ${status.index + 1}
+					                            </c:otherwise>
+					                        </c:choose>
+					                    </strong>
+
+					                    <span class="address-card__text">
+					                        ${addr.address}
+					                        ${addr.addressDetail}
+					                    </span>
+
+					                </span>
+
+					            </button>
+
+					        </c:forEach>
+
+					    </div>
+
+					    <!-- 실제 접수 시 넘어갈 주소 -->
+					    <input type="hidden"
+					           id="service-address"
+					           name="serviceAddress">
+
+							   <button type="button"
+							           class="address-add"
+							           onclick="location.href='${pageContext.request.contextPath}/user/mypage/address'">
+							       + 새 주소 추가하기
+							   </button>
+					</div>
+
+			<!-- 4. 방문 날짜 / 시간 -->
+			<div class="form-sec">
+
+			    <div class="form-sec__head">
+			        <span class="form-sec__no">4</span>
+
+			        <div>
+			            <div class="form-sec__title">
+			                언제 방문할까요?
+			            </div>
+			        </div>
+			    </div>
+				
+				
+
+			    <!-- 지금 바로 / 날짜 지정 -->
+			    <div class="opt-grid" id="when-select">
+
+			        <!-- 지금 바로 -->
+					<button type="button"
+					        class="opt opt--accent"
+					        data-use-yn="Y">
+			            <span class="opt__radio"></span>
+
+			            <span class="opt__body">
+			                <span class="opt__title">
+			                    지금 바로
+			                </span>
+
+			                <span class="opt__desc">
+			                    가장 먼저 신청한 기사님과 연결
+			                </span>
+			            </span>
+
+			        </button>
+
+			        <!-- 날짜 지정 -->
+			        <button type="button"
+			                class="opt"
+			                data-use-yn="N">
+
+			            <span class="opt__radio"></span>
+
+			            <span class="opt__body">
+			                <span class="opt__title">
+			                    날짜 지정
+			                </span>
+
+			                <span class="opt__desc">
+			                    원하는 날짜와 시간대 선택
+			                </span>
+			            </span>
+
+			        </button>
+
+			    </div>
+
+			    <!-- 날짜 지정 선택 시 표시 -->
+			    <div id="visit-option-area"
+			         style="display:none; margin-top:20px;">
+
+			        <!-- 날짜 -->
+			        <div class="field">
+
+			            <label class="field__label"
+			                   for="visit-date">
+			                희망 방문 날짜
+			            </label>
+
+			            <input type="date"
+			                   id="visit-date"
+			                   name="visitDate"
+			                   class="input">
+
+			        </div>
+
+			        <!-- 시간대 -->
+					<div class="field" style="margin-top:20px;">
+					    <label class="field__label" for="visit-time-code">
+					        희망 시간대
+					    </label>
+
+					    <div style="position: relative; width: 100%;">
+
+					        <select id="visit-time-code"
+					                name="visitTimeCode"
+					                class="input"
+					                style="
+					                    width: 100%;
+					                    appearance: none;
+					                    -webkit-appearance: none;
+					                    -moz-appearance: none;
+					                    padding-right: 55px;
+					                ">
+
+					            <option value="">시간대를 선택해주세요</option>
+
+					            <c:forEach var="time" items="${visitTimeList}">
+					                <option value="${time.codeId}">
+					                    ${time.codeName}
+					                </option>
+					            </c:forEach>
+
+					        </select>
+
+					        <!-- 직접 만든 화살표 -->
+					        <span style="
+					            position: absolute;
+					            right: 20px;
+					            top: 50%;
+					            transform: translateY(-50%);
+					            pointer-events: none;
+					            font-size: 13px;
+					            color: #222;
+					        ">
+					            ▼
+					        </span>
+
+					    </div>
+					</div>
+
+			    </div>
+
+			</div>
 
             <div class="form-sec">
                 <label class="check" style="margin-bottom:26px">
@@ -334,6 +475,7 @@
     </div>
 </div>
 </main>
+
 
 <script src="/js/common.js"></script>
 <jsp:include page="/WEB-INF/views/common/footer.jsp"/>
