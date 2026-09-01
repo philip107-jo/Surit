@@ -34,3 +34,6 @@ build/
 .vscode/
 ### 사용자 업로드 파일 ###
 uploads/
+
+### DS_Store 재생성방지 ###
+.DS_Store
