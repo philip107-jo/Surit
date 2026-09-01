@@ -120,6 +120,16 @@ document.addEventListener('click', function (e) {
         return ok ? null : '이메일 형식이 올바르지 않습니다';
       }
     },
+	{
+	  inputId: 'phone',
+	  resultId: 'check-phone-result',   // ← null에서 이걸로 변경
+	  validate: function (v) {
+	    if (!v) return '전화번호를 입력해주세요';
+	    if (!/^[0-9]+$/.test(v)) return '전화번호는 숫자만 입력해주세요';
+	    if (v.length < 9 || v.length > 11) return '전화번호 자리수를 확인해주세요';
+	    return null;
+	  }
+	},
     {
       inputId: 'address',
       resultId: null,
@@ -899,4 +909,25 @@ function toggleAddressAdd() {
 
     });
 
+})();
+/* 마이페이지 : 상태 필터 칩 클릭 -> 접수 목록 테이블 행 필터링 */
+(function () {
+  var filterBar = document.getElementById('status-filter');
+  if (!filterBar) return;
+
+  filterBar.addEventListener('click', function (e) {
+    var chip = e.target.closest('[data-status-filter]');
+    if (!chip) return;
+
+    filterBar.querySelectorAll('[data-status-filter]').forEach(function (c) {
+      c.classList.remove('chip--dark');
+    });
+    chip.classList.add('chip--dark');
+
+    var status = chip.getAttribute('data-status-filter');
+    document.querySelectorAll('[data-status-row]').forEach(function (row) {
+      var show = (status === 'all') || (row.getAttribute('data-status-row') === status);
+      row.style.display = show ? '' : 'none';
+    });
+  });
 })();

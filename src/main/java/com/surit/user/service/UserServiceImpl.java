@@ -33,6 +33,9 @@ public class UserServiceImpl implements UserService {
 	    if (isEmailCheck(user.getEmail())) {
 	        throw new IllegalStateException("이미 사용중인 이메일입니다.");
 	    }
+	    if (user.getPhone() == null || !user.getPhone().matches("^[0-9]+$")) {
+	        throw new IllegalStateException("전화번호는 숫자만 입력해주세요.");
+	    }
 
 	    String encodePwd = passwordencoder.encode(user.getPassword());
 	    user.setPassword(encodePwd);
