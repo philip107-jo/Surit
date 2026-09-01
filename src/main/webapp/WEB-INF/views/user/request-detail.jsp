@@ -30,6 +30,13 @@
 <main>
 <div class="container" style="max-width:900px">
 
+  <c:if test="${not empty message}">
+    <div class="note note--blue" style="margin-bottom:24px">
+      <svg><use href="#i-shield"/></svg>
+      <span><c:out value="${message}"/></span>
+    </div>
+  </c:if>
+
   <div class="page-head page-head--plain">
     <h1>
       <c:out value="${request.title}"/>
@@ -237,5 +244,6 @@
 </main>
 
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />
+<script src="${pageContext.request.contextPath}/js/common.js"></script>
 </body>
 </html>

@@ -108,27 +108,12 @@
         <span>방문 주소 <b><c:out value="${request.serviceAddress}"/></b></span>
       </div>
     </div>
-	<c:if test="${request.statusCode == 'REQ_01' || request.statusCode == 'REQ_02'}">
-
-	    <div class="summary__actions">
-
-	        <!-- 접수 수정 -->
-	        <a class="btn btn--ghost btn--sm"
-	           href="${pageContext.request.contextPath}/request/${request.requestId}/edit">
-	            수정
-	        </a>
-	        <!-- 접수 취소 -->
-	        <form method="post"
-	              action="${pageContext.request.contextPath}/request/${request.requestId}/cancel"
-	              style="display:inline;"
-	              onsubmit="return confirm('정말 접수를 취소하시겠습니까?');">
-	            <button type="submit"
-	                    class="btn btn--danger btn--sm">
-	                접수 취소
-	            </button>
-	        </form>
-	    </div>
-	</c:if>
+    <c:if test="${request.statusCode == 'REQ_01' || request.statusCode == 'REQ_02'}">
+      <div class="summary__actions">
+        <a class="btn btn--ghost btn--sm" href="${pageContext.request.contextPath}/request/edit/${request.requestId}">수정</a>
+        <a class="btn btn--danger btn--sm" href="${pageContext.request.contextPath}/user/mypage">접수 취소</a>
+      </div>
+    </c:if>
   </div>
 
   <div class="sec-head sec-head--row">
@@ -169,7 +154,7 @@
           </p>
 
           <div class="tech__foot">
-            <a class="btn btn--ghost" href="${pageContext.request.contextPath}/fixers/${est.fixerNo}">프로필 보기</a>
+            <a class="btn btn--ghost" href="${pageContext.request.contextPath}/fixers/${est.fixerNo}?requestId=${request.requestId}">프로필 보기</a>
 
             <c:choose>
               <c:when test="${est.status == 'SELECTED'}">
@@ -205,6 +190,6 @@
 </main>
 
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />
-<script src="${pageContext.request.contextPath}/js/common.js"></script>
+
 </body>
 </html>

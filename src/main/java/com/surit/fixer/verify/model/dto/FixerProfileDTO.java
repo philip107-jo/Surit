@@ -31,4 +31,9 @@ public class FixerProfileDTO {
 	 * 그래서 화면에서 반드시 empty 검사를 하고 출력한다.
 	 */
 	private String rejectReason;    // REJECT_REASON
+	// ---- 조인해서 가져오는 값 (고객이 보는 프로필 화면 전용) ----
+	private String fixerName;   // USERS.NAME
+	private Double avgScore;    // REVIEW 평균 점수 (리뷰 없으면 null)
+	private Long   reviewCount; // REVIEW 건수
+	 
 }

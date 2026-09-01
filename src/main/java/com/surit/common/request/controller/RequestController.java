@@ -100,24 +100,69 @@ public class RequestController {
      * GET /request/request
      */
     @GetMapping("/request/request")
-    public String requestPage(@RequestParam(value = "cat", required = false) String cat,
-                               HttpSession session,
-                               Model model) {
+    public String requestPage(
+            @RequestParam(value = "cat", required = false) String cat,
+            @RequestParam(value = "editId", required = false) Long editId,
+            HttpSession session,
+            Model model) {
 
-        UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
+        UserDTO loginMember =
+                (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
+
         if (loginMember == null) {
             return "redirect:/user/login?redirectURL=/request/request";
         }
 
         String selectedCategoryCode = null;
-        if (cat != null) {
+
+        // =========================
+        // 수정 모드
+        // =========================
+        if (editId != null) {
+
+            RequestDTO request =
+                    service.getRequestForMatching(
+                            loginMember.getUserNo(),
+                            editId
+                    );
+
+            model.addAttribute("request", request);
+            model.addAttribute("editMode", true);
+
+            selectedCategoryCode =
+                    request.getCategoryCode();
+        }
+
+        // =========================
+        // 신규 접수 모드
+        // =========================
+        else if (cat != null) {
+
             switch (cat) {
-                case "lock":   selectedCategoryCode = "CAT_10"; break;
-                case "fridge": selectedCategoryCode = "CAT_02"; break;
-                case "pc":     selectedCategoryCode = "CAT_01"; break;
-                case "pipe":   selectedCategoryCode = "CAT_05"; break;
-                case "elec":   selectedCategoryCode = "CAT_06"; break;
-                case "etc":    selectedCategoryCode = "CAT_07"; break;
+
+                case "lock":
+                    selectedCategoryCode = "CAT_10";
+                    break;
+
+                case "fridge":
+                    selectedCategoryCode = "CAT_02";
+                    break;
+
+                case "pc":
+                    selectedCategoryCode = "CAT_01";
+                    break;
+
+                case "pipe":
+                    selectedCategoryCode = "CAT_05";
+                    break;
+
+                case "elec":
+                    selectedCategoryCode = "CAT_06";
+                    break;
+
+                case "etc":
+                    selectedCategoryCode = "CAT_07";
+                    break;
             }
         }
 
@@ -242,27 +287,32 @@ public class RequestController {
                                  HttpSession session,
                                  Model model,
                                  RedirectAttributes ra) {
-
+     
         UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
         if (loginMember == null) {
             return "redirect:/user/login?redirectURL=/request/" + requestId;
         }
-
+     
         try {
             RequestDTO request = service.getRequestDetailForCustomer(loginMember.getUserNo(), requestId);
             EstimateDTO selectedEstimate = service.getSelectedEstimate(requestId);
-
+     
             model.addAttribute("request", request);
             model.addAttribute("selectedEstimate", selectedEstimate);
-
+     
+            // 수리완료 상태면, 이미 리뷰를 썼는지 확인해서 같이 넘겨준다
+            if ("REQ_04".equals(request.getStatusCode())) {
+                UserReviewDTO existingReview = reviewService.getReviewByRequestId(requestId, loginMember.getUserNo());
+                model.addAttribute("existingReview", existingReview);
+            }
+     
         } catch (IllegalStateException e) {
             ra.addFlashAttribute("message", e.getMessage());
             return "redirect:/user/mypage";
         }
-
+     
         return "user/request-detail";
     }
-
    
 
     /** /request 주소로 접근 시 /request/request 로 리다이렉트 (cat 파라미터는 그대로 이어줌) */
@@ -300,7 +350,7 @@ public class RequestController {
                             requestId
                     );
 
-            // 접수 대기 / 매칭 중일 때만 수정 가능
+            // 수정 가능한 상태인지 확인
             if (!"REQ_01".equals(request.getStatusCode())
                     && !"REQ_02".equals(request.getStatusCode())) {
 
@@ -312,7 +362,7 @@ public class RequestController {
                 return "redirect:/request/matching/" + requestId;
             }
 
-            // 기존 접수 페이지로 이동
+            // 기존 접수 페이지로 이동하면서 수정할 접수번호 전달
             return "redirect:/request/request?editId=" + requestId;
 
         } catch (IllegalStateException e) {
