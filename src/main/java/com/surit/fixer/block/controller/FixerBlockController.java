@@ -1,5 +1,7 @@
 package com.surit.fixer.block.controller;
 
+import com.surit.user.model.dto.UserDTO;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -20,7 +22,12 @@ public class FixerBlockController {
      * 차단 고객 목록 화면 조회
      */
     @GetMapping
-    public String showBlockedList(@SessionAttribute("loginUserNo") Long fixerNo, Model model) {
+    public String showBlockedList(HttpSession session, Model model) {
+        // 팀 규칙 세션 꺼내기
+        UserDTO loginMember = (UserDTO) session.getAttribute("loginMember");
+        if (loginMember == null) return "redirect:/user/login";
+        Long fixerNo = loginMember.getUserNo();
+
         log.info("차단 고객 목록 조회 - 기사번호: {}", fixerNo);
 
         model.addAttribute("blockedList", blockService.getBlockedCustomers(fixerNo));
@@ -32,8 +39,13 @@ public class FixerBlockController {
      */
     @PostMapping("/{blockId}/unblock")
     public String unblockCustomer(
-            @SessionAttribute("loginUserNo") Long fixerNo,
+            HttpSession session,
             @PathVariable Long blockId) {
+
+        // 팀 규칙 세션 꺼내기
+        UserDTO loginMember = (UserDTO) session.getAttribute("loginMember");
+        if (loginMember == null) return "redirect:/user/login";
+        Long fixerNo = loginMember.getUserNo();
 
         log.info("차단 해제 요청 - 기사번호: {}, 차단ID: {}", fixerNo, blockId);
 

@@ -1,5 +1,7 @@
 package com.surit.fixer.payment.controller;
 
+import com.surit.user.model.dto.UserDTO; // 추가됨
+import jakarta.servlet.http.HttpSession; // 추가됨
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -25,10 +27,15 @@ public class FixerPaymentController {
      */
     @PostMapping("/complete")
     public String completeJobAndPayment(
-            @SessionAttribute("loginUserNo") Long fixerNo,
+            HttpSession session,
             @ModelAttribute PaymentDTO paymentInfo,           // 영수증 데이터
             @RequestParam("beforePhoto") MultipartFile beforePhoto, // 수리 전 사진
             @RequestParam("afterPhoto") MultipartFile afterPhoto) { // 수리 후 사진
+
+        // 팀 규칙 세션 꺼내기
+        UserDTO loginMember = (UserDTO) session.getAttribute("loginMember");
+        if (loginMember == null) return "redirect:/user/login";
+        Long fixerNo = loginMember.getUserNo();
 
         try {
             // 1. 수리 전 사진 저장

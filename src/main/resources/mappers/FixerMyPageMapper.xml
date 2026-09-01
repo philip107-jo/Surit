@@ -16,38 +16,28 @@
         ORDER BY CODE_ID
     </select>
 
-    <!-- 기사 카테고리 -->
     <select id="selectMyCategories" resultType="string">
-        SELECT CATEGORY_CODE
-        FROM FIXER_CATEGORY
-        WHERE FIXER_ID = #{fixerId}
+        SELECT CATEGORY_CODE FROM FIXER_CATEGORY WHERE FIXER_ID = #{fixerId}
     </select>
 
     <insert id="insertMyCategory">
-        INSERT INTO FIXER_CATEGORY (FIXER_ID, CATEGORY_CODE)
-        VALUES (#{fixerId}, #{categoryCode})
+        INSERT INTO FIXER_CATEGORY (FIXER_ID, CATEGORY_CODE) VALUES (#{fixerId}, #{categoryCode})
     </insert>
 
     <delete id="deleteMyCategories">
-        DELETE FROM FIXER_CATEGORY
-        WHERE FIXER_ID = #{fixerId}
+        DELETE FROM FIXER_CATEGORY WHERE FIXER_ID = #{fixerId}
     </delete>
 
-    <!-- 기사가 선택한 지역 -->
     <select id="selectMyRegions" resultType="string">
-        SELECT REGION_CODE
-        FROM FIXER_REGION
-        WHERE FIXER_ID = #{fixerId}
+        SELECT REGION_CODE FROM FIXER_REGION WHERE FIXER_ID = #{fixerId}
     </select>
 
     <insert id="insertMyRegion">
-        INSERT INTO FIXER_REGION (FIXER_ID, REGION_CODE)
-        VALUES (#{fixerId}, #{regionCode})
+        INSERT INTO FIXER_REGION (FIXER_ID, REGION_CODE) VALUES (#{fixerId}, #{regionCode})
     </insert>
 
     <delete id="deleteMyRegions">
-        DELETE FROM FIXER_REGION
-        WHERE FIXER_ID = #{fixerId}
+        DELETE FROM FIXER_REGION WHERE FIXER_ID = #{fixerId}
     </delete>
 
 </mapper>
