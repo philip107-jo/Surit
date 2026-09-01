@@ -14,6 +14,45 @@
 
 	<%@ include file="common/fixernav.jspf" %>
 
+	<%--
+		내가 등록한 지역·분야를 목록 위에 같이 보여준다.
+
+		접수가 안 보일 때 "내 조건이 뭐였더라" 를 기억에 의존해 떠올려야 했다.
+		인증 화면으로 갔다 와야 확인이 되니 화면을 두 번 오가게 된다.
+		매칭 조건 자체를 옆에 놓아두면 그 자리에서 바로 대조가 된다.
+	--%>
+	<c:if test="${not empty myRegionNames or not empty myCategoryNames}">
+		<div class="card card--sm" style="margin-bottom:20px">
+			<div style="display:flex;gap:32px;flex-wrap:wrap;align-items:flex-start">
+
+				<div>
+					<div class="field__label" style="margin-bottom:6px">내 활동 지역</div>
+					<div>
+						<c:forEach var="name" items="${myRegionNames}">
+							<span class="badge badge--gray"><c:out value="${name}"/></span>
+						</c:forEach>
+						<c:if test="${empty myRegionNames}"><span class="muted">등록된 지역 없음</span></c:if>
+					</div>
+				</div>
+
+				<div>
+					<div class="field__label" style="margin-bottom:6px">수리 가능 분야</div>
+					<div>
+						<c:forEach var="name" items="${myCategoryNames}">
+							<span class="badge badge--primary"><c:out value="${name}"/></span>
+						</c:forEach>
+						<c:if test="${empty myCategoryNames}"><span class="muted">등록된 분야 없음</span></c:if>
+					</div>
+				</div>
+
+				<div style="margin-left:auto">
+					<a class="btn btn--ghost btn--sm" href="/fixer/verify">인증 정보 수정</a>
+				</div>
+
+			</div>
+		</div>
+	</c:if>
+
 	<c:if test="${not empty message}">
 		<div class="note note--warn" style="margin-bottom:24px">
 			<svg><use href="#i-alert"/></svg>
@@ -63,7 +102,7 @@
 				<span class="tile tile--sm t-blue" style="margin:0 auto 16px"><svg><use href="#i-search"/></svg></span>
 				<b style="font-size:19px">조건에 맞는 새 접수가 없습니다.</b>
 				<p class="muted" style="margin-top:8px">
-					활동 지역과 수리 분야를 넓히면 더 많은 접수가 보입니다.
+					위에 표시된 활동 지역과 수리 분야를 넓히면 더 많은 접수가 보입니다.
 					<a href="/fixer/verify">인증 정보에서 수정하기</a>
 				</p>
 			</div>

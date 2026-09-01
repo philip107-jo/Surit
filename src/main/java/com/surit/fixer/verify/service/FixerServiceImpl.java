@@ -1,6 +1,7 @@
 package com.surit.fixer.verify.service;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -29,6 +30,14 @@ public class FixerServiceImpl implements FixerService {
 
 	// 승인 상태 문자열은 FixerGuard 한 곳에만 둔다.
 	// 여러 클래스에 복사해두면 규칙이 바뀔 때 한 곳을 빠뜨리기 쉽다.
+
+	/*
+	 * FIXER_PROFILE.INTRO 컬럼이 VARCHAR2(4000) 이다.
+	 * 오라클의 기본 길이 단위는 "글자"가 아니라 "바이트"이고,
+	 * UTF-8 에서 한글 1자는 3바이트다. 그래서 실제 한도는 한글 약 1,333자다.
+	 * verify.jsp 의 INTRO_MAX_BYTES 와 반드시 같은 값이어야 한다.
+	 */
+	private static final int INTRO_MAX_BYTES = 4000;
 
 	private final FixerMapper      mapper;
 	private final CommonCodeMapper codeMapper;
@@ -60,6 +69,21 @@ public class FixerServiceImpl implements FixerService {
 	@Override
 	public FixerProfileDTO getMyProfile(Long userNo) {
 		return mapper.selectFixerProfile(userNo);
+	}
+
+	/*
+	 * 접수 목록 화면(F-15)에서 "내가 등록한 지역·분야"를 보여주기 위한 조회.
+	 * 매칭이 안 될 때 사용자가 자기 조건을 기억에 의존해 떠올려야 했던 문제(REQ-05·06) 대응.
+	 * MyBatis 는 결과가 없으면 null 이 아니라 빈 List 를 돌려주므로 화면에서 empty 검사만 하면 된다.
+	 */
+	@Override
+	public List<String> getMyRegionNames(Long userNo) {
+		return mapper.selectMyRegionNames(userNo);
+	}
+
+	@Override
+	public List<String> getMyCategoryNames(Long userNo) {
+		return mapper.selectMyCategoryNames(userNo);
 	}
 
 
@@ -234,16 +258,28 @@ public class FixerServiceImpl implements FixerService {
 		return (list != null && i < list.size()) ? list.get(i) : null;
 	}
 
-	/** "2023-05-10" → LocalDate, 비었으면 null */
+	/** "2023-05-10" → LocalDate, 비었으면 null (발급일은 선택 항목) */
 	private LocalDate toDate(String s) {
 		if (s == null || s.isBlank()) {
 			return null;
 		}
+
+		LocalDate date;
 		try {
-			return LocalDate.parse(s.trim());
+			date = LocalDate.parse(s.trim());
 		} catch (Exception e) {
+			// DateTimeParseException 을 그대로 올리면 사용자에게 스택트레이스 같은 말이 나간다.
+			// 컨트롤러가 잡아서 보여줄 수 있는 IllegalStateException 으로 바꾼다.
 			throw new IllegalStateException("발급일 형식이 올바르지 않습니다: " + s);
 		}
+
+		// 형식은 맞지만 말이 안 되는 값 — 아직 오지 않은 날짜에 자격증이 발급될 수는 없다.
+		// 화면에서도 막지만, 개발자도구로 지우면 그만이라 여기서 한 번 더 본다.
+		if (date.isAfter(LocalDate.now())) {
+			throw new IllegalStateException("발급일이 오늘 이후일 수 없습니다: " + s);
+		}
+
+		return date;
 	}
 
 	private void validate(FixerVerifyRequest r) {
@@ -266,10 +302,25 @@ public class FixerServiceImpl implements FixerService {
 		if (r.getCareerYears() > 70) {
 			throw new IllegalStateException("경력이 너무 큽니다. 다시 확인해주세요.");
 		}
-		// DB 컬럼 길이를 넘으면 ORA-12899 라는 알아보기 힘든 에러가 난다.
-		// 사용자에게는 읽을 수 있는 말로 먼저 알려준다.
-		if (r.getIntro() != null && r.getIntro().length() > 4000) {
-			throw new IllegalStateException("자기소개는 4000자를 넘을 수 없습니다.");
+		/*
+		 * 자기소개 길이 — 반드시 "바이트"로 세야 한다.
+		 *
+		 * String.length() 는 글자 수를 센다. 그런데 저장 대상인 VARCHAR2(4000) 은
+		 * 바이트를 센다. 한글은 UTF-8 에서 1자당 3바이트라, 한글 1,334자만 넘어도
+		 *   length()  = 1334   → 검증 통과
+		 *   실제 크기 = 4002 byte → INSERT 에서 ORA-12899
+		 * 가 되어, 사용자는 "알 수 없는 오류" 화면을 보게 된다.
+		 * (영문만으로 테스트하면 1바이트라 4000자까지 안 터져서 놓치기 쉽다)
+		 *
+		 * 그래서 DB 와 같은 기준으로 세고, 몇 바이트인지도 함께 알려준다.
+		 */
+		if (r.getIntro() != null) {
+			int bytes = r.getIntro().getBytes(StandardCharsets.UTF_8).length;
+			if (bytes > INTRO_MAX_BYTES) {
+				throw new IllegalStateException(
+						"자기소개가 너무 깁니다. 한글 기준 약 1,300자까지 입력할 수 있습니다. (현재 "
+						+ bytes + "바이트 / 최대 " + INTRO_MAX_BYTES + "바이트)");
+			}
 		}
 	}
 }

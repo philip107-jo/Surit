@@ -30,4 +30,10 @@ public interface FixerService {
 
 	/** 기사 인증 신청 (신규 / 재신청) */
 	void applyVerify(Long userNo, FixerVerifyRequest request) throws IOException;
+
+	/** 내가 등록한 활동 지역 이름 (없으면 빈 목록) */
+	List<String> getMyRegionNames(Long userNo);
+
+	/** 내가 등록한 수리 분야 이름 (없으면 빈 목록) */
+	List<String> getMyCategoryNames(Long userNo);
 }

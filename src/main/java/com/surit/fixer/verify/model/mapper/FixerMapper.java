@@ -20,6 +20,12 @@ public interface FixerMapper {
 	/** 기사가 등록한 자격증 목록 (재신청 시 기존 파일 삭제용) */
 	List<FixerLicenseDTO> selectLicensesByUserNo(Long userNo);
 
+	/** 내가 등록한 활동 지역 이름 목록 (접수 목록 화면 안내용) */
+	List<String> selectMyRegionNames(Long userNo);
+
+	/** 내가 등록한 수리 분야 이름 목록 (접수 목록 화면 안내용) */
+	List<String> selectMyCategoryNames(Long userNo);
+
 
 	// ---------- 등록 / 수정 ----------
 

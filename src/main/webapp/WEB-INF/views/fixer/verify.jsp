@@ -109,7 +109,7 @@
 				enctype 이 없으면 파일은 이름만 넘어오고 내용은 오지 않는다.
 				서버는 FixerVerifyRequest 의 필드 이름과 name 을 맞춰서 값을 담는다.
 			--%>
-			<form action="/fixer/verify" method="post" enctype="multipart/form-data">
+		<form action="/fixer/verify" method="post" enctype="multipart/form-data" novalidate>
 
 				<%-- CSRF 를 켜둔 프로젝트에서만 토큰이 만들어진다. 없으면 이 줄은 건너뛴다 --%>
 				<c:if test="${not empty _csrf}">
@@ -122,9 +122,19 @@
 
 					<div class="field">
 						<label class="field__label" for="intro">자기소개</label>
-						<textarea class="textarea" id="intro" name="intro" rows="4" maxlength="4000"
+						<%--
+							maxlength 를 쓰지 않는 이유 :
+							maxlength 는 "글자 수"를 세는데, DB 컬럼 INTRO 는 VARCHAR2(4000) 이고
+							오라클의 기본 길이 단위는 "바이트"다. 한글은 UTF-8 에서 1자당 3바이트라
+							maxlength="4000" 으로는 한글 1,334자만 넘어도 ORA-12899 가 터진다.
+							그래서 아래 스크립트가 바이트로 세고, 서버도 같은 기준으로 다시 검사한다.
+						--%>
+						<textarea class="textarea" id="intro" name="intro" rows="4"
 							placeholder="어떤 수리를 오래 해왔는지 짧게 적어주세요."><c:out value="${profile.intro}"/></textarea>
-						<div class="field__help">최대 4000자. 고객이 기사 목록에서 보게 됩니다.</div>
+						<div class="field__help">
+							고객이 기사 목록에서 보게 됩니다. 한글은 1자가 3바이트입니다.
+							<b id="introCount" style="float:right"></b>
+						</div>
 					</div>
 
 					<div class="field" style="margin-bottom:0">
@@ -231,13 +241,18 @@
 
 				<div class="card card--flat">
 					<%--
-						용량 초과 파일은 여기서 먼저 막는다.
-						서버까지 올라가면 멀티파트 파싱 단계에서 끊겨 413 이 뜨는데,
-						그 단계는 컨트롤러 이전이라 예외 핸들러가 안내 화면으로 못 바꿔준다.
+						필수값·형식·용량을 서버로 보내기 전에 여기서 먼저 막는다.
+
+						여기서 막으면 페이지가 새로 그려지지 않으므로 입력값이 그대로 남는다.
+						서버까지 갔다 오면 redirect 로 돌아오기 때문에 입력값이 사라진다.
+						(파일 입력칸은 브라우저 보안상 서버 왕복 후에는 절대 복원되지 않는다)
+
+						용량 초과는 특히 중요하다. 서버까지 올라가면 멀티파트 파싱 단계에서
+						끊기는데, 그 단계는 컨트롤러 이전이라 일반 예외 핸들러가 못 잡는다.
 					--%>
-					<div id="fileSizeAlert" class="note note--warn" style="display:none; margin-bottom:22px">
+					<div id="formAlert" class="note note--warn" style="display:none; margin-bottom:22px">
 						<svg><use href="#i-alert"/></svg>
-						<span id="fileSizeAlertText"></span>
+						<span id="formAlertText"></span>
 					</div>
 					<div class="note note--gray" style="margin-bottom:22px">
 						<svg><use href="#i-shield"/></svg>
@@ -252,44 +267,254 @@
 
 			<script>
 			(function () {
-				// application.properties 의 spring.servlet.multipart.max-file-size 와 같은 값이어야 한다.
-				var MAX_MB = 10;
+				'use strict';
+
+				// ── 서버와 반드시 같아야 하는 값들 ──
+				// application.properties : spring.servlet.multipart.max-file-size
+				var MAX_MB    = 10;
 				var MAX_BYTES = MAX_MB * 1024 * 1024;
 
-				var form  = document.querySelector('form[action="/fixer/verify"]');
-				var box   = document.getElementById('fileSizeAlert');
-				var text  = document.getElementById('fileSizeAlertText');
-				if (!form || !box || !text) return;
+				// FIXER_PROFILE.INTRO 가 VARCHAR2(4000) — 글자 수가 아니라 "바이트" 기준이다.
+				// FixerServiceImpl.validate() 도 같은 값으로 다시 검사한다.
+				var INTRO_MAX_BYTES = 4000;
 
-				function tooBig() {
-					var over = [];
-					var inputs = form.querySelectorAll('input[type=file]');
-					for (var i = 0; i < inputs.length; i++) {
-						var f = inputs[i].files && inputs[i].files[0];
-						if (f && f.size > MAX_BYTES) {
-							over.push(f.name + ' (' + (f.size / 1024 / 1024).toFixed(1) + 'MB)');
+				var PHOTO_EXT   = ['jpg', 'jpeg', 'png'];
+				var LICENSE_EXT = ['jpg', 'jpeg', 'png', 'pdf'];
+
+				var form = document.querySelector('form[action="/fixer/verify"]');
+				if (!form) return;
+
+				var box        = document.getElementById('formAlert');
+				var text       = document.getElementById('formAlertText');
+				var intro      = document.getElementById('intro');
+				var introCount = document.getElementById('introCount');
+
+				// 제출을 한 번이라도 시도했는가.
+				// 시도 전에는 "아직 안 채운 칸"까지 빨갛게 지적하면 잔소리로 느껴지므로,
+				// 즉시 알 수 있는 문제(파일 확장자·용량)만 미리 알려준다.
+				var tried = false;
+
+				// ---------- 도우미 ----------
+
+				// UTF-8 바이트 수. 한글 1자 = 3바이트라서 글자 수와 다르다.
+				function byteLength(s) {
+					if (!s) return 0;
+					if (window.TextEncoder) return new TextEncoder().encode(s).length;
+					return unescape(encodeURIComponent(s)).length;   // 구형 브라우저 대비
+				}
+
+				// "사진.PNG" → "png". 점이 없거나 점으로 끝나면 빈 문자열.
+				// 서버 FileUploadUtil.extensionOf() 와 같은 규칙이다.
+				function extOf(name) {
+					if (!name) return '';
+					var dot = name.lastIndexOf('.');
+					if (dot < 0 || dot === name.length - 1) return '';
+					return name.substring(dot + 1).toLowerCase();
+				}
+
+				function fileOf(input) {
+					return (input && input.files && input.files[0]) ? input.files[0] : null;
+				}
+
+				function mb(bytes) {
+					return (bytes / 1024 / 1024).toFixed(1) + 'MB';
+				}
+
+				// 파일 이름은 사용자가 정하는 값이라 그대로 innerHTML 에 넣으면 XSS 가 된다.
+				function esc(s) {
+					return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+				}
+
+				// ---------- 자기소개 바이트 카운터 ----------
+
+				function updateIntroCount() {
+					if (!intro || !introCount) return;
+					var n = byteLength(intro.value);
+					introCount.textContent = n + ' / ' + INTRO_MAX_BYTES + ' 바이트';
+					introCount.style.color = (n > INTRO_MAX_BYTES) ? '#b45309' : '';
+				}
+
+				if (intro) {
+					intro.addEventListener('input', updateIntroCount);
+					updateIntroCount();
+				}
+
+				// ---------- 검사 본체 ----------
+				// 걸린 항목을 전부 모아서 한 번에 보여준다.
+				// 하나씩 알려주면 "고치고 제출" 을 여러 번 반복하게 된다.
+
+				function collect() {
+					var list     = [];
+					var firstBad = null;
+
+					// kind 'file' : 파일을 고르는 순간 바로 알 수 있는 문제
+					// kind 'need' : 아직 안 채운 항목 — 제출을 시도한 뒤에만 알린다
+					function add(kind, msg, el) {
+						list.push({ kind: kind, msg: msg });
+						if (!firstBad && el) firstBad = el;
+					}
+
+					// 1) 자기소개 길이 (바이트 기준)
+					if (intro) {
+						var n = byteLength(intro.value);
+						if (n > INTRO_MAX_BYTES) {
+							add('need', '자기소개가 너무 깁니다. 현재 ' + n + '바이트 / 최대 '
+								+ INTRO_MAX_BYTES + '바이트 (한글은 1자당 3바이트)', intro);
 						}
 					}
-					return over;
+
+					// 2) 경력
+					var career = document.getElementById('careerYears');
+					if (career) {
+						var v = (career.value || '').trim();
+						if (v === '' || isNaN(v) || Number(v) < 0 || Number(v) > 70) {
+							add('need', '경력(년)을 0 ~ 70 사이 숫자로 입력해주세요.', career);
+						}
+					}
+
+					// 3) 본인 확인용 사진
+					var photoInput = form.querySelector('input[name=photoFile]');
+					var photo      = fileOf(photoInput);
+					if (!photo) {
+						add('need', '본인 확인용 사진을 첨부해주세요.', photoInput);
+					} else if (PHOTO_EXT.indexOf(extOf(photo.name)) < 0) {
+						add('file', '본인 확인용 사진은 jpg, png 만 올릴 수 있습니다. (선택한 파일: '
+							+ esc(photo.name) + ')', photoInput);
+					} else if (photo.size > MAX_BYTES) {
+						add('file', '본인 확인용 사진이 ' + MAX_MB + 'MB를 넘습니다. ('
+							+ mb(photo.size) + ')', photoInput);
+					}
+
+					// 4) 활동 지역
+					if (form.querySelectorAll('input[name=regionCodes]:checked').length === 0) {
+						add('need', '활동 지역을 최소 1개 선택해주세요.',
+							form.querySelector('input[name=regionCodes]'));
+					}
+
+					// 5) 수리 가능 분야
+					if (form.querySelectorAll('input[name=categoryCodes]:checked').length === 0) {
+						add('need', '수리 가능 분야를 최소 1개 선택해주세요.',
+							form.querySelector('input[name=categoryCodes]'));
+					}
+
+					// 6) 자격증
+					// 자격증명이 적힌 줄만 한 건으로 센다 — 서버 saveLicenses() 와 같은 규칙이다.
+					var names = form.querySelectorAll('input[name=licenseNames]');
+					var dates = form.querySelectorAll('input[name=licenseIssuedAts]');
+					var files = form.querySelectorAll('input[name=licenseFiles]');
+
+					var filled = 0;
+					var today  = new Date();
+					today.setHours(0, 0, 0, 0);
+
+					for (var i = 0; i < names.length; i++) {
+						var nm   = (names[i].value || '').trim();
+						var dEl  = dates[i];
+						var fEl  = files[i];
+						var file = fileOf(fEl);
+						var no   = (i + 1);
+
+						if (nm === '') {
+							// 이름 없이 날짜나 파일만 넣으면 서버가 그 줄을 통째로 건너뛴다.
+							// 조용히 버려지면 사용자는 저장된 줄 알기 때문에 미리 알려준다.
+							if ((dEl && dEl.value) || file) {
+								add('need', '자격증 ' + no + ' : 자격증명을 입력하지 않으면 저장되지 않습니다.', names[i]);
+							}
+							continue;
+						}
+						filled++;
+
+						// 발급일 : "2023-13-45" 같은 값을 넣으면 브라우저가 값을 비우고
+						// validity.badInput 을 세운다. value 만 보면 "안 적었다" 와 구별이 안 된다.
+						if (dEl && dEl.validity && dEl.validity.badInput) {
+							add('need', '자격증 ' + no + ' : 발급일이 올바르지 않습니다. 달력에서 다시 골라주세요.', dEl);
+						} else if (dEl && dEl.value) {
+							var d = new Date(dEl.value);
+							if (isNaN(d.getTime())) {
+								add('need', '자격증 ' + no + ' : 발급일 형식이 올바르지 않습니다.', dEl);
+							} else if (d > today) {
+								add('need', '자격증 ' + no + ' : 발급일이 오늘 이후입니다. 다시 확인해주세요.', dEl);
+							}
+						}
+
+						if (file) {
+							if (LICENSE_EXT.indexOf(extOf(file.name)) < 0) {
+								add('file', '자격증 ' + no + ' : 증빙파일은 jpg, png, pdf 만 올릴 수 있습니다. (선택한 파일: '
+									+ esc(file.name) + ')', fEl);
+							} else if (file.size > MAX_BYTES) {
+								add('file', '자격증 ' + no + ' : 증빙파일이 ' + MAX_MB + 'MB를 넘습니다. ('
+									+ mb(file.size) + ')', fEl);
+							}
+						}
+					}
+
+					if (filled === 0) {
+						add('need', '자격증을 최소 1개 입력해주세요. (자격증명을 적은 칸만 저장됩니다)',
+							names.length ? names[0] : null);
+					}
+
+					return { list: list, firstBad: firstBad };
 				}
 
-				function check() {
-					var over = tooBig();
-					if (over.length === 0) { box.style.display = 'none'; return true; }
-					text.innerHTML = '<b>파일 1개당 ' + MAX_MB + 'MB까지</b> 올릴 수 있습니다. '
-					               + '아래 파일을 빼거나 용량을 줄여주세요.<br>' + over.join('<br>');
+				// ---------- 화면 표시 ----------
+
+				function render(result, onlyFile) {
+					if (!box || !text) return;
+
+					var shown = [];
+					for (var i = 0; i < result.list.length; i++) {
+						if (!onlyFile || result.list[i].kind === 'file') {
+							shown.push(result.list[i].msg);
+						}
+					}
+
+					if (shown.length === 0) {
+						box.style.display = 'none';
+						return false;
+					}
+
+					var html = '<b>아래 항목을 확인해주세요.</b><br>';
+					for (var j = 0; j < shown.length; j++) {
+						html += '· ' + shown[j] + '<br>';
+					}
+					html += '<span class="muted">입력하신 내용은 그대로 남아 있습니다. 해당 항목만 고쳐서 다시 눌러주세요.</span>';
+
+					text.innerHTML = html;
 					box.style.display = '';
-					box.scrollIntoView({ behavior: 'smooth', block: 'center' });
-					return false;
+					return true;
 				}
 
-				// 파일을 고르는 즉시 알려준다. 제출까지 기다리게 하지 않는다.
+				// 값이 바뀌면 즉시 다시 검사한다. 제출까지 기다리게 하지 않는다.
 				form.addEventListener('change', function (e) {
-					if (e.target && e.target.type === 'file') check();
+					var t = e.target;
+					if (!t) return;
+					if (t.type === 'file' || t.type === 'checkbox' || t.type === 'date' || t.type === 'number') {
+						render(collect(), !tried);
+					}
+				});
+
+				form.addEventListener('input', function (e) {
+					if (tried && e.target && e.target.type === 'text') render(collect(), false);
 				});
 
 				form.addEventListener('submit', function (e) {
-					if (!check()) e.preventDefault();
+					tried = true;
+
+					var result = collect();
+					if (result.list.length === 0) {
+						if (box) box.style.display = 'none';
+						return;                       // 통과 — 서버로 보낸다
+					}
+
+					// 여기서 멈추므로 화면이 새로 그려지지 않는다 → 입력값이 그대로 남는다
+					e.preventDefault();
+
+					render(result, false);
+					if (box) box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+					if (result.firstBad && result.firstBad.focus) {
+						try { result.firstBad.focus({ preventScroll: true }); } catch (err) { /* 무시 */ }
+					}
 				});
 			})();
 			</script>
