@@ -296,5 +296,13 @@ selectEstimatesByRequestId 와 거의 같은데, STATUS='SELECTED' 조건만 추
       AND e.STATUS = 'SELECTED'
 </select>
  
-
+<insert id="insertPhoto">
+    INSERT INTO REPAIR_PHOTO (
+        REQUEST_ID, PHOTO_PATH, PHOTO_TYPE, PHOTO_ORDER
+    )
+    VALUES (
+        #{requestId}, #{photoPath}, #{photoType}, #{photoOrder}
+    )
+</insert>
+ 
 </mapper>

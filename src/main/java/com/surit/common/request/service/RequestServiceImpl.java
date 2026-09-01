@@ -1,15 +1,21 @@
 package com.surit.common.request.service;
 
+import java.io.IOException;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.surit.common.model.dto.CommonCodeDTO;
 import com.surit.common.model.mapper.CommonCodeMapper;
 import com.surit.common.request.model.dto.RequestDTO;
+import com.surit.common.request.model.dto.RequestPhotoDTO;
 import com.surit.common.request.model.mapper.RequestMapper;
 import com.surit.fixer.common.FixerGuard;
+import com.surit.fixer.common.util.FileUploadUtil;
+import com.surit.fixer.common.util.SavedFile;
 import com.surit.fixer.estimate.model.dto.EstimateDTO;
 
 import lombok.RequiredArgsConstructor;
@@ -21,7 +27,12 @@ public class RequestServiceImpl implements RequestService {
 	private final RequestMapper    mapper;
 	private final CommonCodeMapper codeMapper;
 	private final FixerGuard       fixerGuard;
+	private final FileUploadUtil   fileUploadUtil; 
+	@Value("${file.upload-dir.photo}")               // ← 추가
+	private String photoUploadDir;
 
+	@Value("${file.web-prefix.photo}")                // ← 추가
+	private String photoWebPrefix;
 	@Override
 	public List<CommonCodeDTO> getCategoryList() {
 		return codeMapper.selectByGroup("CATEGORY");
@@ -110,28 +121,48 @@ public void selectEstimate(Long userNo, Long requestId, Long estimateId) {
 	mapper.updateSelectedEstimate(requestId, estimateId);   // 이건 실행됐음 (선택됨 뱃지로 확인됨)
 }
  
-	@Transactional
-	public void createRequest(RequestDTO request) {
-
-	    // 신규 접수 상태
-	    request.setStatusCode("REQ_01");
-
-	    System.out.println("===== 접수 INSERT =====");
-	    System.out.println("userNo = " + request.getUserNo());
-	    System.out.println("categoryCode = " + request.getCategoryCode());
-	    System.out.println("title = " + request.getTitle());
-	    System.out.println("content = " + request.getContent());
-	    System.out.println("serviceAddress = " + request.getServiceAddress());
-	    System.out.println("statusCode = " + request.getStatusCode());
-
-	    Long result = mapper.insertRequest(request);
-
-	    System.out.println("INSERT RESULT = " + result);
-
-	    if (result != 1) {
-	        throw new IllegalStateException("수리 접수 등록에 실패했습니다.");
-	    }
-	}
+@Override
+@Transactional
+public void createRequest(RequestDTO request, List<MultipartFile> photoFiles) throws IOException {
+ 
+    if (photoFiles != null && photoFiles.size() > 5) {
+        throw new IllegalStateException("사진은 최대 5장까지 첨부할 수 있습니다.");
+    }
+ 
+    // 신규 접수 상태
+    request.setStatusCode("REQ_01");
+ 
+    Long result = mapper.insertRequest(request);
+ 
+    if (result != 1) {
+        throw new IllegalStateException("수리 접수 등록에 실패했습니다.");
+    }
+ 
+    // request.getRequestId() 는 insertRequest 의 useGeneratedKeys 덕분에 여기서 채워져 있음
+    if (photoFiles != null) {
+ 
+        int order = 1;
+ 
+        for (MultipartFile file : photoFiles) {
+ 
+            if (file == null || file.isEmpty()) {
+                continue;
+            }
+ 
+            SavedFile saved = fileUploadUtil.save(file, photoUploadDir, photoWebPrefix);
+ 
+            RequestPhotoDTO photo = new RequestPhotoDTO();
+            photo.setRequestId(request.getRequestId());
+            photo.setPhotoPath(saved.getPath());
+            photo.setPhotoType("BEFORE");
+            photo.setPhotoOrder((long) order);
+ 
+            mapper.insertPhoto(photo);
+ 
+            order++;
+        }
+    }
+}
 	@Override
 	@Transactional(readOnly = true)
 	public RequestDTO getRequestDetailForCustomer(Long userNo, Long requestId) {

@@ -1,5 +1,6 @@
 package com.surit.common.request.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.surit.common.request.model.dto.RequestDTO;
@@ -139,33 +141,34 @@ public class RequestController {
      */
     @PostMapping("/request/request")
     public String createRequest(@ModelAttribute RequestDTO request,
+                                 @RequestParam(value = "photoFiles", required = false) List<MultipartFile> photoFiles,
                                  HttpSession session,
                                  RedirectAttributes ra) {
-
+     
         UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
         if (loginMember == null) {
             return "redirect:/user/login?redirectURL=/request/request";
         }
-
+     
         try {
-            // 로그인한 회원 번호는 폼이 아니라 세션에서 넣는다 (폼은 조작 가능)
             request.setUserNo(loginMember.getUserNo());
-
-            service.createRequest(request);
-
+     
+            service.createRequest(request, photoFiles);
+     
             ra.addFlashAttribute("message", "수리 접수가 완료되었습니다.");
-
-            // 방금 생성된 접수의 매칭 화면으로 이동
-            // service.createRequest() 실행 후 request 객체에 requestId 가 자동으로 채워져 있어야 함
-            // (RequestMapper.xml 의 insertRequest 에 useGeneratedKeys="true" keyProperty="requestId" 설정 필요)
+     
             return "redirect:/request/matching/" + request.getRequestId();
-
+     
         } catch (IllegalStateException e) {
             ra.addFlashAttribute("message", e.getMessage());
             return "redirect:/request/request";
+     
+        } catch (IOException e) {
+            e.printStackTrace();
+            ra.addFlashAttribute("message", "사진 업로드 중 오류가 발생했습니다.");
+            return "redirect:/request/request";
         }
     }
-
     /**
      * 기사 매칭 · 선택 화면
      * GET /request/matching/{requestId}
