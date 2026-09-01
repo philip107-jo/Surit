@@ -621,6 +621,56 @@ function toggleAddressAdd() {
 
 
 // ========================================
+// 리뷰 작성 : 별점 클릭 -> hidden input(score) 반영
+// ========================================
+
+(function () {
+  var box = document.getElementById('review-stars');
+  var scoreInput = document.getElementById('review-score');
+  var scoreLabel = document.getElementById('review-score-label');
+  if (!box || !scoreInput) return;
+
+  var svgs = box.querySelectorAll('svg');
+  svgs.forEach(function (s, i) {
+    s.addEventListener('click', function () {
+      svgs.forEach(function (t, j) { t.classList.toggle('off', j > i); });
+      scoreInput.value = i + 1;
+      if (scoreLabel) scoreLabel.textContent = (i + 1) + '.0';
+    });
+  });
+})();
+
+// ========================================
+// 리뷰 작성 : 태그 칩 선택 내용을 제출 시 content 앞에 붙이기
+// ========================================
+
+(function () {
+  var form = document.getElementById('review-form');
+  if (!form) return;
+
+  form.addEventListener('submit', function (e) {
+
+    var scoreInput = document.getElementById('review-score');
+    if (!scoreInput.value) {
+      e.preventDefault();
+      alert('별점을 선택해주세요.');
+      return;
+    }
+
+    var tags = Array.from(form.querySelectorAll('.chip--on'))
+      .map(function (chip) { return chip.textContent.trim(); });
+
+    var contentInput = document.getElementById('review-content');
+    if (tags.length > 0) {
+      var tagText = '[' + tags.join(', ') + '] ';
+      if (contentInput.value.indexOf(tagText) !== 0) {
+        contentInput.value = tagText + contentInput.value;
+      }
+    }
+  });
+})();
+
+// ========================================
 // 사진 확대 보기 (라이트박스)
 // class="photo-zoom" 붙은 img 클릭 시 전체화면으로 확대
 // ========================================
@@ -850,11 +900,3 @@ function toggleAddressAdd() {
     });
 
 })();
-// 연락처 : 숫자만 입력 가능
-const phoneInput = document.getElementById("phone");
-
-if (phoneInput) {
-    phoneInput.addEventListener("input", function () {
-        this.value = this.value.replace(/[^0-9]/g, "");
-    });
-}

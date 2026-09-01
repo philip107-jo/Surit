@@ -71,6 +71,7 @@ EstimateDTO getSelectedEstimate(Long requestId);
 	/** 고객 기능 — 접수 취소 */
 	void cancelRequest(Long userNo, Long requestId);
 
+	/** 고객 기능 — 접수 등록 */
 void createRequest(RequestDTO request, List<MultipartFile> photoFiles) throws IOException;
 
 }
