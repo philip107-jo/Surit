@@ -22,7 +22,7 @@ public interface RequestMapper {
 	 * @param categoryCode 분야 필터 (없으면 null)
 	 * @param keyword      제목/내용 검색어 (없으면 null)
 	 */
-	List<RequestDTO> selectNearbyRequests(@Param("userNo") long userNo,
+	List<RequestDTO> selectNearbyRequests(@Param("userNo") Long userNo,
 	                                      @Param("categoryCode") String categoryCode,
 	                                      @Param("keyword") String keyword);
 
@@ -34,14 +34,14 @@ public interface RequestMapper {
 	 * 남의 접수 내용이 다 보일 수 있다. 그래서 상세 SQL 에도 목록과 똑같은
 	 * "볼 수 있는 조건" 을 붙이고, 조건에 안 맞으면 null 이 돌아오게 한다.
 	 */
-	RequestDTO selectRequestDetail(@Param("userNo") long userNo,
-	                               @Param("requestId") long requestId);
+	RequestDTO selectRequestDetail(@Param("userNo") Long userNo,
+	                               @Param("requestId") Long requestId);
 
 	/** 접수에 딸린 사진 목록 */
-	List<RequestPhotoDTO> selectPhotos(@Param("requestId") long requestId);
+	List<RequestPhotoDTO> selectPhotos(@Param("requestId") Long requestId);
 
 	/** 고객 기능 — 내가 올린 접수 목록 */
-	List<RequestDTO> findByUserId(Long userNo);
+	List<RequestDTO> findByUserId(@Param("userId") Long userNo);
 
 	/** 고객 기능 — 접수 등록 */
 	Long insertRequest(RequestDTO request);
@@ -64,4 +64,14 @@ public interface RequestMapper {
 	 */
 	Long updateSelectedEstimate(@Param("requestId") Long requestId,
 	                            @Param("estimateId") Long estimateId);
+
+    /** 고객 접수 수정 */
+    Long updateCustomerRequest(RequestDTO request);
+
+    /** 고객 접수 취소 */
+    Long cancelCustomerRequest(
+        @Param("requestId") Long requestId,
+        @Param("userNo") Long userNo,
+        @Param("statusCode") String statusCode
+);
 }

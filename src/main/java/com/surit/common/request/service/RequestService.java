@@ -54,5 +54,11 @@ public interface RequestService {
 	
 	/** 고객 기능 — 접수 등록 */
 	void createRequest(RequestDTO request);
+	
+	/** 고객 기능 — 접수 수정 */
+	void updateRequest(Long userNo, RequestDTO request);
+
+	/** 고객 기능 — 접수 취소 */
+	void cancelRequest(Long userNo, Long requestId);
 }
 

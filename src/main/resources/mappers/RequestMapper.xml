@@ -267,6 +267,56 @@
     )
 
 </insert>
+<!-- ============================================= -->
+<!-- 고객 접수 수정 -->
+<!-- 접수대기/견적중 상태에서만 수정 가능 -->
+<!-- ============================================= -->
+<update id="updateCustomerRequest"
+        parameterType="com.surit.common.request.model.dto.RequestDTO">
+
+    UPDATE REPAIR_REQUESTS
+
+       SET CATEGORY_CODE   = #{categoryCode},
+           TITLE           = #{title},
+           CONTENT         = #{content},
+           SERVICE_ADDRESS = #{serviceAddress},
+
+           VISIT_DATE =
+           CASE
+               WHEN #{visitDate} IS NULL
+                 OR #{visitDate} = ''
+               THEN NULL
+               ELSE TO_DATE(#{visitDate}, 'YYYY-MM-DD')
+           END,
+
+           VISIT_TIME_CODE = #{visitTimeCode}
+
+     WHERE REQUEST_ID = #{requestId}
+
+       AND USER_NO = #{userNo}
+
+       AND STATUS_CODE IN ('REQ_01', 'REQ_02')
+
+</update>
+
+
+<!-- ============================================= -->
+<!-- 고객 접수 취소 -->
+<!-- 접수대기/견적중 상태에서만 취소 가능 -->
+<!-- ============================================= -->
+<update id="cancelCustomerRequest">
+
+    UPDATE REPAIR_REQUESTS
+
+       SET STATUS_CODE = #{statusCode}
+
+     WHERE REQUEST_ID = #{requestId}
+
+       AND USER_NO = #{userNo}
+
+       AND STATUS_CODE IN ('REQ_01', 'REQ_02')
+
+</update>
 
 
 </mapper>
