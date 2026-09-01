@@ -295,17 +295,10 @@
 
 					                <span class="address-card__body">
 
-					                    <strong>
-					                        <c:choose>
-					                            <c:when test="${addr.isDefault eq 'Y'}">
-					                                기본 주소
-					                            </c:when>
-					                            <c:otherwise>
-					                                주소 ${status.index + 1}
-					                            </c:otherwise>
-					                        </c:choose>
-					                    </strong>
-
+										<strong>
+										    <c:out value="${addr.addressName}" />
+										</strong>
+										
 					                    <span class="address-card__text">
 					                        ${addr.address}
 					                        ${addr.addressDetail}

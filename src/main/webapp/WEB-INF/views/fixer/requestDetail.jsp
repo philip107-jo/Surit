@@ -34,8 +34,8 @@
 				--%>
 				<div class="upload">
 					<c:forEach var="photo" items="${repair.photos}">
-						<img src="<c:out value='${photo.photoPath}'/>" alt="고장 사진"
-						     style="width:132px;height:132px;object-fit:cover;border-radius:12px;border:1px solid var(--g-200)">
+						<img src="<c:out value='${photo.photoPath}'/>" alt="고장 사진" class="photo-zoom"
+						     style="width:132px;height:132px;object-fit:cover;border-radius:12px;border:1px solid var(--g-200);cursor:zoom-in">
 					</c:forEach>
 				</div>
 			</c:otherwise>

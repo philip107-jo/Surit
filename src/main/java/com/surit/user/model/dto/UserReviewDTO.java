@@ -26,7 +26,7 @@ public class UserReviewDTO {
     private Long      requestId;
     private Long      userNo;       // 리뷰를 쓴 고객 (로그인한 본인)
     private Long      fixerNo;      // 평가받은 기사
-    private Integer   score;        // SCORE NUMBER(1,0) -> 1~5
+    private Long   score;        // SCORE NUMBER(1,0) -> 1~5
     private String    content;
     private Timestamp createdAt;
 

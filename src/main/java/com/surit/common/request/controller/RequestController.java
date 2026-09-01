@@ -1,5 +1,6 @@
 package com.surit.common.request.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.surit.common.request.model.dto.RequestDTO;
@@ -139,33 +141,34 @@ public class RequestController {
      */
     @PostMapping("/request/request")
     public String createRequest(@ModelAttribute RequestDTO request,
+                                 @RequestParam(value = "photoFiles", required = false) List<MultipartFile> photoFiles,
                                  HttpSession session,
                                  RedirectAttributes ra) {
-
+     
         UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
         if (loginMember == null) {
             return "redirect:/user/login?redirectURL=/request/request";
         }
-
+     
         try {
-            // 로그인한 회원 번호는 폼이 아니라 세션에서 넣는다 (폼은 조작 가능)
             request.setUserNo(loginMember.getUserNo());
-
-            service.createRequest(request);
-
+     
+            service.createRequest(request, photoFiles);
+     
             ra.addFlashAttribute("message", "수리 접수가 완료되었습니다.");
-
-            // 방금 생성된 접수의 매칭 화면으로 이동
-            // service.createRequest() 실행 후 request 객체에 requestId 가 자동으로 채워져 있어야 함
-            // (RequestMapper.xml 의 insertRequest 에 useGeneratedKeys="true" keyProperty="requestId" 설정 필요)
+     
             return "redirect:/request/matching/" + request.getRequestId();
-
+     
         } catch (IllegalStateException e) {
             ra.addFlashAttribute("message", e.getMessage());
             return "redirect:/request/request";
+     
+        } catch (IOException e) {
+            e.printStackTrace();
+            ra.addFlashAttribute("message", "사진 업로드 중 오류가 발생했습니다.");
+            return "redirect:/request/request";
         }
     }
-
     /**
      * 기사 매칭 · 선택 화면
      * GET /request/matching/{requestId}
@@ -257,29 +260,7 @@ public class RequestController {
         return "user/request-detail";
     }
 
-    /**
-     * 접수 취소
-     * POST /request/{requestId}/cancel
-     */
-    @PostMapping("/request/{requestId}/cancel")
-    public String cancelRequest(@PathVariable("requestId") Long requestId,
-                                 HttpSession session,
-                                 RedirectAttributes ra) {
-
-        UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
-        if (loginMember == null) {
-            return "redirect:/user/login?redirectURL=/request/" + requestId;
-        }
-
-        try {
-            service.cancelRequest(loginMember.getUserNo(), requestId);
-            ra.addFlashAttribute("message", "접수가 취소되었습니다.");
-        } catch (IllegalStateException e) {
-            ra.addFlashAttribute("message", e.getMessage());
-        }
-
-        return "redirect:/user/mypage";
-    }
+   
 
     /** /request 주소로 접근 시 /request/request 로 리다이렉트 (cat 파라미터는 그대로 이어줌) */
     @GetMapping("/request")
@@ -291,4 +272,165 @@ public class RequestController {
 
         return "redirect:/request/request";
     }
+    /**
+     * 고객 접수 수정 버튼
+     * 기존 접수 페이지로 이동
+     */
+    @GetMapping("/request/{requestId}/edit")
+    public String editRequest(
+            @PathVariable("requestId") Long requestId,
+            HttpSession session,
+            RedirectAttributes ra) {
+
+        UserDTO loginMember =
+                (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
+
+        if (loginMember == null) {
+            return "redirect:/user/login";
+        }
+
+        try {
+
+            RequestDTO request =
+                    service.getRequestForMatching(
+                            loginMember.getUserNo(),
+                            requestId
+                    );
+
+            // 접수 대기 / 매칭 중일 때만 수정 가능
+            if (!"REQ_01".equals(request.getStatusCode())
+                    && !"REQ_02".equals(request.getStatusCode())) {
+
+                ra.addFlashAttribute(
+                        "message",
+                        "이미 매칭된 접수는 수정할 수 없습니다."
+                );
+
+                return "redirect:/request/matching/" + requestId;
+            }
+
+            // 기존 접수 페이지로 이동
+            return "redirect:/request/request?editId=" + requestId;
+
+        } catch (IllegalStateException e) {
+
+            ra.addFlashAttribute(
+                    "message",
+                    e.getMessage()
+            );
+
+            return "redirect:/request/matching/" + requestId;
+        }
+    }
+    /**
+     * 고객 접수 수정 저장
+     */
+    @PostMapping("/request/{requestId}/edit")
+    public String updateRequest(
+            @PathVariable("requestId") Long requestId,
+            @ModelAttribute RequestDTO request,
+            HttpSession session,
+            RedirectAttributes ra) {
+
+        UserDTO loginMember =
+                (UserDTO) session.getAttribute(
+                        SessionConst.LOGIN_MEMBER
+                );
+
+
+        if (loginMember == null) {
+
+            return "redirect:/user/login?redirectURL=/request/"
+                    + requestId
+                    + "/edit";
+        }
+
+
+        try {
+
+            // URL의 requestId 사용
+            request.setRequestId(requestId);
+
+
+            service.updateRequest(
+                    loginMember.getUserNo(),
+                    request
+            );
+
+
+            ra.addFlashAttribute(
+                    "message",
+                    "접수 내용이 수정되었습니다."
+            );
+
+
+            return "redirect:/request/matching/"
+                    + requestId;
+
+
+        } catch (IllegalStateException e) {
+
+            ra.addFlashAttribute(
+                    "message",
+                    e.getMessage()
+            );
+
+
+            return "redirect:/request/"
+                    + requestId
+                    + "/edit";
+        }
+    }
+    /**
+     * 고객 접수 취소
+     */
+    @PostMapping("/request/{requestId}/cancel")
+    public String cancelRequest(
+            @PathVariable("requestId") Long requestId,
+            HttpSession session,
+            RedirectAttributes ra) {
+
+        UserDTO loginMember =
+                (UserDTO) session.getAttribute(
+                        SessionConst.LOGIN_MEMBER
+                );
+
+
+        if (loginMember == null) {
+
+            return "redirect:/user/login";
+        }
+
+
+        try {
+
+            service.cancelRequest(
+                    loginMember.getUserNo(),
+                    requestId
+            );
+
+
+            ra.addFlashAttribute(
+                    "message",
+                    "접수가 취소되었습니다."
+            );
+
+
+            return "redirect:/user/mypage";
+
+
+        } catch (IllegalStateException e) {
+
+            ra.addFlashAttribute(
+                    "message",
+                    e.getMessage()
+            );
+
+
+            return "redirect:/request/matching/"
+                    + requestId;
+        }
+    }
+       
+    
 }
