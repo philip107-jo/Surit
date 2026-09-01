@@ -29,6 +29,7 @@ public class AdminServiceImpl implements AdminService {
 		if (admin == null) {
 			throw new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다");
 		}
+		
 		if (!passwordEncoder.matches(request.getAdminPwd(), admin.getAdminPwd())) {
 			throw new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다");
 		}

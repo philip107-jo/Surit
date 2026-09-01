@@ -21,6 +21,7 @@ public class EstimateDTO {
 	private Long estimateId;
 	private Long       requestId;
 	private Long    fixerNo;            // 견적을 낸 기사의 USER_NO
+	private String fixerName;      
 	/**
 	 * 돈은 double 로 다루지 않는다.
 	 * double 은 0.1 같은 값을 정확히 못 담아서 더할수록 오차가 쌓인다.

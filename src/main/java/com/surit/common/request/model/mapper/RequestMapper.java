@@ -65,6 +65,7 @@ public interface RequestMapper {
 	Long updateSelectedEstimate(@Param("requestId") Long requestId,
 	                            @Param("estimateId") Long estimateId);
 
+
     /** 고객 접수 수정 */
     Long updateCustomerRequest(RequestDTO request);
 
@@ -74,4 +75,9 @@ public interface RequestMapper {
         @Param("userNo") Long userNo,
         @Param("statusCode") String statusCode
 );
+
+	EstimateDTO selectSelectedEstimateByRequestId(@Param("requestId") Long requestId);
+	/** 접수 사진 한 장 저장 */
+	int insertPhoto(RequestPhotoDTO photo);
+
 }

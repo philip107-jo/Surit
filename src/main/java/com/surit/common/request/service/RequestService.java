@@ -1,6 +1,9 @@
 package com.surit.common.request.service;
 
+import java.io.IOException;
 import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import com.surit.common.model.dto.CommonCodeDTO;
 import com.surit.common.request.model.dto.RequestDTO;
@@ -51,8 +54,20 @@ public interface RequestService {
 	
 
 
-	
+
+/**
+ * 접수 상세 조회 (고객용, 매칭완료 이후 단계).
+ * 내 접수가 아니면 예외.
+ */
+RequestDTO getRequestDetailForCustomer(Long userNo, Long requestId);
+ 
+/** 이 접수에서 선택 확정된 견적 (없으면 null) */
+EstimateDTO getSelectedEstimate(Long requestId);
+ 
+
+ 
 	/** 고객 기능 — 접수 등록 */
+
 	void createRequest(RequestDTO request);
 	
 	/** 고객 기능 — 접수 수정 */
@@ -60,5 +75,8 @@ public interface RequestService {
 
 	/** 고객 기능 — 접수 취소 */
 	void cancelRequest(Long userNo, Long requestId);
+
+void createRequest(RequestDTO request, List<MultipartFile> photoFiles) throws IOException;
+
 }
 

@@ -106,8 +106,35 @@
       </table>
     </div>
 
-    <%-- ===== 심사 처리 ===== --%>
-    <c:if test="${fixer.approvalStatus ne 'APPROVED'}">
+    <%--
+      ===== 심사 처리 =====
+
+      approvalStatus 가 비어(null) 있다 = FIXER_PROFILE 행이 아예 없다
+      = 기사로 가입만 하고 /fixer/verify 에서 서류를 아직 안 냈다는 뜻이다.
+
+      이때 승인 버튼을 보여주면 안 된다.
+      눌러도 서비스가 "제출된 자격증이 없습니다" 로 막을 뿐이고,
+      관리자는 "왜 승인이 안 되지?" 하고 헤매게 된다.
+      심사할 서류가 없다는 사실을 화면에서 바로 알려주는 게 맞다.
+    --%>
+    <c:choose>
+
+    <%-- ① 서류 미제출 : 안내만 보여주고 버튼은 아예 안 만든다 --%>
+    <c:when test="${empty fixer.approvalStatus}">
+      <div class="sec-head"><h2>심사 처리</h2></div>
+      <div class="card card--sm" style="margin-bottom:32px;padding:32px;text-align:center">
+        <b style="font-size:18px">아직 서류를 제출하지 않았습니다</b>
+        <p class="muted" style="margin-top:10px;line-height:1.7">
+          기사로 가입만 한 상태입니다. 심사할 자격증·수리 분야·활동 지역이 없어서
+          승인하거나 반려할 수 없습니다.<br>
+          본인이 <b>[마이페이지 &gt; 기사로 전환]</b> 에서 서류를 제출하면
+          <b>기사 가입 승인 대기</b> 목록에 올라옵니다.
+        </p>
+      </div>
+    </c:when>
+
+    <%-- ② 서류를 냈고 아직 승인 전 : 승인 / 반려 처리 --%>
+    <c:when test="${fixer.approvalStatus ne 'APPROVED'}">
       <div class="sec-head"><h2>심사 처리</h2></div>
       <div class="card card--sm" style="margin-bottom:32px">
 
@@ -143,7 +170,9 @@
         </form>
 
       </div>
-    </c:if>
+    </c:when>
+
+    </c:choose>
 
   </c:if>
 

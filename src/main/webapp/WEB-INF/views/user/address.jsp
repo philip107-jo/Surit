@@ -120,7 +120,7 @@
               <form method="post" action="${pageContext.request.contextPath}/user/mypage/address/${addr.addressId}">
                 <div class="field">
                   <label class="field__label">별명</label>
-                  <input type="text" name="nickname" class="input" value="${addr.addressName}" placeholder="예: 집, 사무실, 부모님댁">
+                  <input type="text" name="addressName" class="input" value="${addr.addressName}" placeholder="예: 집, 사무실, 부모님댁">
                 </div>
                 <div class="field-row">
                   <div class="field" style="flex:0 0 160px">
