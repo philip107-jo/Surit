@@ -13,12 +13,41 @@
 
 	<%@ include file="common/fixernav.jspf" %>
 
-	<%-- 서비스가 던진 예외 메시지가 flash 로 넘어온다 (한 번만 보이고 사라짐) --%>
+	<%--
+		서비스가 던진 메시지가 flash 로 넘어온다 (한 번만 보이고 사라짐).
+
+		성공은 파란 안내, 실패는 주황 경고로 색을 나눈다.
+		둘 다 파란 안내로 두면 사용자가 오류인 줄 모르고 지나친다.
+
+		그리고 실패해도 redirect 로 돌아오기 때문에 입력값이 유지되지 않는다.
+		그 사실을 모르면 "왜 안 넘어가지" 하고 헤매게 되므로 안내를 함께 둔다.
+		(성공만 redirect 하고 실패는 forward 로 바꾸면 입력값을 살릴 수 있는데,
+		 파일 입력칸은 브라우저 보안상 어차피 복원되지 않는다.)
+	--%>
 	<c:if test="${not empty message}">
-		<div class="note note--blue" style="margin-bottom:24px">
-			<svg><use href="#i-bell"/></svg>
-			<span><c:out value="${message}"/></span>
-		</div>
+		<c:choose>
+
+			<%-- 실패 : 주황 경고 + 다시 입력해야 한다는 안내 --%>
+			<c:when test="${messageType eq 'error'}">
+				<div class="note note--warn" style="margin-bottom:24px">
+					<svg><use href="#i-alert"/></svg>
+					<span>
+						<b><c:out value="${message}"/></b><br>
+						<span class="muted">신청이 저장되지 않았습니다.
+						입력값 · 선택 항목 · 첨부 파일을 다시 입력해주세요.</span>
+					</span>
+				</div>
+			</c:when>
+
+			<%-- 성공 또는 일반 안내 : 기존 파란 박스 그대로 --%>
+			<c:otherwise>
+				<div class="note note--blue" style="margin-bottom:24px">
+					<svg><use href="#i-bell"/></svg>
+					<span><c:out value="${message}"/></span>
+				</div>
+			</c:otherwise>
+
+		</c:choose>
 	</c:if>
 
 	<c:choose>
