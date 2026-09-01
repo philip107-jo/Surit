@@ -41,7 +41,7 @@ public interface RequestMapper {
 	List<RequestPhotoDTO> selectPhotos(@Param("requestId") Long requestId);
 
 	/** 고객 기능 — 내가 올린 접수 목록 */
-	List<RequestDTO> findByUserId(Long userNo);
+	List<RequestDTO> findByUserId(@Param("userId") Long userNo);
 
 	/** 고객 기능 — 접수 등록 */
 	Long insertRequest(RequestDTO request);
@@ -64,7 +64,20 @@ public interface RequestMapper {
 	 */
 	Long updateSelectedEstimate(@Param("requestId") Long requestId,
 	                            @Param("estimateId") Long estimateId);
+
+
+    /** 고객 접수 수정 */
+    Long updateCustomerRequest(RequestDTO request);
+
+    /** 고객 접수 취소 */
+    Long cancelCustomerRequest(
+        @Param("requestId") Long requestId,
+        @Param("userNo") Long userNo,
+        @Param("statusCode") String statusCode
+);
+
 	EstimateDTO selectSelectedEstimateByRequestId(@Param("requestId") Long requestId);
 	/** 접수 사진 한 장 저장 */
 	int insertPhoto(RequestPhotoDTO photo);
+
 }
