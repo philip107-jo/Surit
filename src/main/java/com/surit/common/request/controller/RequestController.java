@@ -2,6 +2,7 @@ package com.surit.common.request.controller;
 
 import java.io.IOException;
 import java.util.List;
+import com.surit.fixer.verify.service.FixerService;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,11 +17,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.surit.common.request.model.dto.RequestDTO;
 import com.surit.common.request.service.RequestService;
 import com.surit.fixer.estimate.model.dto.EstimateDTO;
-import com.surit.fixer.verify.service.FixerService;
 import com.surit.user.SessionConst;
 import com.surit.user.mapper.UserAddressMapper;
 import com.surit.user.model.dto.UserAddressDTO;
 import com.surit.user.model.dto.UserDTO;
+import com.surit.user.model.dto.UserReviewDTO;
+import com.surit.user.review.service.UserReviewService;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +38,7 @@ public class RequestController {
 
     private final RequestService service;
     private final UserAddressMapper userAddressMapper;
+    private final UserReviewService reviewService;
 
     /*
      * 기사 인증 정보(등록한 지역·분야)를 읽기 위해 주입한다.
@@ -139,8 +142,10 @@ public class RequestController {
 
         // 카테고리 목록
         model.addAttribute("categoryList", service.getCategoryList());
+
         // 방문 시간대 목록
         model.addAttribute("visitTimeList", service.getVisitTimeList());
+
         // 메인에서 선택한 카테고리
         model.addAttribute("selectedCategoryCode", selectedCategoryCode);
 
@@ -207,6 +212,7 @@ public class RequestController {
         try {
             // 내 접수가 맞는지 확인 + 접수 정보
             RequestDTO request = service.getRequestForMatching(loginMember.getUserNo(), requestId);
+
             // 이 접수에 들어온 견적 목록
             List<EstimateDTO> estimateList = service.getEstimatesForMatching(requestId);
 
@@ -277,12 +283,16 @@ public class RequestController {
         return "user/request-detail";
     }
 
+
+
     /** /request 주소로 접근 시 /request/request 로 리다이렉트 (cat 파라미터는 그대로 이어줌) */
     @GetMapping("/request")
     public String index(@RequestParam(value = "cat", required = false) String cat) {
+
         if (cat != null && !cat.isBlank()) {
             return "redirect:/request/request?cat=" + cat;
         }
+
         return "redirect:/request/request";
     }
 
@@ -304,6 +314,7 @@ public class RequestController {
         }
 
         try {
+
             RequestDTO request =
                     service.getRequestForMatching(
                             loginMember.getUserNo(),
@@ -313,10 +324,12 @@ public class RequestController {
             // 접수 대기 / 매칭 중일 때만 수정 가능
             if (!"REQ_01".equals(request.getStatusCode())
                     && !"REQ_02".equals(request.getStatusCode())) {
+
                 ra.addFlashAttribute(
                         "message",
                         "이미 매칭된 접수는 수정할 수 없습니다."
                 );
+
                 return "redirect:/request/matching/" + requestId;
             }
 
@@ -324,10 +337,12 @@ public class RequestController {
             return "redirect:/request/request?editId=" + requestId;
 
         } catch (IllegalStateException e) {
+
             ra.addFlashAttribute(
                     "message",
                     e.getMessage()
             );
+
             return "redirect:/request/matching/" + requestId;
         }
     }
@@ -347,34 +362,45 @@ public class RequestController {
                         SessionConst.LOGIN_MEMBER
                 );
 
+
         if (loginMember == null) {
+
             return "redirect:/user/login?redirectURL=/request/"
                     + requestId
                     + "/edit";
         }
 
+
         try {
+
             // URL의 requestId 사용
             request.setRequestId(requestId);
+
 
             service.updateRequest(
                     loginMember.getUserNo(),
                     request
             );
 
+
             ra.addFlashAttribute(
                     "message",
                     "접수 내용이 수정되었습니다."
             );
 
+
             return "redirect:/request/matching/"
                     + requestId;
 
+
         } catch (IllegalStateException e) {
+
             ra.addFlashAttribute(
                     "message",
                     e.getMessage()
             );
+
+
             return "redirect:/request/"
                     + requestId
                     + "/edit";
@@ -395,31 +421,73 @@ public class RequestController {
                         SessionConst.LOGIN_MEMBER
                 );
 
+
         if (loginMember == null) {
+
             return "redirect:/user/login";
         }
 
+
         try {
+
             service.cancelRequest(
                     loginMember.getUserNo(),
                     requestId
             );
+
 
             ra.addFlashAttribute(
                     "message",
                     "접수가 취소되었습니다."
             );
 
+
             return "redirect:/user/mypage";
 
+
         } catch (IllegalStateException e) {
+
             ra.addFlashAttribute(
                     "message",
                     e.getMessage()
             );
+
+
             return "redirect:/request/matching/"
                     + requestId;
         }
     }
 
+
+ // ----------------------------------------------------------
+ // 리뷰 등록 (신규 메서드)
+ // POST /request/{requestId}/review
+ // ----------------------------------------------------------
+ @PostMapping("/request/{requestId}/review")
+ public String submitReview(@PathVariable("requestId") Long requestId,
+                             @RequestParam("score") Long score,
+                             @RequestParam("content") String content,
+                             HttpSession session,
+                             RedirectAttributes ra) {
+
+     UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
+     if (loginMember == null) {
+         return "redirect:/user/login?redirectURL=/request/" + requestId;
+     }
+
+     try {
+         EstimateDTO selectedEstimate = service.getSelectedEstimate(requestId);
+         if (selectedEstimate == null) {
+             throw new IllegalStateException("담당 기사 정보를 찾을 수 없습니다.");
+         }
+
+         reviewService.submitReview(requestId, loginMember.getUserNo(), selectedEstimate.getFixerNo(), score, content);
+         ra.addFlashAttribute("message", "리뷰가 등록되었습니다.");
+
+     } catch (IllegalStateException e) {
+         ra.addFlashAttribute("message", e.getMessage());
+     }
+
+     return "redirect:/request/" + requestId;
+ }
 }

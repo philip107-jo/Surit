@@ -39,10 +39,6 @@
 		</form>
 	</div>
 
-	<p class="muted" style="text-align:center;margin-top:20px;font-size:14px">
-		비밀번호 5회 오류 시 계정이 잠깁니다.
-	</p>
-
 </div>
 
 </body>

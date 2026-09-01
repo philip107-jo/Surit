@@ -63,9 +63,7 @@ RequestDTO getRequestDetailForCustomer(Long userNo, Long requestId);
  
 /** 이 접수에서 선택 확정된 견적 (없으면 null) */
 EstimateDTO getSelectedEstimate(Long requestId);
- 
 
- 
 	
 	/** 고객 기능 — 접수 수정 */
 	void updateRequest(Long userNo, RequestDTO request);
@@ -73,6 +71,7 @@ EstimateDTO getSelectedEstimate(Long requestId);
 	/** 고객 기능 — 접수 취소 */
 	void cancelRequest(Long userNo, Long requestId);
 
+	/** 고객 기능 — 접수 등록 */
 void createRequest(RequestDTO request, List<MultipartFile> photoFiles) throws IOException;
 
 }
