@@ -82,7 +82,14 @@
 								</td>
 								<td class="num"><fmt:formatDate value="${job.createdAt}" pattern="yyyy-MM-dd HH:mm"/></td>
 								<td class="right">
-									<a class="btn btn--ghost btn--sm" href="/fixer/jobs/${job.requestId}">상세 보기</a>
+									<div class="btn-row">
+										<%-- 이 목록은 "내 견적이 채택된 건" 만 나오므로
+										     채팅 상대(고객)가 항상 있다. --%>
+										<a class="btn btn--primary btn--sm"
+										   href="/orders/${job.requestId}/chat">채팅</a>
+										<a class="btn btn--ghost btn--sm"
+										   href="/fixer/jobs/${job.requestId}">상세 보기</a>
+									</div>
 								</td>
 							</tr>
 						</c:forEach>

@@ -151,16 +151,29 @@
                       </c:otherwise>
                     </c:choose>
                   </td>
-                  <td class="right">
-                    <c:choose>
-                      <c:when test="${req.statusCode == 'REQ_01' || req.statusCode == 'REQ_02'}">
-                        <a class="btn btn--ghost btn--sm" href="${pageContext.request.contextPath}/request/matching/${req.requestId}">상세 보기</a>
-                      </c:when>
-                      <c:otherwise>
-                        <a class="btn btn--ghost btn--sm" href="${pageContext.request.contextPath}/request/${req.requestId}">상세 보기</a>
-                      </c:otherwise>
-                    </c:choose>
-                  </td>
+
+				  <td class="right">
+				    <div class="btn-row">
+				      <%-- 기사가 배정된 뒤부터 채팅이 가능하다. --%>
+				      <c:if test="${req.statusCode == 'REQ_03' or req.statusCode == 'REQ_04'}">
+				        <a class="btn btn--primary btn--sm"
+				           href="${pageContext.request.contextPath}/orders/${req.requestId}/chat">기사와 채팅</a>
+				      </c:if>
+
+				      <%-- 아직 기사를 못 정한 접수만 매칭 화면(견적 선택)으로 보낸다 --%>
+				      <c:choose>
+				        <c:when test="${req.statusCode == 'REQ_01' || req.statusCode == 'REQ_02'}">
+				          <a class="btn btn--ghost btn--sm"
+				             href="${pageContext.request.contextPath}/request/matching/${req.requestId}">상세 보기</a>
+				        </c:when>
+				        <c:otherwise>
+				          <a class="btn btn--ghost btn--sm"
+				             href="${pageContext.request.contextPath}/request/${req.requestId}">상세 보기</a>
+				        </c:otherwise>
+				      </c:choose>
+				    </div>
+				  </td>
+
                 </tr>
               </c:forEach>
             </c:otherwise>
