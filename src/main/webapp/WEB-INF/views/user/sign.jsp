@@ -97,7 +97,7 @@
                         <div class="field">
                             <label class="field__label" for="phone">전화번호<span class="req">*</span></label>
                             <input type="text" id="phone" name="phone" class="input"
-                                placeholder="01012345678" autocomplete="off" required>
+                                placeholder="01012345678" maxlength:"11" autocomplete="off" required>
                         </div>
 
                         <div class="field">

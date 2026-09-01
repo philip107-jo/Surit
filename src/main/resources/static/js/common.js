@@ -811,3 +811,11 @@ function toggleAddressAdd() {
     });
 
 })();
+// 연락처 : 숫자만 입력 가능
+const phoneInput = document.getElementById("phone");
+
+if (phoneInput) {
+    phoneInput.addEventListener("input", function () {
+        this.value = this.value.replace(/[^0-9]/g, "");
+    });
+}

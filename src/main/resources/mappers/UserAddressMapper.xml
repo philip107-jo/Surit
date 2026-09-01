@@ -44,16 +44,16 @@
         VALUES (#{userNo}, #{addressName}, #{zipCode}, #{address}, #{addressDetail}, #{isDefault})
     </insert>
 
-    <update id="updateAddress">
-        UPDATE USER_ADDRESS
-           SET ADDRESS_NAME = #{addressName},
-               ZIP_CODE = #{zipCode},
-               ADDRESS = #{address},
-               ADDRESS_DETAIL = #{addressDetail},
-               IS_DEFAULT = #{isDefault}
-         WHERE ADDRESS_ID = #{addressId}
-           AND USER_NO = #{userNo}
-    </update>
+<update id="updateAddress">
+    UPDATE USER_ADDRESS
+    SET ADDRESS_NAME = #{addressName, jdbcType=VARCHAR},
+        ZIP_CODE = #{zipCode, jdbcType=VARCHAR},
+        ADDRESS = #{address, jdbcType=VARCHAR},
+        ADDRESS_DETAIL = #{addressDetail, jdbcType=VARCHAR},
+        IS_DEFAULT = #{isDefault, jdbcType=CHAR}
+    WHERE ADDRESS_ID = #{addressId}
+      AND USER_NO = #{userNo}
+</update>
 
     <delete id="deleteAddress">
         DELETE FROM USER_ADDRESS
