@@ -21,5 +21,22 @@
         WHERE rv.USER_NO = #{userNo}
         ORDER BY rv.CREATED_AT DESC
     </select>
+<insert id="insertReview">
+    INSERT INTO REVIEW (REQUEST_ID, USER_NO, FIXER_NO, SCORE, CONTENT)
+    VALUES (#{requestId}, #{userNo}, #{fixerNo}, #{score}, #{content})
+</insert>
 
+<select id="selectReviewByRequestId" resultType="com.surit.user.model.dto.UserReviewDTO">
+    SELECT
+        rv.REVIEW_ID    AS reviewId,
+        rv.REQUEST_ID   AS requestId,
+        rv.USER_NO      AS userNo,
+        rv.FIXER_NO     AS fixerNo,
+        rv.SCORE        AS score,
+        rv.CONTENT      AS content,
+        rv.CREATED_AT   AS createdAt
+    FROM REVIEW rv
+    WHERE rv.REQUEST_ID = #{requestId}
+      AND rv.USER_NO = #{userNo}
+</select>
 </mapper>
