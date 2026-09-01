@@ -197,6 +197,45 @@ document.addEventListener('click', function (e) {
     });
   }
 
+  /* 이메일 중복확인 (2026-09-01 추가)
+     아이디는 버튼을 눌러 확인하지만, 이메일은 칸이 하나뿐이라
+     커서가 빠져나가는 순간(blur) 자동으로 확인한다.
+     가입 버튼을 누른 뒤에 알려주면 입력한 내용이 다 날아가기 때문이다. */
+  var emailRule   = null;
+  rules.forEach(function (r) { if (r.inputId === 'user-email') emailRule = r; });
+
+  var emailInput  = document.getElementById('user-email');
+  var emailResult = document.getElementById('check-email-result');
+
+  if (emailRule && emailInput && emailResult) {
+    emailInput.addEventListener('blur', function () {
+      var value = emailInput.value.trim();
+
+      // 형식이 틀렸으면 서버에 물어볼 필요가 없다
+      if (emailRule.validate(value)) { return; }
+
+      emailResult.textContent = '확인 중...';
+      emailResult.style.color = '';
+
+      fetch('/user/checkEmail?email=' + encodeURIComponent(value))
+        .then(function (res) {
+          if (!res.ok) throw new Error('request-failed');
+          return res.json();
+        })
+        .then(function (result) {
+          var isDuplicate = result.data;   // true 면 이미 사용중
+          emailResult.textContent = result.message;
+          emailResult.style.color = isDuplicate ? 'var(--danger)' : 'var(--ok)';
+          emailInput.style.borderColor = isDuplicate ? 'var(--danger)' : '';
+        })
+        .catch(function () {
+          // 확인에 실패해도 가입 자체를 막지는 않는다.
+          // 서버가 저장 직전에 한 번 더 검사하므로 통과해도 안전하다.
+          emailResult.textContent = '';
+        });
+    });
+  }
+
   form.addEventListener('submit', function (e) {
     var firstInvalid = null;
 

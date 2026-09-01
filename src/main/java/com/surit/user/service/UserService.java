@@ -13,6 +13,9 @@ public interface UserService {
 	// 아이디 중복체크
 	boolean isUserIdCheck(String userId);
 
+	// 이메일 중복체크 (2026-09-01 추가)
+	boolean isEmailCheck(String email);
+
 	// 로그인
 	UserDTO login(String userId, String password);
 

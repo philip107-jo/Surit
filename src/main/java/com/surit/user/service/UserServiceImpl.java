@@ -27,6 +27,13 @@ public class UserServiceImpl implements UserService {
 	        throw new IllegalStateException("이미 사용중인 아이디입니다.");
 	    }
 
+	    // 이메일 중복 검사 (2026-09-01 추가)
+	    // USERS.EMAIL 에 UNIQUE 제약이 있어서, 여기서 안 막으면
+	    // INSERT 단계에서 오라클이 ORA-00001 을 던지고 500 에러 페이지가 뜬다.
+	    if (isEmailCheck(user.getEmail())) {
+	        throw new IllegalStateException("이미 사용중인 이메일입니다.");
+	    }
+
 	    String encodePwd = passwordencoder.encode(user.getPassword());
 	    user.setPassword(encodePwd);
 	    mapper.insertUser(user);
@@ -41,6 +48,14 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public boolean isUserIdCheck(String userId) {
 		return mapper.countByUserId(userId) > 0;
+	}
+
+	@Override
+	public boolean isEmailCheck(String email) {
+		if (email == null || email.isBlank()) {
+			return false;   // 빈 값은 중복이 아니라 "미입력". 폼의 required 가 막는다
+		}
+		return mapper.countByEmail(email.trim()) > 0;
 	}
 
 	@Override
