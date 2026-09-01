@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!doctype html>
 <html lang="ko">
 <head>
@@ -120,11 +121,70 @@
     <p class="muted" style="font-size:17px;margin:12px 0 26px">
       채팅으로 문의하시면 평일 09:00~18:00 사이에 답변드립니다.
     </p>
-    <%-- ⚠ /chat 컨트롤러 아직 미확인 --%>
-    <a class="btn btn--primary btn--lg" href="${pageContext.request.contextPath}/chat">
-      <svg class="ico"><use href="#i-chat"/></svg>1:1 문의하기
-    </a>
+
+    <%-- 방을 "만드는" 동작이라 링크(GET)가 아니라 form(POST) 으로 보낸다.
+         이미 진행중인 문의가 있으면 컨트롤러가 그 방으로 보내준다. --%>
+    <form method="post" action="${pageContext.request.contextPath}/user/mypage/support/new"
+          style="display:inline">
+      <button type="submit" class="btn btn--primary btn--lg">
+        <svg class="ico"><use href="#i-chat"/></svg>
+        <c:choose>
+          <c:when test="${empty rooms}">1:1 문의하기</c:when>
+          <c:otherwise>문의 이어서 하기</c:otherwise>
+        </c:choose>
+      </button>
+    </form>
   </div>
+
+  <%-- ══════════ 내 문의 내역 ══════════ --%>
+  <div class="sec-head sec-head--row" style="margin:44px 0 16px">
+    <h2>내 문의 내역</h2>
+  </div>
+
+  <c:choose>
+    <c:when test="${empty rooms}">
+      <div class="card" style="padding:36px">
+        <div class="empty">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v8a2.5 2.5 0 0 1-2.5 2.5H9.5L4 21.5z"/>
+          </svg>
+          <p>아직 문의하신 내역이 없습니다.</p>
+        </div>
+      </div>
+    </c:when>
+
+    <c:otherwise>
+      <c:forEach var="r" items="${rooms}">
+        <a class="card"
+           href="${pageContext.request.contextPath}/user/mypage/support/${r.roomId}"
+           style="display:flex;align-items:center;gap:16px;padding:18px 20px;
+                  margin-bottom:10px;text-decoration:none;color:inherit">
+
+          <span class="tile t-blue" style="flex:none"><svg><use href="#i-chat"/></svg></span>
+
+          <span style="flex:1;min-width:0">
+            <span style="display:block;font-weight:700">
+              <c:out value="${empty r.categoryName ? '일반 문의' : r.categoryName}"/>
+              <%-- 안 읽은 답변이 있으면 개수를 붙여준다 --%>
+              <c:if test="${r.unreadCount > 0}">
+                <span class="badge badge--danger" style="margin-left:6px">${r.unreadCount}</span>
+              </c:if>
+            </span>
+            <%-- ★ lastMessage 는 DB에서 복호화되어 넘어온 평문이다.
+                 반드시 c:out 으로 출력해야 XSS 가 막힌다. --%>
+            <span class="muted" style="display:block;font-size:14.5px;margin-top:4px;
+                                       overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+              <c:out value="${empty r.lastMessage ? '아직 대화가 없습니다.' : r.lastMessage}"/>
+            </span>
+          </span>
+
+          <span class="muted" style="flex:none;font-size:13px">
+            <c:out value="${empty r.lastSentAt ? r.createdAt : r.lastSentAt}"/>
+          </span>
+        </a>
+      </c:forEach>
+    </c:otherwise>
+  </c:choose>
     </div>
   </div>
 </div>

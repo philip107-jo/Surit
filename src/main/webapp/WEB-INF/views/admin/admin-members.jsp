@@ -7,10 +7,6 @@
 			<p>기사 가입을 심사하고 계정 상태를 관리합니다.</p>
 		</div>
 
-		<c:if test="${not empty msg}">
-			<div class="alert" style="margin-bottom:16px"><c:out value="${msg}"/></div>
-		</c:if>
-
 		<%--=====승인 대기 기사=====--%>
 			<div class="sec-head sec-head--row" style="margin-bottom:20px">
 				<div>
