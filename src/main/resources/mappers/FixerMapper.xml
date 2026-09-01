@@ -46,6 +46,7 @@
 	     화면에서 empty 검사를 하고 출력한다. -->
 
 	<select id="selectFixerProfile" parameterType="long"
+
 	        resultType="com.surit.fixer.verify.model.dto.FixerProfileDTO">
 		SELECT USER_NO, INTRO, CAREER_YEARS, APPROVAL_STATUS,
 		       FIXER_PHOTO_URL AS PHOTO_URL,
@@ -61,6 +62,33 @@
 		  FROM FIXER_LICENSE
 		 WHERE USER_NO = #{userNo}
 		 ORDER BY LICENSE_ID
+	</select>
+
+	<!--
+		내가 등록한 활동 지역 / 수리 분야의 "이름"만 뽑는다.
+		화면 안내용이라 코드(REG_01)가 아니라 사람이 읽는 이름이 필요하다.
+
+		USE_YN 을 조건에 넣지 않는 이유 :
+		접수 매칭 조건(RequestMapper 의 fixerScope)도 USE_YN 을 보지 않는다.
+		여기서만 걸러내면 "화면엔 안 보이는데 매칭은 되는" 항목이 생겨서
+		오히려 더 헷갈린다. 매칭에 실제로 쓰이는 것을 그대로 보여준다.
+	-->
+	<select id="selectMyRegionNames" parameterType="Long" resultType="string">
+		SELECT c.CODE_NAME
+		  FROM FIXER_REGION f
+		  JOIN COMMON_CODE  c ON c.CODE_ID    = f.REGION_CODE
+		                     AND c.CODE_GROUP = 'REGION'
+		 WHERE f.USER_NO = #{userNo}
+		 ORDER BY c.CODE_NAME
+	</select>
+
+	<select id="selectMyCategoryNames" parameterType="Long" resultType="string">
+		SELECT c.CODE_NAME
+		  FROM FIXER_CATEGORY f
+		  JOIN COMMON_CODE    c ON c.CODE_ID    = f.CATEGORY_CODE
+		                       AND c.CODE_GROUP = 'CATEGORY'
+		 WHERE f.USER_NO = #{userNo}
+		 ORDER BY c.CODE_NAME
 	</select>
 
 	<!-- ================= 등록 / 수정 ================= -->

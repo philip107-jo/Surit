@@ -98,6 +98,7 @@
                             <label class="field__label" for="phone">전화번호<span class="req">*</span></label>
                             <input type="text" id="phone" name="phone" class="input"
                                 placeholder="01012345678" maxlength:"11" autocomplete="off" required>
+								<p id="check-phone-result" class="field__help" aria-live="polite"></p>
                         </div>
 
                         <div class="field">

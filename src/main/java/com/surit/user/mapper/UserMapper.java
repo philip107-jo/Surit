@@ -11,6 +11,15 @@ public interface UserMapper {
 	
 	// 아이디 중복확인 -> 데이터 조회
 	int countByUserId(String userId);
+
+	/**
+	 * 이메일 중복확인.  2026-09-01 추가
+	 *
+	 * USERS.EMAIL 에 UNIQUE 제약이 걸려 있어서, 중복된 이메일로 INSERT 하면
+	 * 오라클이 ORA-00001 을 던지고 스프링이 500 에러 페이지를 띄운다.
+	 * 저장하기 전에 미리 세어보고 막는다.
+	 */
+	int countByEmail(String email);
 	
 	// 아이디를 통한 회원 조회
 	UserDTO selectByUserId(String userId);

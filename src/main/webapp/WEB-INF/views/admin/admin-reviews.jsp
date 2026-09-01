@@ -4,7 +4,6 @@
 
 	<div class="page-head">
 		<h1>리뷰 관리</h1>
-		<p>리뷰 원문은 관리자만 열람할 수 있습니다.</p>
 	</div>
 
 	<%--===== 평점 하위 기사 =====--%>
@@ -89,7 +88,7 @@
 								<span class="badge badge--warn">★ ${r.score}</span>
 							</c:when>
 							<c:otherwise>
-								<span class="badge badge--gray">★ ${r.score}</span>
+								<span class="badge badge--ok">★ ${r.score}</span>
 							</c:otherwise>
 						</c:choose>
 					</td>

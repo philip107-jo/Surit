@@ -6,7 +6,15 @@
  
  <select id="countByUserId" parameterType="string" resultType="int">
  SELECT COUNT(*) FROM USERS WHERE USER_ID = #{userId}
- 
+
+ </select>
+
+ <!-- 이메일 중복확인 (2026-09-01 추가)
+      대소문자를 구분하지 않는다. abc@x.com 과 ABC@X.com 은 같은 주소인데
+      그냥 비교하면 다른 값으로 보고 통과시켜 버린다.
+      그러면 INSERT 단계에서 UNIQUE 제약에 걸려 다시 500 이 난다. -->
+ <select id="countByEmail" parameterType="string" resultType="int">
+ SELECT COUNT(*) FROM USERS WHERE LOWER(EMAIL) = LOWER(#{email})
  </select>
  
  <select id="selectByUserId" parameterType="string" resultType="com.surit.user.model.dto.UserDTO">

@@ -120,6 +120,16 @@ document.addEventListener('click', function (e) {
         return ok ? null : '이메일 형식이 올바르지 않습니다';
       }
     },
+	{
+	  inputId: 'phone',
+	  resultId: 'check-phone-result',   // ← null에서 이걸로 변경
+	  validate: function (v) {
+	    if (!v) return '전화번호를 입력해주세요';
+	    if (!/^[0-9]+$/.test(v)) return '전화번호는 숫자만 입력해주세요';
+	    if (v.length < 9 || v.length > 11) return '전화번호 자리수를 확인해주세요';
+	    return null;
+	  }
+	},
     {
       inputId: 'address',
       resultId: null,
@@ -193,6 +203,45 @@ document.addEventListener('click', function (e) {
         })
         .finally(function () {
           checkIdBtn.disabled = false;
+        });
+    });
+  }
+
+  /* 이메일 중복확인 (2026-09-01 추가)
+     아이디는 버튼을 눌러 확인하지만, 이메일은 칸이 하나뿐이라
+     커서가 빠져나가는 순간(blur) 자동으로 확인한다.
+     가입 버튼을 누른 뒤에 알려주면 입력한 내용이 다 날아가기 때문이다. */
+  var emailRule   = null;
+  rules.forEach(function (r) { if (r.inputId === 'user-email') emailRule = r; });
+
+  var emailInput  = document.getElementById('user-email');
+  var emailResult = document.getElementById('check-email-result');
+
+  if (emailRule && emailInput && emailResult) {
+    emailInput.addEventListener('blur', function () {
+      var value = emailInput.value.trim();
+
+      // 형식이 틀렸으면 서버에 물어볼 필요가 없다
+      if (emailRule.validate(value)) { return; }
+
+      emailResult.textContent = '확인 중...';
+      emailResult.style.color = '';
+
+      fetch('/user/checkEmail?email=' + encodeURIComponent(value))
+        .then(function (res) {
+          if (!res.ok) throw new Error('request-failed');
+          return res.json();
+        })
+        .then(function (result) {
+          var isDuplicate = result.data;   // true 면 이미 사용중
+          emailResult.textContent = result.message;
+          emailResult.style.color = isDuplicate ? 'var(--danger)' : 'var(--ok)';
+          emailInput.style.borderColor = isDuplicate ? 'var(--danger)' : '';
+        })
+        .catch(function () {
+          // 확인에 실패해도 가입 자체를 막지는 않는다.
+          // 서버가 저장 직전에 한 번 더 검사하므로 통과해도 안전하다.
+          emailResult.textContent = '';
         });
     });
   }
@@ -860,4 +909,25 @@ function toggleAddressAdd() {
 
     });
 
+})();
+/* 마이페이지 : 상태 필터 칩 클릭 -> 접수 목록 테이블 행 필터링 */
+(function () {
+  var filterBar = document.getElementById('status-filter');
+  if (!filterBar) return;
+
+  filterBar.addEventListener('click', function (e) {
+    var chip = e.target.closest('[data-status-filter]');
+    if (!chip) return;
+
+    filterBar.querySelectorAll('[data-status-filter]').forEach(function (c) {
+      c.classList.remove('chip--dark');
+    });
+    chip.classList.add('chip--dark');
+
+    var status = chip.getAttribute('data-status-filter');
+    document.querySelectorAll('[data-status-row]').forEach(function (row) {
+      var show = (status === 'all') || (row.getAttribute('data-status-row') === status);
+      row.style.display = show ? '' : 'none';
+    });
+  });
 })();
