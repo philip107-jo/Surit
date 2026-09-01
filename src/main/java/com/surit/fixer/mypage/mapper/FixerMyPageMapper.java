@@ -1,31 +1,21 @@
 package com.surit.fixer.mypage.mapper;
 
-
-import java.util.List;
-
-import com.surit.fixer.mypage.model.dto.FixerAddressDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface FixerMyPageMapper {
+    List<Map<String, Object>> selectAllCategories();
+    List<Map<String, Object>> selectAllRegions();
 
-    // --- 수리 카테고리 관리 ---
-    int deleteFixerCategories(@Param("fixerNo") Long fixerNo);
-    int insertFixerCategories(@Param("fixerNo") Long fixerNo, @Param("categoryCodes") List<String> categoryCodes);
+    List<String> selectMyCategories(Long fixerId);
+    List<String> selectMyRegions(Long fixerId);
 
-    // --- 활동 지역 관리 ---
-    int deleteFixerRegions(@Param("fixerNo") Long fixerNo);
-    int insertFixerRegions(@Param("fixerNo") Long fixerNo, @Param("regionCodes") List<String> regionCodes);
+    void deleteMyCategories(Long fixerId);
+    void insertMyCategory(@Param("fixerId") Long fixerId, @Param("categoryCode") String categoryCode);
 
-    // --- 주소 관리 ---
-    List<FixerAddressDTO> selectAddresses(@Param("fixerNo") Long fixerNo);
-    int countAddresses(@Param("fixerNo") Long fixerNo);
-    int resetDefaultAddress(@Param("fixerNo") Long fixerNo);
-    int insertAddress(FixerAddressDTO addressDto);
-    int deleteAddress(@Param("fixerNo") Long fixerNo, @Param("addressId") Long addressId);
-
-    public List<String> getCategories(Long fixerId);
-
-    public List<String> getRegions(Long fixerId);
+    void deleteMyRegions(Long fixerId);
+    void insertMyRegion(@Param("fixerId") Long fixerId, @Param("regionCode") String regionCode);
 }

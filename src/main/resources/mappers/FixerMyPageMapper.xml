@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.surit.fixer.mypage.mapper.FixerMyPageMapper">
+
+    <select id="selectAllCategories" resultType="map">
+        SELECT CODE_ID as "codeId", CODE_NAME as "codeName"
+        FROM COMMON_CODE
+        WHERE CODE_GROUP = 'CATEGORY'
+        ORDER BY CODE_ID
+    </select>
+
+    <select id="selectAllRegions" resultType="map">
+        SELECT CODE_ID as "codeId", CODE_NAME as "codeName"
+        FROM COMMON_CODE
+        WHERE CODE_GROUP = 'REGION'
+        ORDER BY CODE_ID
+    </select>
+
+    <!-- 기사 카테고리 -->
+    <select id="selectMyCategories" resultType="string">
+        SELECT CATEGORY_CODE
+        FROM FIXER_CATEGORY
+        WHERE FIXER_ID = #{fixerId}
+    </select>
+
+    <insert id="insertMyCategory">
+        INSERT INTO FIXER_CATEGORY (FIXER_ID, CATEGORY_CODE)
+        VALUES (#{fixerId}, #{categoryCode})
+    </insert>
+
+    <delete id="deleteMyCategories">
+        DELETE FROM FIXER_CATEGORY
+        WHERE FIXER_ID = #{fixerId}
+    </delete>
+
+    <!-- 기사가 선택한 지역 -->
+    <select id="selectMyRegions" resultType="string">
+        SELECT REGION_CODE
+        FROM FIXER_REGION
+        WHERE FIXER_ID = #{fixerId}
+    </select>
+
+    <insert id="insertMyRegion">
+        INSERT INTO FIXER_REGION (FIXER_ID, REGION_CODE)
+        VALUES (#{fixerId}, #{regionCode})
+    </insert>
+
+    <delete id="deleteMyRegions">
+        DELETE FROM FIXER_REGION
+        WHERE FIXER_ID = #{fixerId}
+    </delete>
+
+</mapper>
