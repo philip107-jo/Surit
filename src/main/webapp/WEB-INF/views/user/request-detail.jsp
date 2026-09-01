@@ -30,10 +30,30 @@
 <main>
 <div class="container" style="max-width:900px">
 
+  <c:if test="${not empty message}">
+    <div class="note note--blue" style="margin-bottom:24px">
+      <svg><use href="#i-shield"/></svg>
+      <span><c:out value="${message}"/></span>
+    </div>
+  </c:if>
+
   <div class="page-head page-head--plain">
     <h1>
       <c:out value="${request.title}"/>
-      <span class="badge st-assigned"><c:out value="${request.statusName}"/></span>
+      <c:choose>
+        <c:when test="${request.statusCode == 'REQ_03'}">
+          <span class="badge st-assigned"><c:out value="${request.statusName}"/></span>
+        </c:when>
+        <c:when test="${request.statusCode == 'REQ_04'}">
+          <span class="badge st-done"><c:out value="${request.statusName}"/></span>
+        </c:when>
+        <c:when test="${request.statusCode == 'REQ_05'}">
+          <span class="badge st-canceled"><c:out value="${request.statusName}"/></span>
+        </c:when>
+        <c:otherwise>
+          <span class="badge"><c:out value="${request.statusName}"/></span>
+        </c:otherwise>
+      </c:choose>
     </h1>
     <p><fmt:formatDate value="${request.createdAt}" pattern="yyyy.MM.dd HH:mm"/> 접수</p>
   </div>
@@ -151,6 +171,74 @@
       </div>
     </div>
   </div>
+
+  <%-- 리뷰: 수리완료(REQ_04) 상태일 때만 --%>
+  <c:if test="${request.statusCode == 'REQ_04'}">
+    <c:choose>
+
+      <%-- 이미 리뷰를 썼으면 읽기 전용으로 보여줌 --%>
+      <c:when test="${not empty existingReview}">
+        <div class="card">
+          <div class="card__head"><h2 class="card__title">내가 남긴 리뷰</h2></div>
+          <div class="stars" style="margin-bottom:14px">
+            <c:forEach var="i" begin="1" end="5">
+              <svg class="${i > existingReview.score ? 'off' : ''}"><use href="#i-star"/></svg>
+            </c:forEach>
+            <b style="margin-left:8px"><c:out value="${existingReview.score}"/>.0</b>
+          </div>
+          <p style="font-size:16px;color:var(--g-700);line-height:1.7">
+            <c:out value="${existingReview.content}"/>
+          </p>
+        </div>
+      </c:when>
+
+      <%-- 아직 안 썼으면 작성 폼 --%>
+      <c:otherwise>
+        <div class="card" style="border-color:var(--p-200)">
+          <div class="card__head"><h2 class="card__title">수리는 만족하셨나요?</h2></div>
+
+          <form id="review-form" method="post" action="${pageContext.request.contextPath}/request/${request.requestId}/review">
+
+            <div class="field">
+              <label class="field__label">별점을 선택해 주세요</label>
+              <div class="stars" id="review-stars" style="cursor:pointer">
+                <c:forEach var="i" begin="1" end="5">
+                  <svg class="off"><use href="#i-star"/></svg>
+                </c:forEach>
+                <b id="review-score-label" style="margin-left:8px">0.0</b>
+              </div>
+              <input type="hidden" id="review-score" name="score">
+            </div>
+
+            <div class="field">
+              <label class="field__label">어떤 점이 좋았나요? <span class="muted" style="font-weight:400">(여러 개 선택 가능)</span></label>
+              <div class="chip-row">
+                <button type="button" class="chip" data-toggle>빠른 방문</button>
+                <button type="button" class="chip" data-toggle>친절한 설명</button>
+                <button type="button" class="chip" data-toggle>합리적인 가격</button>
+                <button type="button" class="chip" data-toggle>깔끔한 마무리</button>
+                <button type="button" class="chip" data-toggle>시간 약속 준수</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="review-content">한마디 남겨주세요</label>
+              <textarea id="review-content" name="content" class="textarea"
+                        placeholder="수리 과정에서 좋았던 점이나 아쉬웠던 점을 자유롭게 적어주세요."></textarea>
+            </div>
+
+            <div class="note note--blue" style="margin-bottom:22px">
+              <svg><use href="#i-shield"/></svg>
+              <span>남겨주신 리뷰는 <b>수릿 관리자만 확인</b>하며, 기사님 품질 관리에 사용됩니다. 다른 고객에게 그대로 공개되지 않습니다.</span>
+            </div>
+
+            <button type="submit" class="btn btn--primary btn--xl btn--block">리뷰 등록하기</button>
+          </form>
+        </div>
+      </c:otherwise>
+    </c:choose>
+  </c:if>
+
 </div>
 
 </main>

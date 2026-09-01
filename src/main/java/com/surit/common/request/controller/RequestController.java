@@ -2,6 +2,7 @@ package com.surit.common.request.controller;
 
 import java.io.IOException;
 import java.util.List;
+import com.surit.fixer.verify.service.FixerService;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +21,8 @@ import com.surit.user.SessionConst;
 import com.surit.user.mapper.UserAddressMapper;
 import com.surit.user.model.dto.UserAddressDTO;
 import com.surit.user.model.dto.UserDTO;
+import com.surit.user.model.dto.UserReviewDTO;
+import com.surit.user.review.service.UserReviewService;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +38,13 @@ public class RequestController {
 
     private final RequestService service;
     private final UserAddressMapper userAddressMapper;
+    private final UserReviewService reviewService;
+
+    /*
+     * 기사 인증 정보(등록한 지역·분야)를 읽기 위해 주입한다.
+     * 접수 관련 서비스가 아니라 F-14 의 서비스라서 별도로 받는다.
+     */
+    private final FixerService fixerService;
 
     /** F-15 내 주변 새 접수 조회 */
     @GetMapping("/fixer/requests")
@@ -54,6 +64,18 @@ public class RequestController {
             model.addAttribute("categoryList", service.getCategoryList());
             model.addAttribute("categoryCode", categoryCode);
             model.addAttribute("keyword", keyword);
+
+            /*
+             * 내가 등록한 지역·분야를 화면에 같이 내려준다.
+             * 목록이 비었을 때 "내 조건이 뭐였더라" 를 기억에 의존해야 했던 문제(REQ-05·06) 대응.
+             *
+             * try 안쪽에 두는 이유 :
+             * 위 getNearbyRequests() 가 미인증 기사면 IllegalStateException 을 던지고
+             * 인증 화면으로 보낸다. 그 앞에 두면 어차피 못 쓸 조회를 먼저 하게 된다.
+             */
+            model.addAttribute("myRegionNames",   fixerService.getMyRegionNames(loginMember.getUserNo()));
+            model.addAttribute("myCategoryNames", fixerService.getMyCategoryNames(loginMember.getUserNo()));
+
         } catch (IllegalStateException e) {
             // 아직 인증 안 된 기사 → 신청 화면으로
             ra.addFlashAttribute("message", e.getMessage());
@@ -97,24 +119,69 @@ public class RequestController {
      * GET /request/request
      */
     @GetMapping("/request/request")
-    public String requestPage(@RequestParam(value = "cat", required = false) String cat,
-                               HttpSession session,
-                               Model model) {
+    public String requestPage(
+            @RequestParam(value = "cat", required = false) String cat,
+            @RequestParam(value = "editId", required = false) Long editId,
+            HttpSession session,
+            Model model) {
 
-        UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
+        UserDTO loginMember =
+                (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
+
         if (loginMember == null) {
             return "redirect:/user/login?redirectURL=/request/request";
         }
 
         String selectedCategoryCode = null;
-        if (cat != null) {
+
+        // =========================
+        // 수정 모드
+        // =========================
+        if (editId != null) {
+
+            RequestDTO request =
+                    service.getRequestForMatching(
+                            loginMember.getUserNo(),
+                            editId
+                    );
+
+            model.addAttribute("request", request);
+            model.addAttribute("editMode", true);
+
+            selectedCategoryCode =
+                    request.getCategoryCode();
+        }
+
+        // =========================
+        // 신규 접수 모드
+        // =========================
+        else if (cat != null) {
+
             switch (cat) {
-                case "lock":   selectedCategoryCode = "CAT_10"; break;
-                case "fridge": selectedCategoryCode = "CAT_02"; break;
-                case "pc":     selectedCategoryCode = "CAT_01"; break;
-                case "pipe":   selectedCategoryCode = "CAT_05"; break;
-                case "elec":   selectedCategoryCode = "CAT_06"; break;
-                case "etc":    selectedCategoryCode = "CAT_07"; break;
+
+                case "lock":
+                    selectedCategoryCode = "CAT_10";
+                    break;
+
+                case "fridge":
+                    selectedCategoryCode = "CAT_02";
+                    break;
+
+                case "pc":
+                    selectedCategoryCode = "CAT_01";
+                    break;
+
+                case "pipe":
+                    selectedCategoryCode = "CAT_05";
+                    break;
+
+                case "elec":
+                    selectedCategoryCode = "CAT_06";
+                    break;
+
+                case "etc":
+                    selectedCategoryCode = "CAT_07";
+                    break;
             }
         }
 
@@ -144,31 +211,32 @@ public class RequestController {
                                  @RequestParam(value = "photoFiles", required = false) List<MultipartFile> photoFiles,
                                  HttpSession session,
                                  RedirectAttributes ra) {
-     
+
         UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
         if (loginMember == null) {
             return "redirect:/user/login?redirectURL=/request/request";
         }
-     
+
         try {
             request.setUserNo(loginMember.getUserNo());
-     
+
             service.createRequest(request, photoFiles);
-     
+
             ra.addFlashAttribute("message", "수리 접수가 완료되었습니다.");
-     
+
             return "redirect:/request/matching/" + request.getRequestId();
-     
+
         } catch (IllegalStateException e) {
             ra.addFlashAttribute("message", e.getMessage());
             return "redirect:/request/request";
-     
+
         } catch (IOException e) {
             e.printStackTrace();
             ra.addFlashAttribute("message", "사진 업로드 중 오류가 발생했습니다.");
             return "redirect:/request/request";
         }
     }
+
     /**
      * 기사 매칭 · 선택 화면
      * GET /request/matching/{requestId}
@@ -239,28 +307,32 @@ public class RequestController {
                                  HttpSession session,
                                  Model model,
                                  RedirectAttributes ra) {
-
+     
         UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
         if (loginMember == null) {
             return "redirect:/user/login?redirectURL=/request/" + requestId;
         }
-
+     
         try {
             RequestDTO request = service.getRequestDetailForCustomer(loginMember.getUserNo(), requestId);
             EstimateDTO selectedEstimate = service.getSelectedEstimate(requestId);
-
+     
             model.addAttribute("request", request);
             model.addAttribute("selectedEstimate", selectedEstimate);
-
+     
+            // 수리완료 상태면, 이미 리뷰를 썼는지 확인해서 같이 넘겨준다
+            if ("REQ_04".equals(request.getStatusCode())) {
+                UserReviewDTO existingReview = reviewService.getReviewByRequestId(requestId, loginMember.getUserNo());
+                model.addAttribute("existingReview", existingReview);
+            }
+     
         } catch (IllegalStateException e) {
             ra.addFlashAttribute("message", e.getMessage());
             return "redirect:/user/mypage";
         }
-
+     
         return "user/request-detail";
     }
-
-   
 
     /** /request 주소로 접근 시 /request/request 로 리다이렉트 (cat 파라미터는 그대로 이어줌) */
     @GetMapping("/request")
@@ -272,6 +344,7 @@ public class RequestController {
 
         return "redirect:/request/request";
     }
+
     /**
      * 고객 접수 수정 버튼
      * 기존 접수 페이지로 이동
@@ -297,7 +370,7 @@ public class RequestController {
                             requestId
                     );
 
-            // 접수 대기 / 매칭 중일 때만 수정 가능
+            // 수정 가능한 상태인지 확인
             if (!"REQ_01".equals(request.getStatusCode())
                     && !"REQ_02".equals(request.getStatusCode())) {
 
@@ -309,7 +382,7 @@ public class RequestController {
                 return "redirect:/request/matching/" + requestId;
             }
 
-            // 기존 접수 페이지로 이동
+            // 기존 접수 페이지로 이동하면서 수정할 접수번호 전달
             return "redirect:/request/request?editId=" + requestId;
 
         } catch (IllegalStateException e) {
@@ -322,6 +395,7 @@ public class RequestController {
             return "redirect:/request/matching/" + requestId;
         }
     }
+
     /**
      * 고객 접수 수정 저장
      */
@@ -381,6 +455,7 @@ public class RequestController {
                     + "/edit";
         }
     }
+
     /**
      * 고객 접수 취소
      */
@@ -431,6 +506,37 @@ public class RequestController {
                     + requestId;
         }
     }
-       
-    
+
+
+ // ----------------------------------------------------------
+ // 리뷰 등록 (신규 메서드)
+ // POST /request/{requestId}/review
+ // ----------------------------------------------------------
+ @PostMapping("/request/{requestId}/review")
+ public String submitReview(@PathVariable("requestId") Long requestId,
+                             @RequestParam("score") Long score,
+                             @RequestParam("content") String content,
+                             HttpSession session,
+                             RedirectAttributes ra) {
+
+     UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
+     if (loginMember == null) {
+         return "redirect:/user/login?redirectURL=/request/" + requestId;
+     }
+
+     try {
+         EstimateDTO selectedEstimate = service.getSelectedEstimate(requestId);
+         if (selectedEstimate == null) {
+             throw new IllegalStateException("담당 기사 정보를 찾을 수 없습니다.");
+         }
+
+         reviewService.submitReview(requestId, loginMember.getUserNo(), selectedEstimate.getFixerNo(), score, content);
+         ra.addFlashAttribute("message", "리뷰가 등록되었습니다.");
+
+     } catch (IllegalStateException e) {
+         ra.addFlashAttribute("message", e.getMessage());
+     }
+
+     return "redirect:/request/" + requestId;
+ }
 }

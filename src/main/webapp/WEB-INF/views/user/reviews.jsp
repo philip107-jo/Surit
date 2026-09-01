@@ -36,7 +36,7 @@
       <a href="${pageContext.request.contextPath}/user/mypage/reviews" class="is-active">
         <svg class="ico"><use href="#i-star"/></svg>내가 쓴 리뷰
       </a>
-      <a href="${pageContext.request.contextPath}/support">
+      <a href="${pageContext.request.contextPath}/user/mypage/support">
         <svg class="ico"><use href="#i-chat"/></svg>고객센터
       </a>
     </nav>
@@ -44,10 +44,6 @@
     <div>
       <div class="sec-head" style="margin-bottom:20px"><h2>내가 쓴 리뷰 ${fn:length(reviewList)}건</h2></div>
 
-      <%--
-        ⚠ ReviewDTO 실제 필드명 확인 필요. 아래는 추정치:
-           reviewId, requestTitle, fixerName, rating(1~5), content, createdAt
-      --%>
       <c:choose>
         <c:when test="${empty reviewList}">
           <div class="empty">
@@ -86,6 +82,6 @@
 </main>
 
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />
-<script src="/js/common.js"></script>
+<script src="${pageContext.request.contextPath}/js/common.js"></script>
 </body>
 </html>

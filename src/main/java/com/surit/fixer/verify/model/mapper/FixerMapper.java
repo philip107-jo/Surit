@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.surit.fixer.estimate.model.dto.EstimateDTO;
 import com.surit.fixer.verify.model.dto.FixerLicenseDTO;
 import com.surit.fixer.verify.model.dto.FixerProfileDTO;
 
@@ -20,6 +21,12 @@ public interface FixerMapper {
 	/** 기사가 등록한 자격증 목록 (재신청 시 기존 파일 삭제용) */
 	List<FixerLicenseDTO> selectLicensesByUserNo(Long userNo);
 
+	/** 내가 등록한 활동 지역 이름 목록 (접수 목록 화면 안내용) */
+	List<String> selectMyRegionNames(Long userNo);
+
+	/** 내가 등록한 수리 분야 이름 목록 (접수 목록 화면 안내용) */
+	List<String> selectMyCategoryNames(Long userNo);
+
 
 	// ---------- 등록 / 수정 ----------
 
@@ -34,10 +41,26 @@ public interface FixerMapper {
 	int insertFixerCategory(@Param("userNo") Long userNo,
 	                        @Param("categoryCode") String categoryCode);
 
-
+	 
+	/** 고객이 보는 기사 공개 프로필 (이름 + 평점/리뷰수 포함) */
+	FixerProfileDTO selectPublicProfile(Long userNo);
+	 
 	// ---------- 삭제 (재신청 시 기존 데이터 정리) ----------
 
 	int deleteLicensesByUserNo(Long userNo);
 	int deleteRegionsByUserNo(Long userNo);
 	int deleteCategoriesByUserNo(Long userNo);
+	 
+	// import java.util.List;
+	// import com.surit.fixer.estimate.model.dto.EstimateDTO;
+	 
+	List<String> selectFixerCategoryNames(Long userNo);
+	 
+	List<String> selectFixerRegionNames(Long userNo);
+	 
+	Long selectCompletedJobCount(Long userNo);
+	 
+	EstimateDTO selectEstimateByRequestAndFixer(@Param("requestId") Long requestId,
+	                                             @Param("fixerNo") Long fixerNo);
+	 
 }

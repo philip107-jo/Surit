@@ -56,14 +56,24 @@ public class UserController {
 	                    @ModelAttribute UserAddressDTO address,
 	                    RedirectAttributes redirectAttr) {
 
-	    System.out.println(user);
-	    System.out.println(address);
-
 	    try {
 	        service.sign(user, address);
+
+	    } catch (IllegalStateException e) {
+	        /*
+	         * 아이디·이메일 중복처럼 "사용자가 고칠 수 있는" 문제.
+	         *
+	         * ★ 2026-09-01 이전에는 이 catch 가 없어서 500 에러 페이지가 떴다.
+	         *   서비스가 던지는 IllegalStateException 이 그대로 위로 올라갔기 때문이다.
+	         *   메시지만 꺼내 화면으로 돌려주면 sign.jsp 의 ${error} 자리에 표시된다.
+	         */
+	        redirectAttr.addFlashAttribute("error", e.getMessage());
+	        return "redirect:/user/sign";
+
 	    } catch (IOException e) {
+	        // 파일 저장 실패 같은 시스템 문제. 사용자에게 자세히 알릴 게 없다
 	        e.printStackTrace();
-	        redirectAttr.addFlashAttribute("error", "회원 가입 실패");
+	        redirectAttr.addFlashAttribute("error", "회원 가입에 실패했습니다. 잠시 후 다시 시도해 주세요.");
 	        return "redirect:/user/sign";
 	    }
 
@@ -82,6 +92,24 @@ public class UserController {
 		boolean isDuplicate = service.isUserIdCheck(userId);
 
 		String message = isDuplicate ? "이미 사용중인 아이디입니다." : "사용 가능한 아이디입니다.";
+
+		return ApiResponse.success(message, isDuplicate);
+	}
+
+	/**
+	 * 이메일 중복확인 (2026-09-01 추가)
+	 * URL : [GET] /user/checkEmail?email=XXX
+	 *
+	 * 가입 버튼을 누른 뒤에 알려주면 입력했던 내용이 다 날아간다.
+	 * 이메일 칸에서 커서가 빠져나가는 순간 미리 알려주는 편이 낫다.
+	 */
+	@GetMapping("/checkEmail")
+	@ResponseBody
+	public ApiResponse<Boolean> checkEmail(String email) {
+
+		boolean isDuplicate = service.isEmailCheck(email);
+
+		String message = isDuplicate ? "이미 사용중인 이메일입니다." : "사용 가능한 이메일입니다.";
 
 		return ApiResponse.success(message, isDuplicate);
 	}

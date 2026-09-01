@@ -87,13 +87,13 @@
       </div>
 
       <%-- 상단 상태 탭: 실제 COMMON_CODE(STATUS) 5단계 그대로 표시 --%>
-      <div class="chip-row" style="margin-bottom:24px">
-        <button class="chip chip--dark" data-select="tab">전체 ${fn:length(requestList)}</button>
-        <button class="chip" data-select="tab">접수대기 ${waitingCnt}</button>
-        <button class="chip" data-select="tab">견적중 ${estimatingCnt}</button>
-        <button class="chip" data-select="tab">매칭완료 ${matchedCnt}</button>
-        <button class="chip" data-select="tab">수리완료 ${doneCnt}</button>
-        <button class="chip" data-select="tab">취소 ${canceledCnt}</button>
+      <div class="chip-row" style="margin-bottom:24px" id="status-filter">
+        <button class="chip chip--dark" data-status-filter="all">전체 ${fn:length(requestList)}</button>
+        <button class="chip" data-status-filter="REQ_01">접수대기 ${waitingCnt}</button>
+        <button class="chip" data-status-filter="REQ_02">견적중 ${estimatingCnt}</button>
+        <button class="chip" data-status-filter="REQ_03">매칭완료 ${matchedCnt}</button>
+        <button class="chip" data-status-filter="REQ_04">수리완료 ${doneCnt}</button>
+        <button class="chip" data-status-filter="REQ_05">취소 ${canceledCnt}</button>
       </div>
 
       <div class="card card--sm">
@@ -123,7 +123,7 @@
             </c:when>
             <c:otherwise>
               <c:forEach var="req" items="${requestList}">
-                <tr>
+                <tr data-status-row="${req.statusCode}">
                   <td class="num"><fmt:formatDate value="${req.createdAt}" pattern="MM.dd"/></td>
                   <td>
                     <div class="ttl"><c:out value="${req.title}"/></div>
@@ -163,29 +163,16 @@
                       </c:otherwise>
                     </c:choose>
                   </td>
-
-				  <td class="right">
-				    <div class="btn-row">
-				      <%-- 기사가 배정된 뒤부터 채팅이 가능하다. --%>
-				      <c:if test="${req.statusCode == 'REQ_03' or req.statusCode == 'REQ_04'}">
-				        <a class="btn btn--primary btn--sm"
-				           href="${pageContext.request.contextPath}/orders/${req.requestId}/chat">기사와 채팅</a>
-				      </c:if>
-
-				      <%-- 아직 기사를 못 정한 접수만 매칭 화면(견적 선택)으로 보낸다 --%>
-				      <c:choose>
-				        <c:when test="${req.statusCode == 'REQ_01' || req.statusCode == 'REQ_02'}">
-				          <a class="btn btn--ghost btn--sm"
-				             href="${pageContext.request.contextPath}/request/matching/${req.requestId}">상세 보기</a>
-				        </c:when>
-				        <c:otherwise>
-				          <a class="btn btn--ghost btn--sm"
-				             href="${pageContext.request.contextPath}/request/${req.requestId}">상세 보기</a>
-				        </c:otherwise>
-				      </c:choose>
-				    </div>
-				  </td>
-
+                  <td class="right">
+                    <c:choose>
+                      <c:when test="${req.statusCode == 'REQ_01' || req.statusCode == 'REQ_02'}">
+                        <a class="btn btn--ghost btn--sm" href="${pageContext.request.contextPath}/request/matching/${req.requestId}">상세 보기</a>
+                      </c:when>
+                      <c:otherwise>
+                        <a class="btn btn--ghost btn--sm" href="${pageContext.request.contextPath}/request/${req.requestId}">상세 보기</a>
+                      </c:otherwise>
+                    </c:choose>
+                  </td>
                 </tr>
               </c:forEach>
             </c:otherwise>

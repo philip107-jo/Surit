@@ -6,11 +6,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.surit.fixer.verify.model.dto.FixerProfileDTO;
 import com.surit.fixer.verify.model.dto.FixerVerifyRequest;
+import com.surit.fixer.verify.model.mapper.FixerMapper;
 import com.surit.fixer.verify.service.FixerService;
 import com.surit.user.SessionConst;
 import com.surit.user.model.dto.UserDTO;
@@ -24,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class FixerController {
 
 	private final FixerService service;
-
+    private final FixerMapper mapper;
 	/** 기사 인증 신청 화면 */
 	@GetMapping("/verify")
 	public String verifyForm(HttpSession session, Model model) {
@@ -75,4 +78,5 @@ public class FixerController {
 
 		return "redirect:/fixer/verify";
 	}
+
 }
