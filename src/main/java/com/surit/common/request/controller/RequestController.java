@@ -20,6 +20,8 @@ import com.surit.user.SessionConst;
 import com.surit.user.mapper.UserAddressMapper;
 import com.surit.user.model.dto.UserAddressDTO;
 import com.surit.user.model.dto.UserDTO;
+import com.surit.user.model.dto.UserReviewDTO;
+import com.surit.user.review.service.UserReviewService;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,7 @@ public class RequestController {
 
     private final RequestService service;
     private final UserAddressMapper userAddressMapper;
+    private final UserReviewService reviewService;
 
     /** F-15 내 주변 새 접수 조회 */
     @GetMapping("/fixer/requests")
@@ -431,6 +434,37 @@ public class RequestController {
                     + requestId;
         }
     }
-       
-    
+
+  
+ // ----------------------------------------------------------
+ // 리뷰 등록 (신규 메서드)
+ // POST /request/{requestId}/review
+ // ----------------------------------------------------------
+ @PostMapping("/request/{requestId}/review")
+ public String submitReview(@PathVariable("requestId") Long requestId,
+                             @RequestParam("score") Long score,
+                             @RequestParam("content") String content,
+                             HttpSession session,
+                             RedirectAttributes ra) {
+  
+     UserDTO loginMember = (UserDTO) session.getAttribute(SessionConst.LOGIN_MEMBER);
+     if (loginMember == null) {
+         return "redirect:/user/login?redirectURL=/request/" + requestId;
+     }
+  
+     try {
+         EstimateDTO selectedEstimate = service.getSelectedEstimate(requestId);
+         if (selectedEstimate == null) {
+             throw new IllegalStateException("담당 기사 정보를 찾을 수 없습니다.");
+         }
+  
+         reviewService.submitReview(requestId, loginMember.getUserNo(), selectedEstimate.getFixerNo(), score, content);
+         ra.addFlashAttribute("message", "리뷰가 등록되었습니다.");
+  
+     } catch (IllegalStateException e) {
+         ra.addFlashAttribute("message", e.getMessage());
+     }
+  
+     return "redirect:/request/" + requestId;
+ }
 }
