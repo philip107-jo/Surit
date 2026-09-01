@@ -52,17 +52,25 @@ public class FixerController {
 			return "redirect:/user/login?redirectURL=/fixer/verify";
 		}
 
+		/*
+		 * 성공이든 실패든 redirect 로 끝낸다 (PRG).
+		 * 다만 화면에서 색을 나눠야 하므로 messageType 을 함께 넘긴다 —
+		 * 실패인데 파란 안내 박스로 보이면 사용자가 오류인 줄 모르고 지나친다.
+		 */
 		try {
 			service.applyVerify(loginMember.getUserNo(), request);
 			ra.addFlashAttribute("message", "인증 신청이 완료되었습니다. 심사까지 1~2일 걸립니다.");
+			ra.addFlashAttribute("messageType", "success");
 
 		} catch (IllegalStateException e) {
 			// 중복 신청 / 필수값 누락 등 — 사용자에게 그대로 보여줄 수 있는 메시지
 			ra.addFlashAttribute("message", e.getMessage());
+			ra.addFlashAttribute("messageType", "error");
 
 		} catch (IOException e) {
 			e.printStackTrace();
 			ra.addFlashAttribute("message", "파일 저장 중 오류가 발생했습니다. 다시 시도해주세요.");
+			ra.addFlashAttribute("messageType", "error");
 		}
 
 		return "redirect:/fixer/verify";
