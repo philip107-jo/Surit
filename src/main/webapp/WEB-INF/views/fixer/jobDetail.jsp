@@ -58,6 +58,10 @@
 				<div style="font-size:21px;font-weight:700"><c:out value="${job.customerName}"/> 고객님</div>
 				<div class="muted" style="font-size:16px;margin-top:4px"><c:out value="${job.customerPhone}"/></div>
 			</div>
+			<%-- 이 화면은 "내 견적이 채택된 건" 만 열리므로 채팅 상대가 항상 있다.
+			     전화 대신 채팅으로 유도해야 번호가 덜 노출된다. --%>
+			<a class="btn btn--primary" style="margin-left:auto"
+			   href="/orders/${job.requestId}/chat">고객과 채팅</a>
 		</div>
 		<dl class="dl--inline">
 			<dt>방문 주소</dt><dd><c:out value="${job.serviceAddress}"/></dd>

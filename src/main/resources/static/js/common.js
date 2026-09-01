@@ -582,6 +582,57 @@ function toggleAddressAdd() {
 
 
 // ========================================
+// 사진 확대 보기 (라이트박스)
+// class="photo-zoom" 붙은 img 클릭 시 전체화면으로 확대
+// ========================================
+
+(function () {
+
+    var overlay = null;
+
+    function openLightbox(src) {
+
+        if (overlay) return;
+
+        overlay = document.createElement('div');
+        overlay.style.cssText =
+            'position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;' +
+            'display:flex;align-items:center;justify-content:center;cursor:zoom-out;padding:24px';
+
+        var img = document.createElement('img');
+        img.src = src;
+        img.style.cssText =
+            'max-width:90vw;max-height:90vh;border-radius:12px;object-fit:contain;' +
+            'box-shadow:0 10px 40px rgba(0,0,0,.5)';
+
+        overlay.appendChild(img);
+        document.body.appendChild(overlay);
+
+        overlay.addEventListener('click', closeLightbox);
+        document.addEventListener('keydown', onKeydown);
+    }
+
+    function closeLightbox() {
+        if (!overlay) return;
+        overlay.remove();
+        overlay = null;
+        document.removeEventListener('keydown', onKeydown);
+    }
+
+    function onKeydown(e) {
+        if (e.key === 'Escape') closeLightbox();
+    }
+
+    document.addEventListener('click', function (e) {
+        var img = e.target.closest('.photo-zoom');
+        if (!img) return;
+        openLightbox(img.src);
+    });
+
+})();
+
+
+// ========================================
 // 수리 접수 페이지 : 최종 제출 검증
 // ========================================
 

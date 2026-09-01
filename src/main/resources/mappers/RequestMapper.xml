@@ -225,11 +225,12 @@
     </update>
      
     <!-- 견적 상태 변경 (선택 시 STATUS = 'SELECTED') -->
-    <update id="updateEstimateStatus">
-        UPDATE ESTIMATES
-           SET STATUS = #{status}
-         WHERE ESTIMATE_ID = #{estimateId}
-    </update>
+<update id="updateSelectedEstimate">
+    UPDATE ESTIMATES
+       SET STATUS = 'SELECTED'
+     WHERE REQUEST_ID  = #{requestId}
+       AND ESTIMATE_ID = #{estimateId}
+</update>
 
   <insert id="insertRequest"
         useGeneratedKeys="true"
@@ -295,5 +296,13 @@ selectEstimatesByRequestId 와 거의 같은데, STATUS='SELECTED' 조건만 추
       AND e.STATUS = 'SELECTED'
 </select>
  
-
+<insert id="insertPhoto">
+    INSERT INTO REPAIR_PHOTO (
+        REQUEST_ID, PHOTO_PATH, PHOTO_TYPE, PHOTO_ORDER
+    )
+    VALUES (
+        #{requestId}, #{photoPath}, #{photoType}, #{photoOrder}
+    )
+</insert>
+ 
 </mapper>

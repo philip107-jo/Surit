@@ -23,7 +23,6 @@
 	     화면에서 empty 검사를 하고 출력한다. -->
 
 	<select id="selectFixerProfile" parameterType="long"
-
 	        resultType="com.surit.fixer.verify.model.dto.FixerProfileDTO">
 		SELECT USER_NO, INTRO, CAREER_YEARS, APPROVAL_STATUS,
 		       FIXER_PHOTO_URL AS PHOTO_URL,
