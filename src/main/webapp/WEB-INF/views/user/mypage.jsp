@@ -44,14 +44,14 @@
     <div class="btn-row">
       <a class="btn btn--ghost" href="${pageContext.request.contextPath}/user/mypage/profile">내 정보 수정</a>
       <c:choose>
-        <%-- 이미 기사(FIXER) 권한이 있는 경우: 기사 마이페이지로 이동 --%>
+        <%-- FIXER 권한이 있는 경우: 기사 마이페이지로 이동 --%>
         <c:when test="${user.userRole == 'FIXER'}">
           <a class="btn btn--dark" href="${pageContext.request.contextPath}/fixer/mypage">
-            <svg class="ico"><use href="#i-refresh"/></svg>기사 마이페이지로 이동
+            <svg class="ico"><use href="#i-refresh"/></svg>기사로 전환
           </a>
         </c:when>
 
-        <%-- 일반 유저(USER)인 경우: 기사 인증(가입) 화면으로 이동 --%>
+        <%-- USER인 경우: 기사 인증(가입) 화면으로 이동 --%>
         <c:otherwise>
           <a class="btn btn--dark" href="${pageContext.request.contextPath}/fixer/verify">
             <svg class="ico"><use href="#i-refresh"/></svg>기사로 전환
