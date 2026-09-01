@@ -260,12 +260,18 @@ public class MypageController {
         return "redirect:/user/mypage/address";
     }
 
-    /**
-     * 고객센터
-     * GET /user/mypage/support
+    /*
+     * ★★★ 고객센터(/user/mypage/support) 는 여기에 두지 않는다 ★★★
+     *
+     * SupportController 가 이미 같은 주소를 맡고 있다.
+     * 여기에 @GetMapping("/support") 를 다시 넣으면 스프링이
+     *
+     *   Ambiguous mapping. Cannot map 'mypageController' method
+     *   ... There is already 'supportController' bean method ... mapped.
+     *
+     * 를 내면서 서버 시동 자체를 거부한다. (2026-08-31 두 번 겪음)
+     *
+     * SupportController 쪽은 로그인 확인 + FAQ + 내 문의 내역(rooms) 까지
+     * 같이 담아주므로 그쪽이 맞다. 머지할 때 이 메서드가 되살아나지 않게 주의.
      */
-    @GetMapping("/support")
-    public String support() {
-        return "user/support";
-    }
 }

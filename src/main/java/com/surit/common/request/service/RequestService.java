@@ -1,6 +1,9 @@
 package com.surit.common.request.service;
 
+import java.io.IOException;
 import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import com.surit.common.model.dto.CommonCodeDTO;
 import com.surit.common.request.model.dto.RequestDTO;
@@ -68,6 +71,7 @@ EstimateDTO getSelectedEstimate(Long requestId);
 void cancelRequest(Long userNo, Long requestId);
  
 	/** 고객 기능 — 접수 등록 */
-	void createRequest(RequestDTO request);
+void createRequest(RequestDTO request, List<MultipartFile> photoFiles) throws IOException;
+
 }
 
