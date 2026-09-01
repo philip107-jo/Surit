@@ -43,6 +43,37 @@
         <button type="submit" class="btn btn--primary btn--lg">저장하기</button>
         <a class="btn btn--ghost btn--lg" href="/fixer/mypage/addresses">취소</a>
     </div>
+
+    <div class="sec-head" style="margin-top: 32px; margin-bottom: 16px;">
+        <h3>활동 지역 설정</h3>
+        <p style="color: var(--g-500); font-size: 14px;">수리를 진행하실 주로 활동하는 지역을 입력해 주세요.</p>
+    </div>
+
+    <div class="field">
+        <label class="field__label">지역 추가</label>
+        <div style="display:flex; gap:12px">
+            <input type="text" id="regionInput" class="input" placeholder="예) 서울 강남구, 경기 성남시" onkeypress="if(event.keyCode==13) { addRegion(); return false; }">
+            <button type="button" class="btn btn--dark" style="flex:0 0 auto" onclick="addRegion()">
+                추가
+            </button>
+        </div>
+    </div>
+
+    <!-- 추가된 지역들이 표시될 칩(Chip) 영역 -->
+    <div class="chip-row" id="regionChipContainer" style="margin-top: 16px; margin-bottom: 24px;">
+        <!-- 기존에 등록된 지역이 있다면 여기에 표시 (JSTL 연동) -->
+        <c:forEach var="region" items="${regions}">
+        <span class="chip">
+            ${region}
+            <button type="button" style="margin-left: 8px; border: none; background: none; cursor: pointer;" onclick="removeRegion(this, '${region}')">✖</button>
+            <input type="hidden" name="regionList" value="${region}">
+        </span>
+        </c:forEach>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 🚀 활동지역 관리 자바스크립트 (하단에 추가)       -->
+    <!-- ========================================== -->
 </form>
 
 
@@ -50,5 +81,36 @@
 
     function setAlias(value) {
         document.getElementById('aliasInput').value = value;
+    }
+    function addRegion() {
+        const input = document.getElementById('regionInput');
+        const regionValue = input.value.trim();
+
+        if (!regionValue) {
+            alert('지역을 입력해 주세요.');
+            return;
+        }
+
+        const container = document.getElementById('regionChipContainer');
+
+        // 칩(Chip) UI 생성
+        const chip = document.createElement('span');
+        chip.className = 'chip';
+        chip.innerHTML = `
+            ${regionValue}
+            <button type="button" style="margin-left: 8px; border: none; background: none; cursor: pointer;" onclick="removeRegion(this)">✖</button>
+            <input type="hidden" name="regionList" value="${regionValue}">
+        `;
+
+        container.appendChild(chip);
+        input.value = ''; // 입력창 초기화
+    }
+
+    function removeRegion(button, regionName) {
+        // 칩 삭제
+        const chip = button.parentElement;
+        chip.remove();
+
+        // DB에서도 바로 삭제해야 한다면 여기에 AJAX(fetch) 코드를 추가할 수 있습니다.
     }
 </script>

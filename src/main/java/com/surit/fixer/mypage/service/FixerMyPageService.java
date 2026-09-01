@@ -61,4 +61,12 @@ public class FixerMyPageService {
     public void deleteAddress(Long fixerNo, Long addressId) {
         myPageMapper.deleteAddress(fixerNo, addressId);
     }
+
+    public List<String> getCategories(Long fixerId) {
+        return null;
+    }
+
+    public List<String> getRegions(Long fixerId) {
+        return null;
+    }
 }

@@ -24,4 +24,8 @@ public interface FixerMyPageMapper {
     int resetDefaultAddress(@Param("fixerNo") Long fixerNo);
     int insertAddress(FixerAddressDTO addressDto);
     int deleteAddress(@Param("fixerNo") Long fixerNo, @Param("addressId") Long addressId);
+
+    public List<String> getCategories(Long fixerId);
+
+    public List<String> getRegions(Long fixerId);
 }
