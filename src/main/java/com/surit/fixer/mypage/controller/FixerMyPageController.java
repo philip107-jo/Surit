@@ -63,44 +63,34 @@ public class FixerMyPageController {
         return "redirect:/fixer/mypage";
     }
 
-    // ==========================================
-    // 주소 관리 컨트롤러 (FixerMyPageController.java 내부에 추가 필요)
-    // ==========================================
+    // 저장된 주소 조회
     @GetMapping("/address")
     public String addressList(HttpSession session, Model model) {
         UserDTO loginMember = (UserDTO) session.getAttribute("loginMember");
         if (loginMember == null) return "redirect:/user/login";
         model.addAttribute("user", loginMember);
 
-        // TODO: DB에서 등록된 주소 목록 가져오기 로직 필요
-        // model.addAttribute("addressList", ...);
-
         return "fixer/address-manage"; // 뷰 리턴 주의!
     }
 
+    // 주소 변경
     @GetMapping("/address/form")
     public String addressForm(HttpSession session, Model model, @RequestParam(required=false) Long id) {
         UserDTO loginMember = (UserDTO) session.getAttribute("loginMember");
         if (loginMember == null) return "redirect:/user/login";
         model.addAttribute("user", loginMember);
 
-        // TODO: id가 있으면 해당 주소 상세 조회, 없으면 빈 폼 전달 로직 필요
 
-        return "fixer/mypageAddressForm"; // 뷰 리턴 주의!
+        return "fixer/mypageAddressForm"; // 뷰 리턴 주의
     }
 
 
-    // ==========================================
-    // 내 정보 수정 컨트롤러 (FixerMyPageController.java 내부에 추가 필요)
-    // ==========================================
     @GetMapping("/profile")
     public String profileForm(HttpSession session, Model model) {
         UserDTO loginMember = (UserDTO) session.getAttribute("loginMember");
         if (loginMember == null) return "redirect:/user/login";
         model.addAttribute("user", loginMember);
 
-        // TODO: 회원 정보 조회 로직 필요
-
-        return "fixer/editProfile"; // 뷰 리턴 주의!
+        return "fixer/editProfile"; // 뷰 리턴 주의
     }
 }
