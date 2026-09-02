@@ -83,11 +83,12 @@
         <h2>나의 접수</h2>
       </div>
 
-      <%-- 상단 상태 탭: 실제 COMMON_CODE(STATUS) 5단계 그대로 표시 --%>
+      <%-- 상단 상태 탭: 실제 COMMON_CODE(STATUS) 코드 그대로 표시 --%>
       <div class="chip-row" style="margin-bottom:24px" id="status-filter">
         <button class="chip chip--dark" data-status-filter="all">전체 ${fn:length(requestList)}</button>
         <button class="chip" data-status-filter="REQ_01">접수대기 ${waitingCnt}</button>
         <button class="chip" data-status-filter="REQ_02">견적중 ${estimatingCnt}</button>
+        <button class="chip" data-status-filter="REQ_99">긴급 ${urgentCnt}</button>
         <button class="chip" data-status-filter="REQ_03">매칭완료 ${matchedCnt}</button>
         <button class="chip" data-status-filter="REQ_04">수리완료 ${doneCnt}</button>
         <button class="chip" data-status-filter="REQ_05">취소 ${canceledCnt}</button>
@@ -162,7 +163,10 @@
                   </td>
                   <td class="right">
                     <c:choose>
-                      <c:when test="${req.statusCode == 'REQ_01' || req.statusCode == 'REQ_02'}">
+                      <%-- 아직 기사를 안 정한 접수는 매칭 화면으로 보낸다.
+                           REQ_99(긴급접수) 2026-09-02 추가 — 없으면 긴급 건만
+                           일반 상세로 빠져서 견적을 고를 수가 없다. --%>
+                      <c:when test="${req.statusCode == 'REQ_01' || req.statusCode == 'REQ_02' || req.statusCode == 'REQ_99'}">
                         <a class="btn btn--ghost btn--sm" href="${pageContext.request.contextPath}/request/matching/${req.requestId}">상세 보기</a>
                       </c:when>
                       <c:otherwise>

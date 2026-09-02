@@ -181,8 +181,14 @@ public class RequestServiceImpl implements RequestService {
 			throw new IllegalStateException("사진은 최대 5장까지 첨부할 수 있습니다.");
 		}
 
-		// 신규 접수 상태
-		request.setStatusCode("REQ_01");
+		// 신규 접수 상태.
+		// 긴급으로 체크하면 REQ_99(긴급접수), 아니면 REQ_01(접수대기). (2026-09-02)
+		//
+		// 상태 코드를 SQL 에 박아두지 않고 여기서 정하는 이유는, 어떤 상태로
+		// 시작할지는 "업무 판단" 이지 "저장 방법" 이 아니기 때문이다.
+		// 폼에서 온 urgentYn 을 그대로 믿지 않고 "Y" 인지만 보고 상태 코드로
+		// 바꾸므로, 사용자가 개발자도구로 다른 값을 넣어도 REQ_01 로 떨어진다.
+		request.setStatusCode("Y".equals(request.getUrgentYn()) ? "REQ_99" : "REQ_01");
 
 		Long result = mapper.insertRequest(request);
 
@@ -260,9 +266,14 @@ public class RequestServiceImpl implements RequestService {
 	        }
 
 
-	        // 이미 기사 선택이 끝난 접수는 수정 불가
+	        // 이미 기사 선택이 끝난 접수는 수정 불가.
+	        // REQ_99(긴급접수)를 2026-09-02 에 추가했다. 긴급도 아직 기사를 안 정한
+	        // 상태이므로 수정할 수 있어야 한다. 매퍼(updateCustomerRequest)의 WHERE 에도
+	        // 같은 조건이 있는데, 여기서 먼저 예외가 나면 SQL 까지 가지도 못한다.
+	        // 두 곳은 항상 같이 고쳐야 한다.
 	        if (!"REQ_01".equals(existing.getStatusCode())
-	                && !"REQ_02".equals(existing.getStatusCode())) {
+	                && !"REQ_02".equals(existing.getStatusCode())
+	                && !"REQ_99".equals(existing.getStatusCode())) {
 
 	            throw new IllegalStateException(
 	                    "이미 매칭된 접수는 수정할 수 없습니다."
@@ -309,9 +320,11 @@ public class RequestServiceImpl implements RequestService {
 	        }
 
 
-	        // 접수대기 / 기사매칭 중일 때만 취소 가능
+	        // 접수대기 / 견적중 / 긴급접수 일 때만 취소 가능.
+	        // REQ_99 는 2026-09-02 에 추가 — 위 수정 검사와 같은 이유다.
 	        if (!"REQ_01".equals(existing.getStatusCode())
-	                && !"REQ_02".equals(existing.getStatusCode())) {
+	                && !"REQ_02".equals(existing.getStatusCode())
+	                && !"REQ_99".equals(existing.getStatusCode())) {
 
 	            throw new IllegalStateException(
 	                    "이미 매칭된 접수는 취소할 수 없습니다."
