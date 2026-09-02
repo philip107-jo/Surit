@@ -97,8 +97,7 @@
           <svg class="ico"><use href="#i-x"/></svg>접수 취소
         </button>
       </form>
-      <%-- ⚠ /chat 컨트롤러 아직 미확인 --%>
-      <a class="btn btn--soft btn--xl" style="flex:1" href="${pageContext.request.contextPath}/chat">
+      <a class="btn btn--soft btn--xl" style="flex:1" href="${pageContext.request.contextPath}/orders/${request.requestId}/chat">
         <svg class="ico"><use href="#i-chat"/></svg>기사님과 채팅하기
       </a>
     </div>

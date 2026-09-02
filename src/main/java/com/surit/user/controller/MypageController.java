@@ -56,8 +56,13 @@ public class MypageController {
         List<RequestDTO> requestList = requestService.getRequestsByUserId(loginMember.getUserNo());
 
         // 상태별 카운트 계산
-        // REQ_01 접수대기 / REQ_02 견적중 / REQ_03 매칭완료 / REQ_04 수리완료 / REQ_05 취소
-        int waitingCnt = 0, estimatingCnt = 0, matchedCnt = 0, doneCnt = 0, canceledCnt = 0;
+        // REQ_01 접수대기 / REQ_02 견적중 / REQ_03 매칭완료 / REQ_04 수리완료
+        // REQ_05 취소 / REQ_99 긴급접수
+        //
+        // REQ_99 는 2026-09-02 에 추가했다. 그전에는 default 로 빠져서 어느
+        // 카운트에도 안 잡혔고, 칩 합계가 "전체" 건수와 어긋났다.
+        int waitingCnt = 0, estimatingCnt = 0, matchedCnt = 0,
+            doneCnt = 0, canceledCnt = 0, urgentCnt = 0;
         for (RequestDTO req : requestList) {
             String statusCode = req.getStatusCode();
             if (statusCode == null) continue;
@@ -67,6 +72,7 @@ public class MypageController {
                 case "REQ_03": matchedCnt++; break;
                 case "REQ_04": doneCnt++; break;
                 case "REQ_05": canceledCnt++; break;
+                case "REQ_99": urgentCnt++; break;
                 default: break;
             }
         }
@@ -78,6 +84,7 @@ public class MypageController {
         model.addAttribute("matchedCnt", matchedCnt);
         model.addAttribute("doneCnt", doneCnt);
         model.addAttribute("canceledCnt", canceledCnt);
+        model.addAttribute("urgentCnt", urgentCnt);
 
         return "user/mypage";
     }
@@ -135,14 +142,16 @@ public class MypageController {
         }
 
         form.setUserNo(loginMember.getUserNo());
-        form.setUserId(loginMember.getUserId());   // 아이디는 변경 불가, 세션 값 유지
+        form.setUserId(loginMember.getUserId());
 
-        UserDTO updated = userService.updateUserInfo(form);
+        try {
+            UserDTO updated = userService.updateUserInfo(form);
+            session.setAttribute("loginMember", updated);
+            ra.addFlashAttribute("message", "내 정보가 수정되었습니다.");
 
-        // 세션도 최신 정보로 갱신 (안 하면 화면엔 예전 이름/이메일이 계속 보임)
-        session.setAttribute("loginMember", updated);
-
-        ra.addFlashAttribute("message", "내 정보가 수정되었습니다.");
+        } catch (IllegalStateException e) {
+            ra.addFlashAttribute("message", e.getMessage());
+        }
 
         return "redirect:/user/mypage/profile";
     }
