@@ -118,7 +118,9 @@
 					<div class="list-card__body">
 						<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
 							<span class="badge badge--primary"><c:out value="${request.categoryName}"/></span>
-							<span class="badge badge--gray"><c:out value="${request.statusName}"/></span>
+							<span class="badge ${request.statusCode == 'REQ_99' ? 'badge--danger' : 'badge--gray'}">
+							    <c:out value="${request.statusName}"/>
+							</span>
 							<span class="muted" style="font-size:14.5px">
 								접수번호 ${request.requestId} ·
 								<fmt:formatDate value="${request.createdAt}" pattern="yyyy-MM-dd HH:mm"/>

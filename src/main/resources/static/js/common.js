@@ -607,36 +607,40 @@ function toggleAddressAdd() {
         // 클릭한 카드 선택
         button.classList.add("is-on");
 
+		// ================================
+		// 날짜 지정
+		// ================================
 
-        // ================================
-        // 날짜 지정
-        // ================================
+		if (button.dataset.useYn === "N") {
 
-        if (button.dataset.useYn === "N") {
+		    visitArea.style.display = "block";
 
-            visitArea.style.display = "block";
+		    visitDate.required = true;
+		    visitTimeCode.required = true;
 
-            visitDate.required = true;
-            visitTimeCode.required = true;
+		    var urgentYnN = document.getElementById("urgent-yn");
+		    if (urgentYnN) urgentYnN.value = "";
 
-        }
+		}
 
-        // ================================
-        // 지금 바로
-        // ================================
+		// ================================
+		// 지금 바로
+		// ================================
 
-        else {
+		else {
 
-            visitArea.style.display = "none";
+		    visitArea.style.display = "none";
 
-            visitDate.required = false;
-            visitTimeCode.required = false;
+		    visitDate.required = false;
+		    visitTimeCode.required = false;
 
-            visitDate.value = "";
-            visitTimeCode.value = "";
+		    visitDate.value = "";
+		    visitTimeCode.value = "";
 
-        }
+		    var urgentYnY = document.getElementById("urgent-yn");
+		    if (urgentYnY) urgentYnY.value = "Y";
 
+		}
     });
 
 })();
