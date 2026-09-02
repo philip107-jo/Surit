@@ -15,38 +15,26 @@ import com.surit.user.model.dto.UserDTO;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
-/**
- * 기사 마이페이지 (수리 정보 관리) 컨트롤러
- * 유저 마이페이지(MypageController)와 동일한 세션 로직(loginMember) 사용
- */
 @Controller
-@RequestMapping("/fixer/mypage") // 유저처럼 클래스 레벨로 경로 통일
-@RequiredArgsConstructor // 팀 규칙: Autowired 대신 롬복 사용
+@RequestMapping("/fixer/mypage")
+@RequiredArgsConstructor
 public class FixerMyPageController {
 
     private final FixerMyPageService service;
 
-    /**
-     * 기사 마이페이지 화면 조회
-     * GET /fixer/mypage
-     */
     @GetMapping
     public String fixerMyPage(HttpSession session, Model model) {
-
-        // 1. 팀 규칙에 맞게 'loginMember'로 세션 꺼내기
         UserDTO loginMember = (UserDTO) session.getAttribute("loginMember");
 
-        // 2. 로그인 안 되어 있으면 로그인 창으로 (되돌아올 주소 포함)
         if (loginMember == null) {
             return "redirect:/user/login?redirectURL=/fixer/mypage";
         }
 
         Long fixerId = loginMember.getUserNo();
 
-        // 3. JSP 화면에서 ${user.name} 등을 쓸 수 있게 유저 객체 담기 (유저 마이페이지와 동일)
+        // JSP 사이드바 및 프로필 공통 영역을 위한 user 속성 추가
         model.addAttribute("user", loginMember);
 
-        // 4. 기사 카테고리 & 지역 데이터 담기
         model.addAttribute("categoryList", service.getAllCategories());
         model.addAttribute("regionList", service.getAllRegions());
         model.addAttribute("myCategories", service.getMyCategories(fixerId));
@@ -55,41 +43,64 @@ public class FixerMyPageController {
         return "fixer/mypage";
     }
 
-    /**
-     * 카테고리 설정 저장
-     * POST /fixer/mypage/categories
-     */
     @PostMapping("/categories")
     public String updateCategories(@RequestParam(value="categories", required=false) List<String> categories,
                                    HttpSession session) {
-
         UserDTO loginMember = (UserDTO) session.getAttribute("loginMember");
-
-        if (loginMember == null) {
-            return "redirect:/user/login?redirectURL=/fixer/mypage";
-        }
+        if (loginMember == null) return "redirect:/user/login";
 
         service.updateCategories(loginMember.getUserNo(), categories);
-
         return "redirect:/fixer/mypage";
     }
 
-    /**
-     * 지역 설정 저장
-     * POST /fixer/mypage/regions
-     */
     @PostMapping("/regions")
     public String updateRegions(@RequestParam(value="regions", required=false) List<String> regions,
                                 HttpSession session) {
-
         UserDTO loginMember = (UserDTO) session.getAttribute("loginMember");
-
-        if (loginMember == null) {
-            return "redirect:/user/login?redirectURL=/fixer/mypage";
-        }
+        if (loginMember == null) return "redirect:/user/login";
 
         service.updateRegions(loginMember.getUserNo(), regions);
-
         return "redirect:/fixer/mypage";
+    }
+
+    // ==========================================
+    // 주소 관리 컨트롤러 (FixerMyPageController.java 내부에 추가 필요)
+    // ==========================================
+    @GetMapping("/address")
+    public String addressList(HttpSession session, Model model) {
+        UserDTO loginMember = (UserDTO) session.getAttribute("loginMember");
+        if (loginMember == null) return "redirect:/user/login";
+        model.addAttribute("user", loginMember);
+
+        // TODO: DB에서 등록된 주소 목록 가져오기 로직 필요
+        // model.addAttribute("addressList", ...);
+
+        return "fixer/address-manage"; // 뷰 리턴 주의!
+    }
+
+    @GetMapping("/address/form")
+    public String addressForm(HttpSession session, Model model, @RequestParam(required=false) Long id) {
+        UserDTO loginMember = (UserDTO) session.getAttribute("loginMember");
+        if (loginMember == null) return "redirect:/user/login";
+        model.addAttribute("user", loginMember);
+
+        // TODO: id가 있으면 해당 주소 상세 조회, 없으면 빈 폼 전달 로직 필요
+
+        return "fixer/mypageAddressForm"; // 뷰 리턴 주의!
+    }
+
+
+    // ==========================================
+    // 내 정보 수정 컨트롤러 (FixerMyPageController.java 내부에 추가 필요)
+    // ==========================================
+    @GetMapping("/profile")
+    public String profileForm(HttpSession session, Model model) {
+        UserDTO loginMember = (UserDTO) session.getAttribute("loginMember");
+        if (loginMember == null) return "redirect:/user/login";
+        model.addAttribute("user", loginMember);
+
+        // TODO: 회원 정보 조회 로직 필요
+
+        return "fixer/editProfile"; // 뷰 리턴 주의!
     }
 }
