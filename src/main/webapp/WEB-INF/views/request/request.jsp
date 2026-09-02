@@ -282,40 +282,46 @@
 
 					    <div class="address-list">
 
-					        <c:forEach var="addr"
-					                   items="${addressList}"
-					                   varStatus="status"
-					                   end="2">
+							<c:forEach var="addr"
+							                   items="${addressList}"
+							                   varStatus="status"
+							                   end="2">
 
-					            <button type="button"
-					                    class="address-card ${addr.isDefault eq 'Y' ? 'is-on' : ''}"
-					                    data-address="${addr.address} ${addr.addressDetail}">
+							            <button type="button"
+							                    class="address-card ${addr.isDefault eq 'Y' ? 'is-on' : ''}"
+							                    data-address="${addr.address} ${addr.addressDetail}">
 
-					                <span class="address-radio"></span>
+							                <span class="address-radio"></span>
 
-					                <span class="address-card__body">
+							                <span class="address-card__body">
 
-					                    <strong>
-					                        <c:choose>
-					                            <c:when test="${addr.isDefault eq 'Y'}">
-					                                기본 주소
-					                            </c:when>
-					                            <c:otherwise>
-					                                주소 ${status.index + 1}
-					                            </c:otherwise>
-					                        </c:choose>
-					                    </strong>
+							                    <strong>
+							                        <c:choose>
+							                            <c:when test="${not empty addr.addressName}">
+							                                <c:out value="${addr.addressName}"/>
+							                            </c:when>
+							                            <c:when test="${addr.isDefault eq 'Y'}">
+							                                기본 주소
+							                            </c:when>
+							                            <c:otherwise>
+							                                주소 ${status.index + 1}
+							                            </c:otherwise>
+							                        </c:choose>
+							                        <c:if test="${not empty addr.addressName and addr.isDefault eq 'Y'}">
+							                            <span class="badge badge--primary" style="margin-left:6px;font-size:12px">기본</span>
+							                        </c:if>
+							                    </strong>
 
-					                    <span class="address-card__text">
-					                        ${addr.address}
-					                        ${addr.addressDetail}
-					                    </span>
+							                    <span class="address-card__text">
+							                        ${addr.address}
+							                        ${addr.addressDetail}
+							                    </span>
 
-					                </span>
+							                </span>
 
-					            </button>
+							            </button>
 
-					        </c:forEach>
+							        </c:forEach>
 
 					    </div>
 
