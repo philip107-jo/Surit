@@ -41,7 +41,6 @@
                 <a href="${pageContext.request.contextPath}/fixer/mypage" class="is-active"><svg class="ico"><use href="#i-wrench"/></svg>수리 정보 관리</a>
                 <a href="${pageContext.request.contextPath}/fixer/mypage/address"><svg class="ico"><use href="#i-home"/></svg>주소 관리</a>
                 <a href="${pageContext.request.contextPath}/fixer/mypage/profile"><svg class="ico"><use href="#i-user"/></svg>내 정보 수정</a>
-                <a href="${pageContext.request.contextPath}/support"><svg class="ico"><use href="#i-chat"/></svg>고객센터</a>
             </nav>
 
             <div>

@@ -109,9 +109,14 @@
       </div>
     </div>
     <c:if test="${request.statusCode == 'REQ_01' || request.statusCode == 'REQ_02'}">
-      <div class="summary__actions">
-        <a class="btn btn--ghost btn--sm" href="${pageContext.request.contextPath}/request/edit/${request.requestId}">수정</a>
-        <a class="btn btn--danger btn--sm" href="${pageContext.request.contextPath}/user/mypage">접수 취소</a>
+      <div class="summary__actions" style="display: flex; gap: 8px;">
+        <!-- 1. 컨트롤러 매핑과 동일하게 /request/{번호}/edit 으로 순서 변경 -->
+        <a class="btn btn--ghost btn--sm" href="${pageContext.request.contextPath}/request/${request.requestId}/edit">수정</a>
+
+        <!-- 2. a 태그 대신 form 태그를 사용해 실제 취소 로직(POST)을 타도록 변경 -->
+        <form method="post" action="${pageContext.request.contextPath}/request/${request.requestId}/cancel" style="margin: 0;">
+          <button type="submit" class="btn btn--danger btn--sm" onclick="return confirm('정말 접수를 취소하시겠습니까?');">접수 취소</button>
+        </form>
       </div>
     </c:if>
   </div>
