@@ -1,5 +1,6 @@
 package com.surit.fixer.estimate.service;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -31,6 +32,24 @@ public class EstimateServiceImpl implements EstimateService {
 	/** 견적 금액 상한. 실수로 0 을 몇 개 더 붙이는 걸 막는다 */
 	private static final long MAX_PRICE        = 100_000_000L;   // 1억 원
 	private static final long MAX_DURATION_MIN = 60L * 24 * 30;  // 30일(분)
+
+	/*
+	 * 견적 설명 길이 상한 (2026-09-02 변경).
+	 *
+	 * 원래는 content.length() > 1000 이었다. 즉 "글자 수" 로 셌다.
+	 * 그런데 ESTIMATES.CONTENT 는 VARCHAR2(4000 BYTE) 라서
+	 * 오라클은 "바이트" 로 센다. 세는 단위가 서로 달랐다.
+	 *
+	 * 당장 터지지는 않았다. 1000자를 통과시켜도 한글은 1자 3바이트라
+	 * 최악이 3000바이트여서 4000바이트 안에 들어왔기 때문이다.
+	 * 즉 안전했던 이유가 "여유가 우연히 남아서" 였다.
+	 * 나중에 누군가 설명이 짧다며 2000자로 올리면
+	 * 한글 2000자 = 6000바이트가 되어 그 순간 ORA-12899 가 난다.
+	 *
+	 * 자기소개(FIXER_PROFILE.INTRO)에서 같은 이유로 실제 장애가 났었다.
+	 * 그래서 여기도 컬럼과 같은 단위(바이트)로 맞춘다.
+	 */
+	private static final int CONTENT_MAX_BYTES = 4000;
 
 	private final EstimateMapper mapper;
 	private final RequestMapper  requestMapper;
@@ -92,6 +111,13 @@ public class EstimateServiceImpl implements EstimateService {
 		return mapper.selectMyEstimates(fixerNo);
 	}
 
+	/*
+	 * 화면(estimateForm.jsp)에서도 같은 조건을 먼저 검사한다.
+	 * 화면 검사는 "여기까지 오기 전에 멈춰서 입력값을 지켜주는" 용도이고,
+	 * 실제 차단은 이 메소드가 한다.
+	 * 자바스크립트를 끄거나 개발자도구로 값을 바꿔서 보내면
+	 * 화면 검사는 통째로 건너뛰어지기 때문이다.
+	 */
 	private void validate(EstimateForm form) {
 
 		if (form.getRequestId() == null) {
@@ -109,7 +135,7 @@ public class EstimateServiceImpl implements EstimateService {
 			throw new IllegalStateException("예상 금액은 0원 이상이어야 합니다.");
 		}
 		if (price > MAX_PRICE) {
-			throw new IllegalStateException("예상 금액이 너무 큽니다. 다시 확인해주세요.");
+			throw new IllegalStateException("예상 금액이 너무 큽니다. 최대 1억 원까지 입력할 수 있습니다.");
 		}
 
 		Long duration = form.getEstimatedDuration();
@@ -117,16 +143,25 @@ public class EstimateServiceImpl implements EstimateService {
 			throw new IllegalStateException("예상 소요 시간(분)을 입력해주세요.");
 		}
 		if (duration > MAX_DURATION_MIN) {
-			throw new IllegalStateException("예상 소요 시간이 너무 깁니다. 다시 확인해주세요.");
+			throw new IllegalStateException("예상 소요 시간이 너무 깁니다. 최대 30일(43,200분)까지 입력할 수 있습니다.");
 		}
 
 		String content = form.getContent();
 		if (content == null || content.isBlank()) {
 			throw new IllegalStateException("견적 설명을 입력해주세요.");
 		}
-		// DB 컬럼 길이를 넘으면 ORA-12899 라는 알아보기 힘든 에러가 난다
-		if (content.length() > 1000) {
-			throw new IllegalStateException("견적 설명은 1000자를 넘을 수 없습니다.");
+
+		/*
+		 * 글자 수가 아니라 UTF-8 바이트로 센다.
+		 * ESTIMATES.CONTENT 가 VARCHAR2(4000 BYTE) 라 오라클도 바이트로 센다.
+		 * 여기서 글자 수로 세면 세는 단위가 달라지고,
+		 * 어긋난 만큼이 그대로 ORA-12899 로 튀어나온다.
+		 */
+		int bytes = content.getBytes(StandardCharsets.UTF_8).length;
+		if (bytes > CONTENT_MAX_BYTES) {
+			throw new IllegalStateException(
+				"견적 설명이 너무 깁니다. 한글 기준 약 1,300자까지 입력할 수 있습니다. (현재 "
+				+ bytes + "바이트 / 최대 " + CONTENT_MAX_BYTES + "바이트)");
 		}
 	}
 }
