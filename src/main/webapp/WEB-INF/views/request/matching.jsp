@@ -116,12 +116,14 @@
     </div>
     <%-- 긴급접수(REQ_99)도 아직 기사를 안 정한 상태라 수정·취소가 가능하다. 2026-09-02 --%>
     <c:if test="${request.statusCode == 'REQ_01' || request.statusCode == 'REQ_02' || request.statusCode == 'REQ_99'}">
-      <div class="summary__actions">
-        <%-- 컨트롤러 매핑은 @GetMapping("/request/{requestId}/edit") 이다.
-             2026-09-02 이전에는 /request/edit/{id} 로 적혀 있어서 404 가 났다.
-             순서가 뒤바뀌면 정적 리소스 요청으로 처리돼 Whitelabel 화면이 뜬다. --%>
+      <div class="summary__actions" style="display: flex; gap: 8px;">
+        <!-- 1. 컨트롤러 매핑과 동일하게 /request/{번호}/edit 으로 순서 변경 -->
         <a class="btn btn--ghost btn--sm" href="${pageContext.request.contextPath}/request/${request.requestId}/edit">수정</a>
-        <a class="btn btn--danger btn--sm" href="${pageContext.request.contextPath}/user/mypage">접수 취소</a>
+
+        <!-- 2. a 태그 대신 form 태그를 사용해 실제 취소 로직(POST)을 타도록 변경 -->
+        <form method="post" action="${pageContext.request.contextPath}/request/${request.requestId}/cancel" style="margin: 0;">
+          <button type="submit" class="btn btn--danger btn--sm" onclick="return confirm('정말 접수를 취소하시겠습니까?');">접수 취소</button>
+        </form>
       </div>
     </c:if>
   </div>

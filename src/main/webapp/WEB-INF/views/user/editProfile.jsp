@@ -62,13 +62,13 @@
 
           <div class="field">
             <label class="field__label" for="p-email">이메일<span class="req">*</span></label>
-            <input type="email" id="p-email" name="email" class="input" value="${user.email}" requir'
-'>
+            <input type="email" id="p-email" name="email" class="input" value="${user.email}" required>
           </div>
 
           <div class="field">
             <label class="field__label" for="p-phone">전화번호<span class="req">*</span></label>
             <input type="text" id="p-phone" name="phone" class="input" value="${user.phone}" placeholder="01012345678" required>
+            <p id="check-phone-result" class="field__help" aria-live="polite"></p>
           </div>
 
           <hr style="border:0;border-top:1px solid var(--g-200);margin:28px 0">
