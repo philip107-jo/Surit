@@ -92,7 +92,9 @@ public class UserServiceImpl implements UserService {
 	    } else {
 	        form.setPassword(null);
 	    }
- 
+	    if (form.getPhone() == null || !form.getPhone().matches("^[0-9]{9,11}$")) {
+	        throw new IllegalStateException("전화번호 형식이 올바르지 않습니다.");
+	    }
 	    mapper.updateUser(form);
  
 	    // 최신 정보 다시 조회해서 반환 (세션 갱신용)
