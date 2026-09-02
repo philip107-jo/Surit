@@ -76,14 +76,19 @@ public class FixerServiceImpl implements FixerService {
 	 * 매칭이 안 될 때 사용자가 자기 조건을 기억에 의존해 떠올려야 했던 문제(REQ-05·06) 대응.
 	 * MyBatis 는 결과가 없으면 null 이 아니라 빈 List 를 돌려주므로 화면에서 empty 검사만 하면 된다.
 	 */
+	/*
+	 * 기사 공개 프로필 화면이 쓰는 조회와 내용이 같아서, 쿼리를 두 벌 두지 않고
+	 * selectFixerRegionNames / selectFixerCategoryNames 하나로 합쳤다.
+	 * 조건이 바뀔 때 한쪽만 고쳐져서 화면끼리 어긋나는 일을 막기 위함이다.
+	 */
 	@Override
 	public List<String> getMyRegionNames(Long userNo) {
-		return mapper.selectMyRegionNames(userNo);
+		return mapper.selectFixerRegionNames(userNo);
 	}
 
 	@Override
 	public List<String> getMyCategoryNames(Long userNo) {
-		return mapper.selectMyCategoryNames(userNo);
+		return mapper.selectFixerCategoryNames(userNo);
 	}
 
 

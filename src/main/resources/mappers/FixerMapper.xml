@@ -6,14 +6,23 @@
 
 	<!-- ================= 조회 ================= -->
 
-	<!-- FIXER_PHOTO_URL 에 PHOTO_URL 별칭을 붙이는 이유 :
+	<!-- ※ 아래 두 조회(selectPublicProfile · selectFixerProfile)에 공통으로 적용되는 규칙
+
+	     FIXER_PHOTO_URL 에 PHOTO_URL 별칭을 붙이는 이유 :
 	     map-underscore-to-camel-case 가 켜져 있어서 MyBatis 는
 	     FIXER_PHOTO_URL 을 fixerPhotoUrl 로 바꿔 DTO 필드를 찾는다.
 	     그런데 DTO 필드 이름은 photoUrl 이라 이름이 어긋나고,
 	     MyBatis 는 에러 없이 조용히 건너뛰어 값이 null 이 된다.
 	     (INSERT/UPDATE 는 #{photoUrl} 로 직접 지정해서 영향 없음 → 읽기만 깨짐)
-	     별칭을 주면 PHOTO_URL → photoUrl 로 정확히 맞는다. -->
+	     별칭을 주면 PHOTO_URL → photoUrl 로 정확히 맞는다.
 
+	     같은 이유로 FIXER_NAME · AVG_SCORE · REVIEW_COUNT 도 DTO 에
+	     fixerName · avgScore · reviewCount 필드가 있어야 값이 담긴다.
+	     필드를 안 만들면 예외 없이 조용히 null 이 되므로 주의. -->
+
+	<!-- 고객이 보는 기사 공개 프로필.
+	     평점·리뷰수는 REVIEW 를 스칼라 서브쿼리로 같이 가져온다.
+	     리뷰가 없으면 AVG 는 null, COUNT 는 0 이다. -->
 <select id="selectPublicProfile" parameterType="long"
         resultType="com.surit.fixer.verify.model.dto.FixerProfileDTO">
     SELECT
@@ -37,7 +46,7 @@
     LEFT JOIN USERS u ON u.USER_NO = fp.USER_NO
     WHERE fp.USER_NO = #{userNo}
 </select>
- 
+
 	<!-- REJECT_REASON 을 같이 읽는 이유 :
 	     관리자가 거절할 때 남긴 사유를 기사 화면(verify.jsp)에 보여주기 위함.
 	     이 컬럼은 관리자 기능에서 채우고 여기서는 읽기만 한다.
@@ -46,7 +55,6 @@
 	     화면에서 empty 검사를 하고 출력한다. -->
 
 	<select id="selectFixerProfile" parameterType="long"
-
 	        resultType="com.surit.fixer.verify.model.dto.FixerProfileDTO">
 		SELECT USER_NO, INTRO, CAREER_YEARS, APPROVAL_STATUS,
 		       FIXER_PHOTO_URL AS PHOTO_URL,
@@ -65,31 +73,17 @@
 	</select>
 
 	<!--
-		내가 등록한 활동 지역 / 수리 분야의 "이름"만 뽑는다.
-		화면 안내용이라 코드(REG_01)가 아니라 사람이 읽는 이름이 필요하다.
+		접수 목록 화면(F-15)에 "내 활동 지역 / 수리 가능 분야" 를 보여줄 때 쓰던
+		selectMyRegionNames / selectMyCategoryNames 는 2026-09-02 삭제했다.
 
-		USE_YN 을 조건에 넣지 않는 이유 :
-		접수 매칭 조건(RequestMapper 의 fixerScope)도 USE_YN 을 보지 않는다.
-		여기서만 걸러내면 "화면엔 안 보이는데 매칭은 되는" 항목이 생겨서
-		오히려 더 헷갈린다. 매칭에 실제로 쓰이는 것을 그대로 보여준다.
+		기사 공개 프로필 화면이 추가되면서 같은 내용을 조회하는
+		selectFixerRegionNames / selectFixerCategoryNames 가 생겼는데
+		(이 파일 맨 아래 "기사 공개 프로필" 구역),
+		두 벌을 두면 조건이 바뀔 때 한쪽만 고쳐져 화면끼리 어긋난다.
+		그래서 그쪽 하나로 합치고, FixerServiceImpl 의
+		getMyRegionNames / getMyCategoryNames 가 그것을 부르도록 바꿨다.
+		(서비스·컨트롤러·JSP 의 이름은 그대로라 화면 쪽 변경은 없다)
 	-->
-	<select id="selectMyRegionNames" parameterType="Long" resultType="string">
-		SELECT c.CODE_NAME
-		  FROM FIXER_REGION f
-		  JOIN COMMON_CODE  c ON c.CODE_ID    = f.REGION_CODE
-		                     AND c.CODE_GROUP = 'REGION'
-		 WHERE f.USER_NO = #{userNo}
-		 ORDER BY c.CODE_NAME
-	</select>
-
-	<select id="selectMyCategoryNames" parameterType="Long" resultType="string">
-		SELECT c.CODE_NAME
-		  FROM FIXER_CATEGORY f
-		  JOIN COMMON_CODE    c ON c.CODE_ID    = f.CATEGORY_CODE
-		                       AND c.CODE_GROUP = 'CATEGORY'
-		 WHERE f.USER_NO = #{userNo}
-		 ORDER BY c.CODE_NAME
-	</select>
 
 	<!-- ================= 등록 / 수정 ================= -->
 
@@ -158,32 +152,35 @@
 	<delete id="deleteCategoriesByUserNo" parameterType="Long">
 		DELETE FROM FIXER_CATEGORY WHERE USER_NO = #{userNo}
 	</delete>
-<!--
-============================================================
-파일: resources/mappers/FixerMapper.xml
-기존 <mapper> 태그 안에 아래 쿼리들 추가
 
-⚠ COMMON_CODE 그룹 'CATEGORY'는 확인됨. 'REGION'도 이미 verify.jsp에서
-   쓰고 있던 걸로 추정 (fixer/verify 신청 화면에 지역 선택 있었음).
-⚠ FIXER_CATEGORY.CATEGORY_CODE, FIXER_REGION.REGION_CODE 컬럼명은
-   FixerMapper.xml에 이미 있던 insertFixerCategory/insertFixerRegion 기준.
-============================================================
--->
+	<!-- ================= 고객이 보는 기사 공개 프로필 (기사 프로필 화면) =================
+	     아래 4개는 기사 프로필 화면(다른 담당 파트)이 추가하면서 들어온 조회다.
+	     그중 이름 조회 2개는 접수 목록 화면(F-15)도 같이 쓴다. -->
 
-<!-- 기사가 수리 가능하다고 등록한 카테고리 이름 목록 -->
+<!-- 기사가 수리 가능하다고 등록한 카테고리 이름 목록.
+     기사 공개 프로필 화면과 접수 목록 화면(F-15)이 함께 쓴다.
+
+     ORDER BY 를 붙인 이유 (2026-09-02 추가) :
+     정렬을 지정하지 않으면 오라클은 행 순서를 보장하지 않는다. 대개는 같은
+     순서로 나오지만 실행 계획이 바뀌면 달라질 수 있어서, 새로고침할 때마다
+     화면의 분야 칩 순서가 뒤바뀌어 보일 수 있다. 이름순으로 고정한다. -->
 <select id="selectFixerCategoryNames" parameterType="long" resultType="string">
     SELECT cc.CODE_NAME
     FROM FIXER_CATEGORY fc
     JOIN COMMON_CODE cc ON cc.CODE_ID = fc.CATEGORY_CODE AND cc.CODE_GROUP = 'CATEGORY'
     WHERE fc.USER_NO = #{userNo}
+    ORDER BY cc.CODE_NAME
 </select>
 
-<!-- 기사가 활동 가능하다고 등록한 지역 이름 목록 -->
+<!-- 기사가 활동 가능하다고 등록한 지역 이름 목록.
+     기사 공개 프로필 화면과 접수 목록 화면(F-15)이 함께 쓴다.
+     ORDER BY 는 위 selectFixerCategoryNames 와 같은 이유로 붙였다. -->
 <select id="selectFixerRegionNames" parameterType="long" resultType="string">
     SELECT cc.CODE_NAME
     FROM FIXER_REGION fr
     JOIN COMMON_CODE cc ON cc.CODE_ID = fr.REGION_CODE AND cc.CODE_GROUP = 'REGION'
     WHERE fr.USER_NO = #{userNo}
+    ORDER BY cc.CODE_NAME
 </select>
 
 <!-- 이 기사가 선택되어 실제로 수리 완료까지 간 건수 -->
