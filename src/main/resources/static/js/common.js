@@ -284,21 +284,23 @@ document.addEventListener('click', function (e) {
 })();
 
 /* 회원가입 : 지역 선택 토글 + 지역명/상세주소 합쳐서 hidden input(address) 채우기 */
-function toggleRegionSelect() {
-  var panel = document.getElementById('region-select-panel');
+/* 지역 선택 토글 + 지역명/상세주소 합쳐서 hidden input(address) 채우기
+   -- 회원가입, 마이페이지 주소 추가 등 여러 화면에서 재사용하는 범용 함수 -- */
+function toggleRegionPanel(panelId) {
+  var panel = document.getElementById(panelId);
   if (!panel) return;
   panel.style.display = (panel.style.display === 'none') ? 'block' : 'none';
 }
 
-(function () {
-  var panel = document.getElementById('region-select-panel');
-  var addressDetail = document.getElementById('address-detail');
-  var addressHidden = document.getElementById('address');
-  var selectedLabel = document.getElementById('region-selected-label');
+function bindRegionSelect(panelId, detailId, hiddenId, labelId, radioName) {
+  var panel = document.getElementById(panelId);
+  var addressDetail = document.getElementById(detailId);
+  var addressHidden = document.getElementById(hiddenId);
+  var selectedLabel = document.getElementById(labelId);
   if (!panel || !addressHidden) return;
 
   function updateAddress() {
-    var checked = panel.querySelector('input[name="regionRadio"]:checked');
+    var checked = panel.querySelector('input[name="' + radioName + '"]:checked');
     var regionName = checked ? checked.dataset.regionName : '';
     if (checked && selectedLabel) selectedLabel.textContent = regionName;
 
@@ -307,15 +309,31 @@ function toggleRegionSelect() {
   }
 
   panel.addEventListener('change', function (e) {
-    if (e.target.name === 'regionRadio') {
+    if (e.target.name === radioName) {
       updateAddress();
-      panel.style.display = 'none';   // 지역 고르면 자동으로 패널 닫기
+      panel.style.display = 'none';
     }
   });
 
   if (addressDetail) {
     addressDetail.addEventListener('input', updateAddress);
   }
+}
+
+/* 회원가입 폼에 적용 */
+function toggleRegionSelect() {
+  toggleRegionPanel('region-select-panel');
+}
+(function () {
+  bindRegionSelect('region-select-panel', 'address-detail', 'address', 'region-selected-label', 'regionRadio');
+})();
+
+/* 마이페이지 : 새 주소 추가 폼에 적용 (같은 지역 토글 방식, id만 다름) */
+function toggleNewAddressRegionSelect() {
+  toggleRegionPanel('new-region-select-panel');
+}
+(function () {
+  bindRegionSelect('new-region-select-panel', 'new-address-detail', 'new-address', 'new-region-selected-label', 'newRegionRadio');
 })();
 
 /* 수리 접수 : 카테고리 카드 선택 -> hidden input(categoryCode) 동기화 */
@@ -909,6 +927,27 @@ function toggleAddressAdd() {
 
     });
 
+})();
+/* 마이페이지 : 상태 필터 칩 클릭 -> 접수 목록 테이블 행 필터링 */
+(function () {
+  var filterBar = document.getElementById('status-filter');
+  if (!filterBar) return;
+
+  filterBar.addEventListener('click', function (e) {
+    var chip = e.target.closest('[data-status-filter]');
+    if (!chip) return;
+
+    filterBar.querySelectorAll('[data-status-filter]').forEach(function (c) {
+      c.classList.remove('chip--dark');
+    });
+    chip.classList.add('chip--dark');
+
+    var status = chip.getAttribute('data-status-filter');
+    document.querySelectorAll('[data-status-row]').forEach(function (row) {
+      var show = (status === 'all') || (row.getAttribute('data-status-row') === status);
+      row.style.display = show ? '' : 'none';
+    });
+  });
 })();
 /* 마이페이지 : 상태 필터 칩 클릭 -> 접수 목록 테이블 행 필터링 */
 (function () {

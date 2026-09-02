@@ -19,6 +19,7 @@
 <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V5h6v2"/><path d="M6 7l1 13h10l1-13"/></symbol>
 <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></symbol>
 <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-13.7-5.3L3 9"/><path d="M4 13a8 8 0 0 0 13.7 5.3L21 15"/><path d="M3 4v5h5"/><path d="M21 20v-5h-5"/></symbol>
+<symbol id="i-chevd" viewBox="0 0 24 24"><path d="M6 9.5 12 15.5 18 9.5"/></symbol>
 </defs>
 </svg>
 
@@ -166,20 +167,37 @@
               <label class="field__label">별명</label>
               <input type="text" name="addressName" class="input" placeholder="예: 집, 사무실, 부모님댁">
             </div>
-            <div class="field-row">
-              <div class="field" style="flex:0 0 160px">
-                <label class="field__label">우편번호</label>
-                <input type="text" name="zipCode" class="input">
-              </div>
-              <div class="field" style="flex:1">
-                <label class="field__label">주소<span class="req">*</span></label>
-                <input type="text" name="address" class="input" placeholder="예: 서울 강남구 테헤란로 123" required>
-              </div>
-            </div>
+
             <div class="field">
-              <label class="field__label">상세주소</label>
-              <input type="text" name="addressDetail" class="input" placeholder="예: 101동 1502호">
+              <label class="field__label">지역 선택<span class="req">*</span></label>
+
+              <button type="button" class="btn btn--ghost btn--block" id="new-region-toggle-btn" onclick="toggleNewAddressRegionSelect()">
+                <span id="new-region-selected-label">지역을 선택해주세요</span>
+                <svg class="ico" style="margin-left:auto"><use href="#i-chevd"/></svg>
+              </button>
+
+              <div id="new-region-select-panel" style="display:none;margin-top:10px;padding:16px;
+                   border:1.5px solid var(--g-300);border-radius:var(--r-md);
+                   max-height:220px;overflow-y:auto">
+                <c:forEach var="region" items="${regionList}">
+                  <label class="check" style="display:block;margin-bottom:12px">
+                    <input type="radio" name="newRegionRadio" value="${region.codeId}"
+                           data-region-name="${region.codeName}">
+                    <c:out value="${region.codeName}"/>
+                  </label>
+                </c:forEach>
+              </div>
             </div>
+
+            <div class="field">
+              <label class="field__label">상세주소<span class="req">*</span></label>
+              <input type="text" id="new-address-detail" name="addressDetail" class="input"
+                     placeholder="예: 테헤란로 123, 101동 1502호" required>
+            </div>
+
+            <!-- 실제 제출되는 최종 주소 (지역명 + 상세주소를 JS로 합쳐서 채움) -->
+            <input type="hidden" id="new-address" name="address">
+
             <div class="field">
               <label class="field__label">기본 주소 설정</label>
               <select name="isDefault" class="select">

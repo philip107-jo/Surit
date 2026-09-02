@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.surit.common.model.mapper.CommonCodeMapper;
 import com.surit.common.request.model.dto.RequestDTO;
 import com.surit.common.request.service.RequestService;
 import com.surit.user.address.service.UserAddressService;
@@ -38,7 +39,7 @@ public class MypageController {
     private final RequestService requestService;
     private final UserReviewService reviewService;
     private final UserAddressService addressService;
-
+    private final CommonCodeMapper codeMapper;
     /**
      * 나의 접수 목록
      * GET /user/mypage
@@ -161,7 +162,8 @@ public class MypageController {
 
         model.addAttribute("user", loginMember);
         model.addAttribute("addressList", addressService.getAddressesByUserNo(loginMember.getUserNo()));
-
+        // 새 주소 추가 폼에서 지역 선택 토글에 쓸 목록
+        model.addAttribute("regionList", codeMapper.selectByGroup("REGION"));
         return "user/address";
     }
 
