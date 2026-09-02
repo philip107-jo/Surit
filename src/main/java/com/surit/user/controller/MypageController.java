@@ -135,14 +135,16 @@ public class MypageController {
         }
 
         form.setUserNo(loginMember.getUserNo());
-        form.setUserId(loginMember.getUserId());   // 아이디는 변경 불가, 세션 값 유지
+        form.setUserId(loginMember.getUserId());
 
-        UserDTO updated = userService.updateUserInfo(form);
+        try {
+            UserDTO updated = userService.updateUserInfo(form);
+            session.setAttribute("loginMember", updated);
+            ra.addFlashAttribute("message", "내 정보가 수정되었습니다.");
 
-        // 세션도 최신 정보로 갱신 (안 하면 화면엔 예전 이름/이메일이 계속 보임)
-        session.setAttribute("loginMember", updated);
-
-        ra.addFlashAttribute("message", "내 정보가 수정되었습니다.");
+        } catch (IllegalStateException e) {
+            ra.addFlashAttribute("message", e.getMessage());
+        }
 
         return "redirect:/user/mypage/profile";
     }
