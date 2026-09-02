@@ -12,9 +12,6 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/pages.css">
 </head>
 <body>
-
-<%-- 아이콘 심볼 정의: 기존 header.jsp 안에 이미 있다면 이 svg 블록은 지우고
-     header.jsp 쪽에만 유지하세요. (중복 정의돼도 동작엔 문제 없음) --%>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
 <defs>
 <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3.5 6h.01"/><path d="M3.5 12h.01"/><path d="M3.5 18h.01"/></symbol>
