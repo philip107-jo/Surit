@@ -59,14 +59,16 @@
               <label class="field__label" for="p-name">이름<span class="req">*</span></label>
               <input type="text" id="p-name" name="name" class="input" value="${user.name}" required>
             </div>
-            <div class="field">
-              <label class="field__label" for="p-email">이메일<span class="req">*</span></label>
-              <input type="email" id="p-email" name="email" class="input" value="${user.email}" readonly style="background:var(--g-50)">
-            </div>
-            <div class="field">
-              <label class="field__label" for="p-phone">전화번호<span class="req">*</span></label>
-              <input type="text" id="p-phone" name="phone" class="input" value="${user.phone}" placeholder="01012345678" required>
-            </div>
+			<div class="field">
+			  <label class="field__label" for="p-email">이메일<span class="req">*</span></label>
+			  <input type="email" id="p-email" name="email" class="input" value="${user.email}" required>
+			  <p id="check-email-result" class="field__help" aria-live="polite"></p>
+			</div>
+			<div class="field">
+			  <label class="field__label" for="p-phone">전화번호<span class="req">*</span></label>
+			  <input type="text" id="p-phone" name="phone" class="input" value="${user.phone}" placeholder="01012345678" required>
+			  <p id="check-phone-result" class="field__help" aria-live="polite"></p>   <!-- 이 줄 있는지 확인 -->
+			</div>
 
             <hr style="border:0;border-top:1px solid var(--g-200);margin:28px 0">
 
@@ -87,17 +89,6 @@
             </div>
           </form>
         </div>
-
-        <div class="card card--sm" style="margin-top:20px;max-width:560px">
-          <div style="display:flex;align-items:center;gap:16px">
-            <div><b style="font-size:17px">회원 탈퇴</b>
-              <p class="muted" style="font-size:15px;margin-top:4px">탈퇴하면 접수 내역과 리뷰가 모두 삭제됩니다.</p>
-            </div>
-            <form method="post" action="${pageContext.request.contextPath}/user/withdraw" style="margin-left:auto" onsubmit="return confirm('정말 탈퇴하시겠습니까?');">
-              <button type="submit" class="btn btn--danger btn--sm">회원 탈퇴</button>
-            </form>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -105,6 +96,5 @@
 </main>
 
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />
-<script src="${pageContext.request.contextPath}/js/common.js"></script>
 </body>
 </html>

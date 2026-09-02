@@ -122,7 +122,7 @@ document.addEventListener('click', function (e) {
     },
     {
       inputId: 'phone',
-      resultId: null,
+      resultId: 'check-phone-result',
       validate: function (v) {
         if (!v) return '전화번호를 입력해주세요';
         if (!/^[0-9]+$/.test(v)) return '전화번호는 숫자만 입력해주세요';
@@ -926,7 +926,7 @@ function toggleAddressAdd() {
     });
 
 })();
-/* 내 정보 수정 폼 : 전화번호 숫자만 입력 검증 */
+/* 내 정보 수정 폼 : 전화번호 숫자만 입력 검증 (editProfile.jsp, id="p-phone") */
 (function () {
   var phoneInput = document.getElementById('p-phone');
   if (!phoneInput) return;
