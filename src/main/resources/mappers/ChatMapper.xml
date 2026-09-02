@@ -104,10 +104,10 @@
 	</select>
 
 	<!-- ROOM_ID 는 IDENTITY 라 넣지 않는다 (넣으면 ORA-32795) -->
-	<insert id="insertRoom" parameterType="com.surit.chat.dto.ChatRoomDTO">
-		INSERT INTO CHAT_ROOM (REQUEST_ID, USER_NO, FIXER_NO, CATEGORY_CODE, CREATED_AT)
-		VALUES (#{requestId}, #{userNo}, #{fixerNo}, #{categoryCode}, SYSTIMESTAMP)
-	</insert>
+<insert id="insertRoom">
+    INSERT INTO CHAT_ROOM (REQUEST_ID, USER_NO, FIXER_NO, CATEGORY_CODE, CREATED_AT)
+    VALUES (#{requestId, jdbcType=BIGINT}, #{userNo}, #{fixerNo, jdbcType=BIGINT}, #{categoryCode, jdbcType=VARCHAR}, SYSTIMESTAMP)
+</insert>
 
 	<select id="selectRoomsByUserNo" resultMap="roomListMap">
 		SELECT <include refid="roomColumns"/>,
