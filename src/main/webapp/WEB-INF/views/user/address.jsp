@@ -100,7 +100,6 @@
                   <c:if test="${not empty addr.addressName}">
                     <c:out value="${addr.address}"/><br>
                   </c:if>
-                  <c:if test="${not empty addr.zipCode}">(<c:out value="${addr.zipCode}"/>) </c:if>
                   <c:out value="${addr.addressDetail}"/>
                 </div>
               </div>
@@ -123,20 +122,42 @@
                   <label class="field__label">별명</label>
                   <input type="text" name="addressName" class="input" value="${addr.addressName}" placeholder="예: 집, 사무실, 부모님댁">
                 </div>
-                <div class="field-row">
-                  <div class="field" style="flex:0 0 160px">
-                    <label class="field__label">우편번호</label>
-                    <input type="text" name="zipCode" class="input" value="${addr.zipCode}">
-                  </div>
-                  <div class="field" style="flex:1">
-                    <label class="field__label">주소<span class="req">*</span></label>
-                    <input type="text" name="address" class="input" value="${addr.address}" required>
-                  </div>
-                </div>
+
                 <div class="field">
-                  <label class="field__label">상세주소</label>
-                  <input type="text" name="addressDetail" class="input" value="${addr.addressDetail}">
+                  <label class="field__label">지역 선택<span class="req">*</span></label>
+
+                  <button type="button" class="btn btn--ghost btn--block" id="edit-region-toggle-btn-${addr.addressId}"
+                          onclick="toggleRegionPanel('edit-region-panel-${addr.addressId}')">
+                    <span id="edit-region-label-${addr.addressId}"><c:out value="${addr.address}"/></span>
+                    <svg class="ico" style="margin-left:auto"><use href="#i-chevd"/></svg>
+                  </button>
+
+                  <div id="edit-region-panel-${addr.addressId}" style="display:none;margin-top:10px;padding:16px;
+                       border:1.5px solid var(--g-300);border-radius:var(--r-md);
+                       max-height:220px;overflow-y:auto">
+                    <c:forEach var="region" items="${regionList}">
+                      <label class="check" style="display:block;margin-bottom:12px">
+                        <input type="radio" name="editRegionRadio${addr.addressId}" value="${region.codeId}"
+                               data-region-name="${region.codeName}">
+                        <c:out value="${region.codeName}"/>
+                      </label>
+                    </c:forEach>
+                  </div>
                 </div>
+
+                <div class="field">
+                  <label class="field__label">상세주소<span class="req">*</span></label>
+                  <input type="text" id="edit-address-detail-${addr.addressId}" name="addressDetail" class="input"
+                         value="${addr.addressDetail}" required>
+                </div>
+
+                <!-- 실제 제출되는 최종 주소. 지역을 안 바꾸면 기존 주소 그대로 유지됨 -->
+                <input type="hidden" id="edit-address-${addr.addressId}" name="address" value="${addr.address}">
+				<script>
+				document.addEventListener('DOMContentLoaded', function() {
+				  bindRegionSelect('edit-region-panel-${addr.addressId}', 'edit-address-detail-${addr.addressId}', 'edit-address-${addr.addressId}', 'edit-region-label-${addr.addressId}', 'editRegionRadio${addr.addressId}');
+				});
+				</script>
                 <div class="field">
                   <label class="field__label">기본 주소 설정</label>
                   <select name="isDefault" class="select">
@@ -219,7 +240,6 @@
 </main>
 
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />
-<script src="${pageContext.request.contextPath}/js/common.js"></script>
 
 </body>
 </html>

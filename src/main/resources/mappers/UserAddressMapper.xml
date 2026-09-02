@@ -12,7 +12,6 @@
             ADDRESS_ID     AS addressId,
             USER_NO        AS userNo,
             ADDRESS_NAME   AS addressName,
-            ZIP_CODE       AS zipCode,
             ADDRESS        AS address,
             ADDRESS_DETAIL AS addressDetail,
             IS_DEFAULT     AS isDefault
@@ -30,7 +29,6 @@
             ADDRESS_ID     AS addressId,
             USER_NO        AS userNo,
             ADDRESS_NAME   AS addressName,
-            ZIP_CODE       AS zipCode,
             ADDRESS        AS address,
             ADDRESS_DETAIL AS addressDetail,
             IS_DEFAULT     AS isDefault
@@ -40,14 +38,13 @@
     </select>
 
     <insert id="insertAddress" useGeneratedKeys="true" keyProperty="addressId" keyColumn="ADDRESS_ID">
-        INSERT INTO USER_ADDRESS (USER_NO, ADDRESS_NAME, ZIP_CODE, ADDRESS, ADDRESS_DETAIL, IS_DEFAULT)
-        VALUES (#{userNo}, #{addressName}, #{zipCode}, #{address}, #{addressDetail}, #{isDefault})
+        INSERT INTO USER_ADDRESS (USER_NO, ADDRESS_NAME, ADDRESS, ADDRESS_DETAIL, IS_DEFAULT)
+        VALUES (#{userNo}, #{addressName}, #{address}, #{addressDetail}, #{isDefault})
     </insert>
 
 <update id="updateAddress">
     UPDATE USER_ADDRESS
     SET ADDRESS_NAME = #{addressName, jdbcType=VARCHAR},
-        ZIP_CODE = #{zipCode, jdbcType=VARCHAR},
         ADDRESS = #{address, jdbcType=VARCHAR},
         ADDRESS_DETAIL = #{addressDetail, jdbcType=VARCHAR},
         IS_DEFAULT = #{isDefault, jdbcType=CHAR}
