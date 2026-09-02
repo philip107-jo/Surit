@@ -260,9 +260,14 @@ public class RequestServiceImpl implements RequestService {
 	        }
 
 
-	        // 이미 기사 선택이 끝난 접수는 수정 불가
+	        // 이미 기사 선택이 끝난 접수는 수정 불가.
+	        // REQ_99(긴급접수)를 2026-09-02 에 추가했다. 긴급도 아직 기사를 안 정한
+	        // 상태이므로 수정할 수 있어야 한다. 매퍼(updateCustomerRequest)의 WHERE 에도
+	        // 같은 조건이 있는데, 여기서 먼저 예외가 나면 SQL 까지 가지도 못한다.
+	        // 두 곳은 항상 같이 고쳐야 한다.
 	        if (!"REQ_01".equals(existing.getStatusCode())
-	                && !"REQ_02".equals(existing.getStatusCode())) {
+	                && !"REQ_02".equals(existing.getStatusCode())
+	                && !"REQ_99".equals(existing.getStatusCode())) {
 
 	            throw new IllegalStateException(
 	                    "이미 매칭된 접수는 수정할 수 없습니다."
@@ -309,9 +314,11 @@ public class RequestServiceImpl implements RequestService {
 	        }
 
 
-	        // 접수대기 / 기사매칭 중일 때만 취소 가능
+	        // 접수대기 / 견적중 / 긴급접수 일 때만 취소 가능.
+	        // REQ_99 는 2026-09-02 에 추가 — 위 수정 검사와 같은 이유다.
 	        if (!"REQ_01".equals(existing.getStatusCode())
-	                && !"REQ_02".equals(existing.getStatusCode())) {
+	                && !"REQ_02".equals(existing.getStatusCode())
+	                && !"REQ_99".equals(existing.getStatusCode())) {
 
 	            throw new IllegalStateException(
 	                    "이미 매칭된 접수는 취소할 수 없습니다."
