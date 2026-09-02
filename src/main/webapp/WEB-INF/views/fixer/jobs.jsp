@@ -113,7 +113,7 @@
 										</td>
 										<td class="right">
 											<div class="btn-row">
-												<a class="btn btn--primary btn--sm" href="${pageContext.request.contextPath}/orders/${job.requestId}/chat">채팅</a>
+												<a class="btn btn--primary btn--sm" href="/fixer/chat/${job.requestId}">채팅</a>
 												<a class="btn btn--ghost btn--sm" href="${pageContext.request.contextPath}/fixer/jobs/${job.requestId}">상세</a>
 											</div>
 										</td>

@@ -31,7 +31,7 @@ public class FixerBlockController {
         log.info("차단 고객 목록 조회 - 기사번호: {}", fixerNo);
 
         model.addAttribute("blockedList", blockService.getBlockedCustomers(fixerNo));
-        return "partner/blocked"; // WEB-INF/views/partner/blocked.jsp 로 이동
+        return "fixer/blocked"; // WEB-INF/views/fixer/blocked.jsp 로 이동
     }
 
     /**

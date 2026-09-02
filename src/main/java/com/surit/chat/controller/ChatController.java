@@ -74,38 +74,61 @@ public class ChatController {
 		return "chat/chat";
 	}
 
-	/*
-	 * 2026-08-31 : 임시 테스트용 뒷문(?testUserNo=회원번호) 제거.
-	 *   주소에 숫자 하나만 붙이면 로그인 없이 남의 채팅방을 열 수 있었다.
-	 *   메시지를 암호화해놓고 이 문이 열려 있으면 아무 의미가 없다.
-	 *   로그인 연동은 끝나 있으므로 세션만 본다.
-	 *     UserController → session.setAttribute("loginMember", UserDTO)
-	 *     ChatLoginResolver → loginMember 를 읽어 getUserNo() 호출
-	 *
-	 *   한 PC 에서 고객·기사 두 명을 테스트하려면 시크릿 창(Ctrl+Shift+N)을 쓴다.
-	 *   창마다 세션이 따로 잡힌다.
-	 */
+	/** 고객이 보는 채팅 주소 */
 	@GetMapping("/orders/{requestId}/chat")
 	public String chatPage(@PathVariable Long requestId,
 	                       HttpSession session,
 	                       Model model) {
+		return renderChat(requestId, session, model, false);
+	}
+
+	/**
+	 * 기사가 보는 채팅 주소. 2026-09-02 추가
+	 *
+	 * ★ redirect 를 안 쓰는 이유
+	 *   redirect 하면 주소창이 /orders/13/chat 으로 바뀐다.
+	 *   여기서 화면을 직접 그려야 /fixer/chat/13 이 그대로 남는다.
+	 */
+	@GetMapping("/fixer/chat/{requestId}")
+	public String fixerChatPage(@PathVariable Long requestId,
+	                            HttpSession session,
+	                            Model model) {
+		return renderChat(requestId, session, model, true);
+	}
+
+	/**
+	 * 채팅 화면 본체. 위 두 주소가 같이 쓴다.
+	 * 화면과 권한 검사가 똑같으니 코드를 두 벌 만들지 않는다.
+	 *
+	 * @param fixerView true 면 헤더와 돌아가기 버튼이 기사용
+	 */
+	private String renderChat(Long requestId, HttpSession session,
+	                          Model model, boolean fixerView) {
+
+		// 로그인 후 되돌아올 주소도 들어온 입구에 맞춘다
+		String myUrl = fixerView
+				? "/fixer/chat/" + requestId
+				: "/orders/" + requestId + "/chat";
 
 		model.addAttribute("requestId", requestId);
 
 		Long myNo = ChatLoginResolver.resolveUserNo(session);
 
 		if (myNo == null) {
-			// 로그인 후 원래 가려던 채팅방으로 되돌아오게 한다
-			return "redirect:/user/login?redirectURL=/orders/" + requestId + "/chat";
+			return "redirect:/user/login?redirectURL=" + myUrl;
 		}
 
-		// ★ 화면 왼쪽 채팅방 목록.
-		//   새 SQL 없이 기존 getMyRooms 를 그대로 쓴다.
-		//   아래 어느 경로로 빠지든 목록은 보여야 하므로 여기서 미리 담는다.
+		// ★ 헤더를 기사용으로 고정하는 신호. header.jsp 가 이 값을 같이 본다.
+		//   세션의 USER_ROLE 값이 꼬여 있어도 기사 화면은 기사로 유지된다.
+		model.addAttribute("fixerView", fixerView);
+
 		model.addAttribute("showSide",  true);
 		model.addAttribute("sideRooms", chatService.getMyRooms(myNo));
-		model.addAttribute("backUrl",   "/user/mypage");
-		model.addAttribute("backText",  "마이페이지로 돌아가기");
+
+		// 방을 읽기 전 기본값. 방을 읽고 나면 아래에서 다시 덮어쓴다.
+		model.addAttribute("backUrl",  fixerView ? "/fixer/jobs" : "/user/mypage");
+		model.addAttribute("backText", fixerView ? "내 작업으로 돌아가기"
+		                                         : "마이페이지로 돌아가기");
 
 		ChatRoomDTO room = chatService.getOrCreateRoomByRequest(requestId);
 
@@ -127,6 +150,15 @@ public class ChatController {
 			return "chat/chat";
 		}
 
+		// 이 방에서 내가 기사인지는 USER_ROLE 이 아니라 방이 알고 있다
+		boolean iAmFixer = myNo.equals(room.getFixerNo());
+
+		model.addAttribute("iAmFixer", iAmFixer);
+		model.addAttribute("backUrl",  iAmFixer
+				? "/fixer/jobs/" + requestId : "/user/mypage");
+		model.addAttribute("backText", iAmFixer
+				? "작업 상세로 돌아가기" : "마이페이지로 돌아가기");
+
 		// WebSocket 이 "누가 보냈는지" 판단할 근거
 		session.setAttribute(CHAT_USER_NO, myNo);
 
@@ -138,6 +170,7 @@ public class ChatController {
 
 		return "chat/chat";
 	}
+	
 	/**
 	 * 고객센터 [1:1 문의하기] 버튼이 오는 곳.
 	 * GET /support/chat
