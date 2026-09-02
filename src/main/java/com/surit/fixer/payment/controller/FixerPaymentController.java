@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpSession; // 추가됨
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,6 +22,19 @@ public class FixerPaymentController {
 
     private final FixerPaymentService paymentService;
     private final FileUploadService fileUploadService;
+
+    @GetMapping
+    public String showPaymentForm(@RequestParam("requestId") Long requestId, Model model) {
+
+        // JSP에서 ${booking.requestId} 형태로 값을 꺼내 쓸 수 있도록 껍데기 객체를 하나 담아줍니다.
+        PaymentDTO booking = new PaymentDTO();
+        booking.setRequestId(requestId);
+
+        model.addAttribute("booking", booking);
+
+        // views/fixer/payment-form.jsp (또는 실제 위치한 파일명)을 반환합니다.
+        return "fixer/payment-form";
+    }
 
     /**
      * 현장 결제 완료 및 사진 업로드 처리 (POST)
