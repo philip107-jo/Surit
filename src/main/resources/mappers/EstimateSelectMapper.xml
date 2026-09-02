@@ -40,14 +40,19 @@
 	</update>
 
 	<!-- 3) 접수를 매칭완료(REQ_03)로.
-	        아직 기사를 안 정한 상태(REQ_01·REQ_02)일 때만 바뀐다.
-	        USER_NO 까지 걸어서 남의 접수는 애초에 못 건드린다. -->
+	        아직 기사를 안 정한 상태(REQ_01·REQ_02·REQ_99)일 때만 바뀐다.
+	        USER_NO 까지 걸어서 남의 접수는 애초에 못 건드린다.
+
+	        REQ_99(긴급접수)를 2026-09-02 에 추가했다.
+	        긴급 접수도 "아직 기사를 안 정한" 상태라 매칭 대상이다.
+	        이게 없으면 기사가 견적을 낼 수는 있는데 고객이 그 견적을
+	        선택해도 0건이라 매칭이 안 되고 견적 단계에서 멈춰버린다. -->
 	<update id="updateRequestToMatched">
 		UPDATE REPAIR_REQUESTS
 		   SET STATUS_CODE = 'REQ_03'
 		 WHERE REQUEST_ID  = #{requestId}
 		   AND USER_NO     = #{userNo}
-		   AND STATUS_CODE IN ('REQ_01', 'REQ_02')
+		   AND STATUS_CODE IN ('REQ_01', 'REQ_02', 'REQ_99')
 	</update>
 
 </mapper>

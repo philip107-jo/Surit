@@ -103,6 +103,8 @@
 						<c:if test="${r.statusCode eq 'REQ_02'}"><c:set var="stClass" value="st-repairing" /></c:if>
 						<c:if test="${r.statusCode eq 'REQ_03'}"><c:set var="stClass" value="st-assigned" /></c:if>
 						<c:if test="${r.statusCode eq 'REQ_04'}"><c:set var="stClass" value="st-done" /></c:if>
+						<%-- 긴급접수(REQ_99). 2026-09-02 추가 --%>
+						<c:if test="${r.statusCode eq 'REQ_99'}"><c:set var="stClass" value="st-received" /></c:if>
 						<span class="badge ${stClass}"><c:out value="${r.statusName}"/></span>
 					</td>
 					<td class="num"><c:out value="${r.createdAt}"/></td>

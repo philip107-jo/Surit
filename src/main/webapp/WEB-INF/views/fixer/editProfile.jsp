@@ -56,8 +56,9 @@
                             <input type="text" name="name" class="input" value="${user.name}" required>
                         </div>
                         <div class="field">
-                            <label class="field__label">전화번호</label>
-                            <input type="text" name="phone" class="input" value="${user.phone}" placeholder="01012345678" required>
+							<label class="field__label" for="p-phone">전화번호<span class="req">*</span></label>
+							 <input type="text" id="p-phone" name="phone" class="input" value="${user.phone}" placeholder="01012345678" required>
+							 <p id="check-phone-result" class="field__help" aria-live="polite"></p>
                             <div class="field__help">번호는 고객에게 공개되지 않고, 알림 발송에만 사용됩니다.</div>
                         </div>
                         <div class="field">
@@ -78,18 +79,6 @@
                         </div>
                     </div>
                 </form>
-
-                <div class="card card--sm" style="margin-top:20px">
-                    <div style="display:flex;align-items:center;gap:16px">
-                        <div>
-                            <b style="font-size:17px">기사 탈퇴</b>
-                            <p class="muted" style="font-size:15px;margin-top:4px">탈퇴하면 진행 중인 작업과 보낸 견적 내역이 모두 삭제됩니다.</p>
-                        </div>
-                        <form action="${pageContext.request.contextPath}/fixer/withdraw" method="post" onsubmit="return confirm('정말 기사 탈퇴를 진행하시겠습니까?');" style="margin-left:auto;">
-                            <button type="submit" class="btn btn--danger btn--sm">기사 탈퇴</button>
-                        </form>
-                    </div>
-                </div>
 
             </div>
         </div>

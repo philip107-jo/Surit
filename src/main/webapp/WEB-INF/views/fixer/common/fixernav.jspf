@@ -18,6 +18,10 @@
 		<svg class="ico"><use href="#i-list"/></svg>내 작업</a>
 	<a href="/fixer/verify" class="${navActive eq 'verify' ? 'is-active' : ''}">
 		<svg class="ico"><use href="#i-shield"/></svg>기사 인증</a>
-	<a href="/fixer/fixer-mypage" class="${navActive eq 'fixerMypage' ? 'is-active' : ''}">
+	<%-- FixerMyPageController 의 매핑은 /fixer/mypage 다.
+	     2026-09-02 이전에는 /fixer/fixer-mypage 로 적혀 있어서 404 가 났다.
+	     이 조각은 기사 화면 네 곳에 전부 include 되므로 어디서 눌러도 에러였다. --%>
+	<a href="/fixer/mypage" class="${navActive eq 'fixerMypage' ? 'is-active' : ''}">
 		<svg class="ico"><use href="#i-edit"/></svg>수리 정보 관리</a>
+
 </nav>

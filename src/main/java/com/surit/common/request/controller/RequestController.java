@@ -370,9 +370,12 @@ public class RequestController {
                             requestId
                     );
 
-            // 수정 가능한 상태인지 확인
+            // 수정 가능한 상태인지 확인 (접수대기 / 견적중 / 긴급접수)
+            // REQ_99 는 2026-09-02 에 추가. 같은 검사가 RequestServiceImpl 과
+            // 매퍼 WHERE 에도 있어서, 셋 다 같이 맞춰야 한다.
             if (!"REQ_01".equals(request.getStatusCode())
-                    && !"REQ_02".equals(request.getStatusCode())) {
+                    && !"REQ_02".equals(request.getStatusCode())
+                    && !"REQ_99".equals(request.getStatusCode())) {
 
                 ra.addFlashAttribute(
                         "message",

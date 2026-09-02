@@ -48,6 +48,11 @@
         <c:when test="${request.statusCode == 'REQ_05'}">
           <span class="badge st-canceled"><c:out value="${request.statusName}"/></span>
         </c:when>
+        <%-- 긴급접수(REQ_99). 2026-09-02 추가.
+             원래 c:otherwise 가 없어서 REQ_99 면 상태 배지가 아예 안 그려졌다. --%>
+        <c:when test="${request.statusCode == 'REQ_99'}">
+          <span class="badge st-received"><c:out value="${request.statusName}"/></span>
+        </c:when>
       </c:choose>
     </h1>
     <p><fmt:formatDate value="${request.createdAt}" pattern="yyyy.MM.dd HH:mm"/> 접수</p>
@@ -61,7 +66,8 @@
         <div class="steps__dot"><svg><use href="#i-check"/></svg></div>
         <div class="steps__label">접수 완료</div>
       </div>
-      <div class="steps__item ${request.statusCode == 'REQ_01' || request.statusCode == 'REQ_02' ? 'now' : (request.statusCode == 'REQ_03' || request.statusCode == 'REQ_04' ? 'done' : '')}">
+      <%-- REQ_99(긴급접수)도 "기사 매칭 중" 단계다. 2026-09-02 추가. --%>
+      <div class="steps__item ${request.statusCode == 'REQ_01' || request.statusCode == 'REQ_02' || request.statusCode == 'REQ_99' ? 'now' : (request.statusCode == 'REQ_03' || request.statusCode == 'REQ_04' ? 'done' : '')}">
         <div class="steps__dot">
           <c:choose>
             <c:when test="${request.statusCode == 'REQ_03' || request.statusCode == 'REQ_04'}">
@@ -108,7 +114,8 @@
         <span>방문 주소 <b><c:out value="${request.serviceAddress}"/></b></span>
       </div>
     </div>
-    <c:if test="${request.statusCode == 'REQ_01' || request.statusCode == 'REQ_02'}">
+    <%-- 긴급접수(REQ_99)도 아직 기사를 안 정한 상태라 수정·취소가 가능하다. 2026-09-02 --%>
+    <c:if test="${request.statusCode == 'REQ_01' || request.statusCode == 'REQ_02' || request.statusCode == 'REQ_99'}">
       <div class="summary__actions" style="display: flex; gap: 8px;">
         <!-- 1. 컨트롤러 매핑과 동일하게 /request/{번호}/edit 으로 순서 변경 -->
         <a class="btn btn--ghost btn--sm" href="${pageContext.request.contextPath}/request/${request.requestId}/edit">수정</a>
@@ -165,7 +172,10 @@
               <c:when test="${est.status == 'SELECTED'}">
                 <span class="badge badge--ok" style="margin-left:auto">선택됨</span>
               </c:when>
-              <c:when test="${request.statusCode == 'REQ_01' || request.statusCode == 'REQ_02'}">
+              <%-- 긴급접수(REQ_99)에서도 기사를 고를 수 있어야 한다. 2026-09-02 추가.
+                   이 조건이 없으면 견적은 들어오는데 "결정" 버튼이 안 그려져서
+                   매칭 자체가 불가능했다. --%>
+              <c:when test="${request.statusCode == 'REQ_01' || request.statusCode == 'REQ_02' || request.statusCode == 'REQ_99'}">
                 <form method="post" action="${pageContext.request.contextPath}/request/matching/select" style="margin-left:auto">
                   <input type="hidden" name="requestId" value="${request.requestId}">
                   <input type="hidden" name="estimateId" value="${est.estimateId}">

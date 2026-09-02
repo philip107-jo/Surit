@@ -8,18 +8,9 @@
         <h2>수릿과 함께<br>믿을 수 있는 수리를 시작하세요</h2>
         <p>검증된 기사님과 투명한 견적으로<br>안심하고 맡길 수 있어요.</p>
         <ul>
-            <li>
-                <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
-                검증된 기사 매칭
-            </li>
-            <li>
-                <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
-                투명한 견적 비교
-            </li>
-            <li>
-                <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
-                실시간 채팅 상담
-            </li>
+            <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>검증된 기사 매칭</li>
+            <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>투명한 견적 비교</li>
+            <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>실시간 채팅 상담</li>
         </ul>
     </div>
 
@@ -65,6 +56,9 @@
                             </button>
                         </div>
                         <input type="hidden" id="user-role" name="userRole" value="USER">
+                        <div class="note note--warn" style="margin-top:14px;font-size:15px;padding:14px 18px">
+                            <svg class=""><use href="#i-alert"/></svg><span>수리 기사는 <b>가입 후 [기사 인증] 화면에서 자격증을 제출</b>해야 활동할 수 있습니다. 관리자 확인까지 1~2일 걸리며, 승인 전에는 견적을 보낼 수 없습니다.</span>
+                        </div>
                     </div>
 
                     <div class="field">
@@ -96,11 +90,9 @@
                     <div class="field-row">
                         <div class="field">
                             <label class="field__label" for="phone">전화번호<span class="req">*</span></label>
-                            <input type="text" id="phone" name="phone" class="input"
-                                placeholder="01012345678" maxlength:"11" autocomplete="off" required>
-								<p id="check-phone-result" class="field__help" aria-live="polite"></p>
+                            <input type="text" id="phone" name="p-phone" class="input" placeholder="01012345678" maxlength="11" autocomplete="off" required>
+                            <p id="check-phone-result" class="field__help" aria-live="polite"></p>
                         </div>
-
                         <div class="field">
                             <label class="field__label" for="user-email">이메일<span class="req">*</span></label>
                             <input type="email" id="user-email" name="email" class="input" required autocomplete="off">
@@ -120,19 +112,14 @@
 
                     <div class="field">
                         <label class="field__label">지역 선택<span class="req">*</span></label>
-
                         <button type="button" class="btn btn--ghost btn--block" id="region-toggle-btn" onclick="toggleRegionSelect()">
                             <span id="region-selected-label">지역을 선택해주세요</span>
                             <svg class="ico" style="margin-left:auto"><use href="#i-chevd"/></svg>
                         </button>
-
-                        <div id="region-select-panel" style="display:none;margin-top:10px;padding:16px;
-                             border:1.5px solid var(--g-300);border-radius:var(--r-md);
-                             max-height:260px;overflow-y:auto">
+                        <div id="region-select-panel" style="display:none;margin-top:10px;padding:16px;border:1.5px solid var(--g-300);border-radius:var(--r-md);max-height:260px;overflow-y:auto">
                             <c:forEach var="region" items="${regionList}">
                                 <label class="check" style="display:block;margin-bottom:12px">
-                                    <input type="radio" name="regionRadio" value="${region.codeId}"
-                                           data-region-name="${region.codeName}">
+                                    <input type="radio" name="regionRadio" value="${region.codeId}" data-region-name="${region.codeName}">
                                     <c:out value="${region.codeName}"/>
                                 </label>
                             </c:forEach>
@@ -141,23 +128,35 @@
 
                     <div class="field">
                         <label class="field__label" for="address-detail">상세주소<span class="req">*</span></label>
-                        <input type="text" id="address-detail" name="addressDetail" class="input"
-                               placeholder="예: 테헤란로 123, 101동 1502호" autocomplete="off" required>
+                        <input type="text" id="address-detail" name="addressDetail" class="input" placeholder="예: 테헤란로 123, 101동 1502호" autocomplete="off" required>
                     </div>
 
-                    <!-- 실제 제출되는 최종 주소 (지역명 + 상세주소를 JS로 합쳐서 채움) -->
                     <input type="hidden" id="address" name="address">
 
                     <div class="field">
                         <input type="hidden" id="is-default" name="isDefault" value="Y">
-                        <label class="check">
-                            <input type="checkbox" id="is-default-checkbox" checked>
-                            기본 주소로 설정
+                        <label class="check" style="display:none;">
+                            <input type="checkbox" id="is-default-checkbox" checked>기본 주소로 설정
                         </label>
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn--primary btn--block btn--lg">가입하기</button>
+                <div class="card card--sm" style="box-shadow:none;background:var(--g-50);margin-bottom:26px">
+                    <label class="check" style="font-weight:700;font-size:17px">
+                        <input type="checkbox" id="agree-all" checked>전체 동의
+                    </label>
+                    <hr style="border:0;border-top:1px solid var(--g-200);margin:16px 0">
+                    <div style="display:flex;flex-direction:column;gap:12px">
+                        <label class="check"><input type="checkbox" class="agree-item" checked required>[필수] 만 14세 이상입니다</label>
+                        <label class="check"><input type="checkbox" class="agree-item" checked required>[필수] 서비스 이용약관 동의</label>
+                        <label class="check"><input type="checkbox" class="agree-item" checked required>[필수] 개인정보 수집 · 이용 동의</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn--primary btn--block btn--xl">가입하고 시작하기</button>
+                <div class="field__help" style="text-align:center;margin-top:12px">
+                    기사로 가입하셨다면 이어서 <b style="color:var(--p-600);">기사 인증</b> 화면으로 이동합니다.
+                </div>
             </form>
 
             <div class="auth__bottom">
@@ -170,5 +169,20 @@
 </div>
 
 <script src="/js/common.js"></script>
+<script>
+    // 전체 동의 체크박스 로직 연동
+    const agreeAll = document.getElementById('agree-all');
+    const agreeItems = document.querySelectorAll('.agree-item');
+
+    agreeAll.addEventListener('change', (e) => {
+        agreeItems.forEach(item => item.checked = e.target.checked);
+    });
+
+    agreeItems.forEach(item => {
+        item.addEventListener('change', () => {
+            agreeAll.checked = Array.from(agreeItems).every(i => i.checked);
+        });
+    });
+</script>
 
 <jsp:include page="/WEB-INF/views/common/footer.jsp"/>
