@@ -181,8 +181,14 @@ public class RequestServiceImpl implements RequestService {
 			throw new IllegalStateException("사진은 최대 5장까지 첨부할 수 있습니다.");
 		}
 
-		// 신규 접수 상태
-		request.setStatusCode("REQ_01");
+		// 신규 접수 상태.
+		// 긴급으로 체크하면 REQ_99(긴급접수), 아니면 REQ_01(접수대기). (2026-09-02)
+		//
+		// 상태 코드를 SQL 에 박아두지 않고 여기서 정하는 이유는, 어떤 상태로
+		// 시작할지는 "업무 판단" 이지 "저장 방법" 이 아니기 때문이다.
+		// 폼에서 온 urgentYn 을 그대로 믿지 않고 "Y" 인지만 보고 상태 코드로
+		// 바꾸므로, 사용자가 개발자도구로 다른 값을 넣어도 REQ_01 로 떨어진다.
+		request.setStatusCode("Y".equals(request.getUrgentYn()) ? "REQ_99" : "REQ_01");
 
 		Long result = mapper.insertRequest(request);
 
