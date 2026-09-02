@@ -105,15 +105,22 @@
 <main>
 <div class="container">
     <div class="page-head">
-        <h1>수리 접수</h1>
+        <h1><c:choose><c:when test="${editMode}">수리 접수 수정</c:when><c:otherwise>수리 접수</c:otherwise></c:choose></h1>
         <p>증상만 남겨주시면 주변 기사님이 직접 견적을 신청합니다.</p>
     </div>
 
     <div class="card" style="max-width:840px;margin:0 auto">
 		<form id="request-form"
-		      action="/request/request"
+		      action="<c:choose>
+		                  <c:when test='${editMode}'>${pageContext.request.contextPath}/request/${request.requestId}/edit</c:when>
+		                  <c:otherwise>${pageContext.request.contextPath}/request/request</c:otherwise>
+		              </c:choose>"
 		      method="post"
 		      enctype="multipart/form-data">
+
+		    <c:if test="${editMode}">
+		        <input type="hidden" name="requestId" value="${request.requestId}">
+		    </c:if>
 
             <div class="form-sec">
                 <div class="form-sec__head">
@@ -231,11 +238,12 @@
                 <div class="field">
                     <label class="field__label" for="request-title">제목<span class="req">*</span></label>
                     <input type="text" id="request-title" name="title" class="input"
+                        value="${request.title}"
                         placeholder="예: 현관 도어락이 반응이 없어요" required>
                 </div>
 
                 <textarea id="request-content" name="content" class="textarea"
-                    placeholder="예) 현관 도어락 버튼을 눌러도 반응이 없고 삐 소리만 납니다.&#10;건전지는 어제 새로 갈았습니다."></textarea>
+                    placeholder="예) 현관 도어락 버튼을 눌러도 반응이 없고 삐 소리만 납니다.&#10;건전지는 어제 새로 갈았습니다.">${request.content}</textarea>
 
 					<div class="field__label" style="margin:26px 0 12px">
 					    사진 첨부
@@ -328,7 +336,8 @@
 					    <!-- 실제 접수 시 넘어갈 주소 -->
 					    <input type="hidden"
 					           id="service-address"
-					           name="serviceAddress">
+					           name="serviceAddress"
+					           value="${request.serviceAddress}">
 
 							   <button type="button"
 							           class="address-add"
@@ -469,7 +478,9 @@
                     개인정보 제3자 제공 및 이용약관에 동의합니다. (필수)
                 </label>
 
-                <button type="submit" class="btn btn--primary btn--xl btn--block">접수하고 기사님 찾기</button>
+                <button type="submit" class="btn btn--primary btn--xl btn--block">
+                    <c:choose><c:when test="${editMode}">수정 완료</c:when><c:otherwise>접수하고 기사님 찾기</c:otherwise></c:choose>
+                </button>
 
                 <div class="note note--gray" style="margin-top:20px">
                     <svg><use href="#i-shield"/></svg>
@@ -482,6 +493,4 @@
     </div>
 </div>
 </main>
-
-<script src="${pageContext.request.contextPath}/js/common.js"></script>
 <jsp:include page="/WEB-INF/views/common/footer.jsp"/>
