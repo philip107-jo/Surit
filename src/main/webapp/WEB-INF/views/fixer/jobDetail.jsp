@@ -18,8 +18,7 @@
 				</c:otherwise>
 			</c:choose>
 		</h1>
-		<p>접수번호 ${job.requestId} ·
-			<fmt:formatDate value="${job.createdAt}" pattern="yyyy-MM-dd HH:mm"/> 접수</p>
+		<p>접수번호 ${job.requestId} · <fmt:formatDate value="${job.createdAt}" pattern="yyyy-MM-dd HH:mm"/> 접수</p>
 	</div>
 
 	<c:if test="${not empty message}">
@@ -42,14 +41,10 @@
 		</div>
 	</div>
 
-	<!-- 고객 / 방문지 -->
-	<%--
-		연락처와 방문 주소는 내 작업으로 확정된 뒤에만 보인다.
-		접수 목록·상세(F-15)에는 고객 이름만 있고 전화번호가 없다.
-	--%>
-	<div class="card">
+	<!-- 고객 / 방문지 (예약 확정 안내 보강) -->
+	<div class="card" style="border-color:var(--p-200)">
 		<div class="card__head">
-			<h2 class="card__title">고객 · 방문지</h2>
+			<h2 class="card__title">확정된 예약 및 방문지</h2>
 			<span class="muted" style="font-size:15px">매칭된 뒤에만 보입니다</span>
 		</div>
 		<div style="display:flex;align-items:center;gap:20px;margin-bottom:22px">
@@ -58,13 +53,11 @@
 				<div style="font-size:21px;font-weight:700"><c:out value="${job.customerName}"/> 고객님</div>
 				<div class="muted" style="font-size:16px;margin-top:4px"><c:out value="${job.customerPhone}"/></div>
 			</div>
-			<%-- 이 화면은 "내 견적이 채택된 건" 만 열리므로 채팅 상대가 항상 있다.
-			     전화 대신 채팅으로 유도해야 번호가 덜 노출된다. --%>
-			<a class="btn btn--primary" style="margin-left:auto"
-			   href="/orders/${job.requestId}/chat">고객과 채팅</a>
+			<a class="btn btn--primary" style="margin-left:auto" href="${pageContext.request.contextPath}/orders/${job.requestId}/chat">고객과 채팅하기</a>
 		</div>
 		<dl class="dl--inline">
 			<dt>방문 주소</dt><dd><c:out value="${job.serviceAddress}"/></dd>
+			<dt>방문 일시</dt><dd class="muted">채팅에서 시간을 협의하고 일정을 확정해주세요.</dd>
 		</dl>
 	</div>
 
@@ -74,52 +67,35 @@
 			<h2 class="card__title">내가 보낸 예상 견적</h2>
 			<span class="muted" style="font-size:15px">견적번호 ${job.estimateId}</span>
 		</div>
-		<div class="field__label" style="margin-bottom:8px">견적 설명</div>
 		<p style="font-size:16px;line-height:1.8;color:var(--g-700);white-space:pre-wrap;margin:0 0 20px"><c:out value="${job.estimateContent}"/></p>
-
 		<dl class="dl--inline">
 			<dt>예상 소요 시간</dt><dd>${job.estimatedDuration} 분</dd>
 		</dl>
-
-		<div style="display:flex;justify-content:space-between;align-items:center;
-			margin-top:20px;padding-top:20px;border-top:2px solid var(--g-200)">
+		<div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:20px;border-top:2px solid var(--g-200)">
 			<span style="font-size:18px;font-weight:700">예상 금액</span>
-			<span style="font-size:32px;font-weight:800;letter-spacing:-1.4px">
-				<fmt:formatNumber value="${job.estimatedPrice}" pattern="#,##0"/>원</span>
+			<span style="font-size:32px;font-weight:800;letter-spacing:-1.4px"><fmt:formatNumber value="${job.estimatedPrice}" pattern="#,##0"/>원</span>
 		</div>
 	</div>
 
-	<!-- 완료 처리 -->
+	<!-- 수리 완료 처리 (결제 폼으로 연결되도록 변경) -->
 	<div class="card card--flat">
-		<div class="card__head"><h2 class="card__title">수리 완료 처리</h2></div>
-
+		<div class="card__head"><h2 class="card__title">수리를 마치셨나요?</h2></div>
 		<c:choose>
 			<c:when test="${job.statusCode eq 'REQ_03'}">
-				<%--
-					상태를 바꾸는 건 POST 로 보낸다.
-					<a href> 링크(GET)로 만들면 클릭 한 번, 심하면 크롤러가 긁기만 해도
-					상태가 바뀌어버린다.
-
-					여기서 버튼을 숨기는 건 안내일 뿐이고, 진짜 차단은
-					completeJob 의 WHERE 절(상태 + 소유자 확인)이 한다.
-				--%>
-				<form action="/fixer/jobs/${job.requestId}/complete" method="post"
-				      onsubmit="return confirm('수리 완료로 변경할까요? 되돌릴 수 없습니다.');">
-					<c:if test="${not empty _csrf}">
-						<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-					</c:if>
-					<button type="submit" class="btn btn--ok btn--xl btn--block">
-						<svg class="ico"><use href="#i-check"/></svg>수리 완료 처리</button>
-				</form>
+				<p class="muted" style="font-size:16.5px;line-height:1.8">
+					현장에서 결제를 받은 뒤 최종 금액으로 영수증 겸 견적서를 보내면 접수가 완료됩니다.
+				</p>
+				<!-- 기존 폼 POST 전송을 빼고 결제/영수증 폼으로 이동하는 버튼으로 수정 -->
+				<a class="btn btn--dark btn--lg btn--block" style="margin-top:22px" href="${pageContext.request.contextPath}/fixer/payment?requestId=${job.requestId}">
+					<svg class="ico"><use href="#i-doc"/></svg>수리 완료 처리 화면 열기
+				</a>
 			</c:when>
-
 			<c:when test="${job.statusCode eq 'REQ_04'}">
 				<div class="note note--ok" style="margin-bottom:0">
 					<svg><use href="#i-check"/></svg>
 					<span><b>수리가 완료된 작업입니다.</b></span>
 				</div>
 			</c:when>
-
 			<c:otherwise>
 				<div class="note note--gray" style="margin-bottom:0">
 					<svg><use href="#i-clock"/></svg>
@@ -129,8 +105,7 @@
 		</c:choose>
 	</div>
 
-	<p style="margin-top:24px"><a href="/fixer/jobs">← 목록으로</a></p>
-
+	<p style="margin-top:24px"><a href="${pageContext.request.contextPath}/fixer/jobs">← 목록으로</a></p>
 </div>
 
 <jsp:include page="/WEB-INF/views/common/footer.jsp"/>

@@ -922,3 +922,40 @@ function toggleAddressAdd() {
     });
 
 })();
+/* 내 정보 수정 폼 : 전화번호 숫자만 입력 검증 */
+(function () {
+  var phoneInput = document.getElementById('p-phone');
+  if (!phoneInput) return;
+
+  var form = phoneInput.closest('form');
+  if (!form) return;
+
+  function validatePhone(v) {
+    if (!v) return '전화번호를 입력해주세요';
+    if (!/^[0-9]+$/.test(v)) return '전화번호는 숫자만 입력해주세요';
+    if (v.length < 9 || v.length > 11) return '전화번호 자리수를 확인해주세요';
+    return null;
+  }
+
+  function showPhoneError(message) {
+    phoneInput.style.borderColor = message ? 'var(--danger)' : '';
+    var out = document.getElementById('check-phone-result');
+    if (out) {
+      out.textContent = message || '';
+      out.style.color = message ? 'var(--danger)' : '';
+    }
+  }
+
+  phoneInput.addEventListener('input', function () {
+    showPhoneError(validatePhone(phoneInput.value));
+  });
+
+  form.addEventListener('submit', function (e) {
+    var message = validatePhone(phoneInput.value);
+    showPhoneError(message);
+    if (message) {
+      e.preventDefault();
+      phoneInput.focus();
+    }
+  });
+})();

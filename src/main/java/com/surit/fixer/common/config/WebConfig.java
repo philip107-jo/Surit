@@ -1,7 +1,9 @@
 package com.surit.fixer.common.config;
 
+import com.surit.interceptor.FixerInterceptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -39,6 +41,17 @@ public class WebConfig implements WebMvcConfigurer {
 		registry.addResourceHandler(urlPatternOf(photoWebPrefix))
 		        .addResourceLocations(locationOf(photoUploadDir));
 	}
+
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		// 기존에 등록된 다른 인터셉터 코드가 있다면 지우지 말고 그 아래에 추가하세요!
+
+		// [추가] 기사 권한 제어 인터셉터
+		registry.addInterceptor(new FixerInterceptor())
+				.addPathPatterns("/fixer/**")
+				.excludePathPatterns("/fixer/verify");
+	}
+
 
 	/** "/uploads/photo" → "/uploads/photo/**" */
 	private String urlPatternOf(String webPrefix) {
