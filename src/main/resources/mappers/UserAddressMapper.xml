@@ -38,7 +38,7 @@
     </select>
 
     <insert id="insertAddress" useGeneratedKeys="true" keyProperty="addressId" keyColumn="ADDRESS_ID">
-        INSERT INTO USER_ADDRESS (USER_NO, ADDRESS_NAME, ZIP_CODE, ADDRESS, ADDRESS_DETAIL, IS_DEFAULT)
+        INSERT INTO USER_ADDRESS (USER_NO, ADDRESS_NAME, ADDRESS, ADDRESS_DETAIL, IS_DEFAULT)
         VALUES (#{userNo}, #{addressName}, #{address}, #{addressDetail}, #{isDefault})
     </insert>
 
