@@ -123,11 +123,7 @@
                   <label class="field__label">별명</label>
                   <input type="text" name="addressName" class="input" value="${addr.addressName}" placeholder="예: 집, 사무실, 부모님댁">
                 </div>
-                <div class="field-row">
-                  <div class="field" style="flex:0 0 160px">
-                    <label class="field__label">우편번호</label>
-                    <input type="text" name="zipCode" class="input" value="${addr.zipCode}">
-                  </div>
+           
                   <div class="field" style="flex:1">
                     <label class="field__label">주소<span class="req">*</span></label>
                     <input type="text" name="address" class="input" value="${addr.address}" required>
