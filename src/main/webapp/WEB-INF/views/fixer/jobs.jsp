@@ -92,6 +92,7 @@
 													<span class="badge st-repairing"><c:out value="${job.statusName}"/></span>
 												</c:otherwise>
 											</c:choose>
+
 											<span class="muted" style="font-size:14.5px">접수번호 ${job.requestId} · <c:out value="${job.customerName}"/> 고객님</span>
 										</div>
 
@@ -104,14 +105,17 @@
 											<div><span class="muted">예상 금액 |</span> <b style="color:var(--g-900)"><fmt:formatNumber value="${job.estimatedPrice}" pattern="#,##0"/> 원</b></div>
 										</div>
 									</div>
-
-									<!-- 우측 버튼 영역 -->
-									<div class="btn-row" style="flex:0 0 auto; flex-direction:column; gap:10px;">
-										<a class="btn btn--primary" style="width:100%" href="${pageContext.request.contextPath}/orders/${job.requestId}/chat">채팅하기</a>
-										<a class="btn btn--ghost" style="width:100%" href="${pageContext.request.contextPath}/fixer/jobs/${job.requestId}">상세 보기</a>
-									</div>
-								</div>
-							</c:forEach>
+										</td>
+										<td class="right">
+											<div class="btn-row">
+												<a class="btn btn--primary btn--sm" href="/fixer/chat/${job.requestId}">채팅</a>
+												<a class="btn btn--ghost btn--sm" href="${pageContext.request.contextPath}/fixer/jobs/${job.requestId}">상세</a>
+											</div>
+										</td>
+									</tr>
+								</c:forEach>
+								</tbody>
+							</table>
 						</div>
 
 					</c:otherwise>
