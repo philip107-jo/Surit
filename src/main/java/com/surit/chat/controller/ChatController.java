@@ -138,4 +138,23 @@ public class ChatController {
 
 		return "chat/chat";
 	}
+	/**
+	 * 고객센터 [1:1 문의하기] 버튼이 오는 곳.
+	 * GET /support/chat
+	 *
+	 * 열려있는 문의방이 있으면 그 방으로, 없으면 새로 만들어서 이동시킨다.
+	 */
+	@GetMapping("/support/chat")
+	public String supportChat(HttpSession session) {
+
+	    Long myNo = ChatLoginResolver.resolveUserNo(session);
+
+	    if (myNo == null) {
+	        return "redirect:/user/login?redirectURL=/support/chat";
+	    }
+
+	    Long roomId = chatService.getOrCreateSupportRoom(myNo);
+
+	    return "redirect:/user/mypage/support/" + roomId;
+	}
 }
