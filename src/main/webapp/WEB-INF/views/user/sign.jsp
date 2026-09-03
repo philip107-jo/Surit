@@ -90,13 +90,13 @@
                     <div class="field-row">
                         <div class="field">
                             <label class="field__label" for="phone">전화번호<span class="req">*</span></label>
-                            <input type="text" id="phone" name="p-phone" class="input" placeholder="01012345678" maxlength="11" autocomplete="off" required>
+                            <input type="text" id="phone" name="phone" class="input" placeholder="01012345678" maxlength="11" autocomplete="off" required>
                             <p id="check-phone-result" class="field__help" aria-live="polite"></p>
                         </div>
                         <div class="field">
                             <label class="field__label" for="user-email">이메일<span class="req">*</span></label>
                             <input type="email" id="user-email" name="email" class="input" required autocomplete="off">
-                            <p id="check-email-result" class="field__help" aria-live="polite"></p>
+                            <p id="check-email-ressult" class="field__help" aria-live="polite"></p>
                         </div>
                     </div>
                 </div>

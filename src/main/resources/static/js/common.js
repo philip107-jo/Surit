@@ -963,3 +963,59 @@ function toggleAddressAdd() {
     }
   });
 })();
+// ========================================
+// 접수 페이지 : 새 주소 추가 박스 열기/닫기
+// ========================================
+(function () {
+
+    const showBtn =
+        document.getElementById("show-address-add-btn");
+
+    const addBox =
+        document.getElementById("address-add-box");
+
+    const closeBtn =
+        document.getElementById("address-add-close");
+
+    const cancelBtn =
+        document.getElementById("address-add-cancel");
+
+
+    if (!showBtn || !addBox) {
+        return;
+    }
+
+
+    showBtn.addEventListener("click", function () {
+
+        addBox.style.display = "block";
+
+        // 버튼은 그대로 두고 싶으면 이 줄은 안 써도 됨
+        // showBtn.style.display = "none";
+
+    });
+
+
+    function closeAddressForm() {
+
+        addBox.style.display = "none";
+
+    }
+
+
+    if (closeBtn) {
+        closeBtn.addEventListener(
+            "click",
+            closeAddressForm
+        );
+    }
+
+
+    if (cancelBtn) {
+        cancelBtn.addEventListener(
+            "click",
+            closeAddressForm
+        );
+    }
+
+})();

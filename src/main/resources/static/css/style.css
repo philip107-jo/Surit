@@ -485,6 +485,194 @@ table{border-collapse:collapse;width:100%}
   display:grid;place-items:center;overflow:hidden}
 .thumb svg{width:36px;height:36px;stroke:var(--g-300);fill:none;stroke-width:2}
 .thumb--wide{width:100%;height:150px}
+/* ===============================
+   접수 페이지 새 주소 추가 폼
+================================ */
+
+.request-address-form {
+    display: none;
+
+    margin-top: 14px;
+    padding: 22px;
+
+    border: 1px solid #e1e6ee;
+    border-radius: 16px;
+
+    background: #fff;
+
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+.request-address-form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    margin-bottom: 20px;
+}
+
+.request-address-form-header strong {
+    font-size: 17px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.request-address-form-header p {
+    margin: 5px 0 0;
+
+    font-size: 13px;
+    color: #778196;
+}
+
+.request-address-close {
+    border: none;
+    background: transparent;
+
+    font-size: 23px;
+    color: #9aa3b2;
+
+    cursor: pointer;
+}
+
+
+/* 입력 영역 */
+
+.request-address-field {
+    margin-bottom: 15px;
+}
+
+.request-address-field label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    color: #252b37;
+}
+
+.request-address-field label span {
+    color: #ff4d4f;
+}
+
+.request-address-field input {
+    width: 100%;
+    height: 44px;
+
+    padding: 0 13px;
+
+    border: 1px solid #d7dde7;
+    border-radius: 10px;
+
+    background: #fff;
+
+    font-size: 13px;
+
+    box-sizing: border-box;
+    outline: none;
+}
+
+.request-address-field input:focus {
+    border-color: #3478ff;
+    box-shadow: 0 0 0 3px rgba(52, 120, 255, 0.08);
+}
+
+.request-address-field input::placeholder {
+    color: #a7b0bf;
+}
+
+
+/* 우편번호 + 주소검색 */
+
+.request-address-search-row {
+    display: flex;
+    gap: 8px;
+}
+
+.request-address-search-row input {
+    flex: 1;
+}
+
+.request-address-search-row button {
+    width: 110px;
+    height: 44px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #172033;
+    color: #fff;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+
+/* 기본주소 체크 */
+
+.request-address-default {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-top: 4px;
+
+    font-size: 13px;
+    color: #455064;
+
+    cursor: pointer;
+}
+
+.request-address-default input {
+    width: 16px;
+    height: 16px;
+}
+
+
+/* 하단 버튼 */
+
+.request-address-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+
+    margin-top: 20px;
+}
+
+.request-address-cancel,
+.request-address-save {
+    height: 42px;
+
+    padding: 0 19px;
+
+    border-radius: 10px;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.request-address-cancel {
+    border: 1px solid #d7dde7;
+
+    background: #fff;
+    color: #4b5565;
+}
+
+.request-address-save {
+    border: none;
+
+    background: #3478ff;
+    color: #fff;
+}
+
+.request-address-save:hover {
+    background: #2868e8;
+}
 
 /* 주소 리스트 */
 .address-list {

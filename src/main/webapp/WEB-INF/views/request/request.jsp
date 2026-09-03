@@ -333,19 +333,106 @@
 
 					    </div>
 
-					    <!-- 실제 접수 시 넘어갈 주소 -->
-					    <input type="hidden"
-					           id="service-address"
-					           name="serviceAddress"
-					           value="${request.serviceAddress}">
+						<!-- 실제 접수 시 넘어갈 주소 -->
+						<input type="hidden"
+						       id="service-address"
+						       name="serviceAddress"
+						       value="${request.serviceAddress}">
 
-							   <button type="button"
-							           class="address-add"
-							           onclick="location.href='${pageContext.request.contextPath}/user/mypage/address'">
-							       + 새 주소 추가하기
-							   </button>
-					</div>
+						<!-- 새 주소 추가 버튼 -->
+						<button type="button"
+						        class="address-add"
+						        id="show-address-add-btn">
+						    + 새 주소 추가하기
+						</button>
 
+						<div id="address-add-box" class="request-address-form">
+
+						    <div class="request-address-form-header">
+						        <div>
+						            <strong>새 주소 추가</strong>
+						            <p>기사님이 방문할 주소를 입력해주세요.</p>
+						        </div>
+
+						        <button type="button"
+						                class="request-address-close"
+						                id="address-add-close">
+						            ×
+						        </button>
+						    </div>
+
+						    <div class="request-address-field">
+						        <label>주소 별칭 <span>*</span></label>
+
+						        <input type="text"
+						               id="new-address-name"
+						               placeholder="예) 집, 사무실, 부모님댁">
+						    </div>
+
+
+						    <div class="request-address-field">
+						        <label>우편번호 <span>*</span></label>
+
+						        <div class="request-address-search-row">
+
+						            <input type="text"
+						                   id="new-zip-code"
+						                   placeholder="우편번호"
+						                   readonly>
+
+						            <button type="button"
+						                    id="address-search-btn">
+						                주소 검색
+						            </button>
+
+						        </div>
+						    </div>
+
+
+						    <div class="request-address-field">
+						        <label>기본주소 <span>*</span></label>
+
+						        <input type="text"
+						               id="new-address"
+						               placeholder="주소 검색으로 입력됩니다"
+						               readonly>
+						    </div>
+
+
+						    <div class="request-address-field">
+						        <label>상세주소</label>
+
+						        <input type="text"
+						               id="new-address-detail"
+						               placeholder="동 · 호수 등 나머지 주소를 입력하세요">
+						    </div>
+
+
+						    <label class="request-address-default">
+						        <input type="checkbox"
+						               id="new-address-default">
+
+						        <span>이 주소를 기본 주소로 설정합니다</span>
+						    </label>
+
+
+						    <div class="request-address-actions">
+
+						        <button type="button"
+						                class="request-address-cancel"
+						                id="address-add-cancel">
+						            취소
+						        </button>
+
+						        <button type="button"
+						                class="request-address-save"
+						                id="save-address-btn">
+						            저장하기
+						        </button>
+
+						    </div>
+
+						</div>
 			<!-- 4. 방문 날짜 / 시간 -->
 			<div class="form-sec">
 
