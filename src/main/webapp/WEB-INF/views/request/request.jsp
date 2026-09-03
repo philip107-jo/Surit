@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<div%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <jsp:include page="/WEB-INF/views/common/header.jsp"/>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -273,7 +273,7 @@
 
 					    <!-- 선택한 사진들이 여기에 좌르륵 나옴 -->
 					    <div id="photo-preview" class="photo-preview"></div>
-
+					</div>
 					</div>
 
 					<!-- 3. 방문 주소 -->
@@ -513,6 +513,7 @@
 					});
 					</script>
 					</c:if>
+					</div>
 					
 					<%-- ══════════ 접수 페이지 주소 수정·삭제 ══════════
 					     ★ 반드시 위 <c:if> 바깥에 둔다.
