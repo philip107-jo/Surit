@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<div%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <jsp:include page="/WEB-INF/views/common/header.jsp"/>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -513,7 +513,6 @@
 					});
 					</script>
 					</c:if>
-					</div>
 					
 					<%-- ══════════ 접수 페이지 주소 수정·삭제 ══════════
 					     ★ 반드시 위 <c:if> 바깥에 둔다.
