@@ -104,7 +104,66 @@
 			</c:otherwise>
 		</c:choose>
 	</div>
+	
+	<!-- =================================================
+		     최종 결제 및 영수증 (수리 완료 상태일 때만 노출)
+		================================================== -->
+		<c:if test="${job.statusCode eq 'REQ_04'}">
+		    <!-- 수정 포인트 1: 튀는 테두리 스타일(border-color) 제거하고 공통 .card 유지 -->
+		    <div class="card" style="margin-top: 20px;">
+		        <div class="card__head" style="margin-bottom: 16px;">
+		            <h3 class="card__title" style="font-size: 18px;">최종 결제 및 수리 내역</h3>
+		            <span class="badge st-done">결제 완료</span>
+		        </div>
 
+		        <!-- 금액 및 결제 방식 비교 -->
+		        <div class="list-card__meta" style="line-height: 2; margin-bottom: 24px;">
+		            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--g-200); padding-bottom: 12px; margin-bottom: 12px;">
+		                <span class="muted">예상 견적 금액</span>
+		                <!-- 수정 포인트 2: estimate 객체 대신 이미 있는 job 객체의 예상 금액 재활용 -->
+		                <del style="color: var(--g-500);"><fmt:formatNumber value="${job.estimatedPrice}" pattern="#,##0"/>원</del>
+		            </div>
+		            
+		            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+		                <span class="muted">실제 결제 금액</span>
+		                <!-- 수정 포인트 3: '원' 글자를 <b> 태그 밖으로 빼서 폰트 사이즈 정상화 -->
+		                <span>
+		                    <b style="font-size: 24px; color: var(--p-600); letter-spacing: -0.5px;">
+		                        <fmt:formatNumber value="${payment.totalAmount}" pattern="#,##0"/>
+		                    </b>원
+		                </span>
+		            </div>
+		            
+		            <div style="display: flex; justify-content: space-between; align-items: center;">
+		                <span class="muted">결제 방식</span>
+		                <strong style="font-size: 15px; background: var(--g-100); padding: 4px 10px; border-radius: 6px;">
+		                    <c:choose>
+		                        <c:when test="${payment.paymentMethod == 'CARD'}">카드 결제</c:when>
+		                        <c:when test="${payment.paymentMethod == 'CASH'}">현금 결제</c:when>
+		                        <c:when test="${payment.paymentMethod == 'TRANSFER'}">계좌 이체</c:when>
+		                        <c:otherwise>${payment.paymentMethod}</c:otherwise>
+		                    </c:choose>
+		                </strong>
+		            </div>
+		        </div>
+
+		        <!-- 수리 전/후 사진 -->
+		        <div class="field">
+		            <span class="field__label">수리 전 · 후 사진</span>
+		            <div style="display: flex; gap: 12px; margin-top: 12px;">
+		                <div style="flex: 1;">
+		                    <span class="muted" style="display: block; font-size: 13px; margin-bottom: 8px; text-align: center;">수리 전</span>
+		                    <div style="width: 100%; height: 160px; background: url('${pageContext.request.contextPath}${payment.beforePhotoUrl}') center/cover no-repeat; border-radius: 8px; border: 1px solid var(--g-200);"></div>
+		                </div>
+		                <div style="flex: 1;">
+		                    <span class="muted" style="display: block; font-size: 13px; margin-bottom: 8px; text-align: center;">수리 후</span>
+		                    <div style="width: 100%; height: 160px; background: url('${pageContext.request.contextPath}${payment.afterPhotoUrl}') center/cover no-repeat; border-radius: 8px; border: 1px solid var(--g-200);"></div>
+		                </div>
+		            </div>
+		        </div>
+		    </div>
+		</c:if>
+	
 	<p style="margin-top:24px"><a href="${pageContext.request.contextPath}/fixer/jobs">← 목록으로</a></p>
 </div>
 
