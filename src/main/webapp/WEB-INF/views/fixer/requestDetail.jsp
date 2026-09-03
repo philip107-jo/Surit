@@ -106,6 +106,21 @@
 						<div class="field__help">정확한 방문 시간은 매칭 후 채팅에서 고객과 확정합니다.</div>
 					</div>
 
+					<script>
+						// 방문 가능 시간 버튼 UI 토글 (데이터 전송 X)
+						document.querySelectorAll('button[data-select="visit"]').forEach(function(btn) {
+							btn.addEventListener('click', function() {
+								// 1. 모든 버튼의 파란색(chip--on) 제거
+								document.querySelectorAll('button[data-select="visit"]').forEach(function(c) {
+									c.classList.remove('chip--on');
+								});
+
+								// 2. 내가 방금 누른 버튼만 파란색(chip--on) 추가
+								this.classList.add('chip--on');
+							});
+						});
+					</script>
+
 					<div class="field">
 						<span class="field__label">추가 제공 <span class="muted" style="font-weight:400">(선택)</span></span>
 						<div class="chip-row">

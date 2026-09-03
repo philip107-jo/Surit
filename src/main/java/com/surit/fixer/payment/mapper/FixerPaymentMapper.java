@@ -12,4 +12,7 @@ public interface FixerPaymentMapper {
     int insertPaymentDetail(PaymentDetailDTO detail);
     // 3. 수리 요청 상태를 '완료(COMPLETED)'로 변경
     int updateRequestStatusToCompleted(Long requestId);
+    
+    // 기존 코드 아래에 이 코드를 추가해 주세요.
+    PaymentDTO selectPaymentByEstimateId(Long estimateId);
 }

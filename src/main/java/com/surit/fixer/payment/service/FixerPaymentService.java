@@ -30,4 +30,9 @@ public class FixerPaymentService {
         // 3. 작업 상태를 '완료'로 업데이트
         paymentMapper.updateRequestStatusToCompleted(paymentInfo.getRequestId());
     }
+    
+    // 기존 코드 아래에 이 메서드를 추가해 주세요.
+    public PaymentDTO getPaymentByEstimateId(Long estimateId) {
+        return paymentMapper.selectPaymentByEstimateId(estimateId);
+    }
 }

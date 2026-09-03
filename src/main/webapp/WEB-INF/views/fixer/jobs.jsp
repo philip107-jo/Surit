@@ -12,7 +12,7 @@
 </head>
 <body>
 
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="i-tools" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z"/></symbol><symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-13.7-5.3L3 9"/><path d="M4 13a8 8 0 0 0 13.7 5.3L21 15"/><path d="M3 4v5h5"/><path d="M21 20v-5h-5"/></symbol><symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/></symbol><symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3.5 6h.01"/><path d="M3.5 12h.01"/><path d="M3.5 18h.01"/></symbol><symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11.5 12 4l8 7.5"/><path d="M6.5 10.5V20h11v-9.5"/></symbol><symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z"/></symbol><symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.4-3 8-7 9.5-4-1.5-7-5.1-7-9.5V6z"/><path d="M9.2 12l2 2 3.6-3.8"/></symbol><symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v8a2.5 2.5 0 0 1-2.5 2.5H9.5L4 21.5z"/></symbol><symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 15V10a6 6 0 1 0-12 0v5l-1.6 2.5h15.2z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></symbol><symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.2 16.2 21 21"/></symbol><symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h6"/></symbol></defs></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="i-tools" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z"/></symbol><symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-13.7-5.3L3 9"/><path d="M4 13a8 8 0 0 0 13.7 5.3L21 15"/><path d="M3 4v5h5"/><path d="M21 20v-5h-5"/></symbol><symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/></symbol><symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3.5 6h.01"/><path d="M3.5 12h.01"/><path d="M3.5 18h.01"/></symbol><symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11.5 12 4l8 7.5"/><path d="M6.5 10.5V20h11v-9.5"/></symbol><symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z"/></symbol><symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.4-3 8-7 9.5-4-1.5-7-5.1-7-9.5V6z"/><path d="M9.2 12l2 2 3.6-3.8"/></symbol><symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v8a2.5 2.5 0 0 1-2.5 2.5H9.5L4 21.5z"/></symbol><symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 15V10a6 6 0 1 0-12 0v5l-1.6 2.5h15.2z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></symbol><symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.2 16.2 21 21"/></symbol></defs></svg>
 
 <jsp:include page="/WEB-INF/views/common/header.jsp"/>
 
@@ -36,10 +36,6 @@
 
 		<div class="with-side">
 			<nav class="side-nav">
-				<%-- 2026-09-03 추가. 이 두 줄이 없어서 내 작업 / 기사 인증 화면에서는
-				     접수 찾기와 견적 확인으로 갈 방법이 없었다. 주소창을 직접 쳐야 했다. --%>
-				<a href="${pageContext.request.contextPath}/fixer/requests"><svg class="ico"><use href="#i-search"/></svg>내 주변 새 접수</a>
-				<a href="${pageContext.request.contextPath}/fixer/estimates"><svg class="ico"><use href="#i-doc"/></svg>내 견적</a>
 				<a href="${pageContext.request.contextPath}/fixer/jobs" class="is-active"><svg class="ico"><use href="#i-list"/></svg>내 작업</a>
 				<a href="${pageContext.request.contextPath}/fixer/verify"><svg class="ico"><use href="#i-shield"/></svg>기사 인증</a>
 				<a href="${pageContext.request.contextPath}/fixer/mypage"><svg class="ico"><use href="#i-wrench"/></svg>수리 정보 관리</a>
@@ -96,7 +92,6 @@
 													<span class="badge st-repairing"><c:out value="${job.statusName}"/></span>
 												</c:otherwise>
 											</c:choose>
-
 											<span class="muted" style="font-size:14.5px">접수번호 ${job.requestId} · <c:out value="${job.customerName}"/> 고객님</span>
 										</div>
 
@@ -110,23 +105,13 @@
 										</div>
 									</div>
 
-									<%--
-										2026-09-03 수정.
-										예전에는 이 목록이 <table> 이었는데 카드(div)로 바꾸면서
-										</td> <td> </tr> </tbody> </table> 이 그대로 남아 있었다.
-										div 안에 테이블 태그가 섞이면 브라우저가 그 태그들을
-										카드 밖으로 밀어내면서 레이아웃을 다시 짠다.
-										작업이 1건일 때는 티가 안 났는데 2건이 되자
-										앞 카드가 폭 0 으로 찌그러지고 글자가 세로로 흘렀다.
-										남은 테이블 태그를 걷어내고 버튼도 카드 안 div 로 옮긴다.
-									--%>
-									<div class="btn-row" style="flex-shrink:0">
-										<a class="btn btn--primary btn--sm" href="${pageContext.request.contextPath}/fixer/chat/${job.requestId}">채팅</a>
-										<a class="btn btn--ghost btn--sm" href="${pageContext.request.contextPath}/fixer/jobs/${job.requestId}">상세</a>
+									<!-- 우측 버튼 영역 -->
+									<div class="btn-row" style="flex:0 0 auto; flex-direction:column; gap:10px;">
+										<a class="btn btn--primary" style="width:100%" href="${pageContext.request.contextPath}/orders/${job.requestId}/chat">채팅하기</a>
+										<a class="btn btn--ghost" style="width:100%" href="${pageContext.request.contextPath}/fixer/jobs/${job.requestId}">상세 보기</a>
 									</div>
-
 								</div>
-								</c:forEach>
+							</c:forEach>
 						</div>
 
 					</c:otherwise>

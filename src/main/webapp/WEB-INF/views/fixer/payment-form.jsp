@@ -119,9 +119,9 @@
         const tr = document.createElement('tr');
         tr.className = 'receipt-row';
         tr.innerHTML = `
-            <td><input type="text" name="details[\${rowIndex}].itemName" class="input" style="height:48px" placeholder="예: 추가 작업비" required></td>
-            <td><input type="number" name="details[\${rowIndex}].quantity" class="qty input" style="height:48px;text-align:center" value="1" min="1" onchange="calcTotal()"></td>
-            <td><input type="number" name="details[\${rowIndex}].unitPrice" class="price input" style="height:48px;text-align:right" value="0" min="0" onchange="calcTotal()"></td>
+            <td><input type="text" name="details[${rowIndex}].itemName" class="input" style="height:48px" placeholder="예: 추가 작업비" required></td>
+            <td><input type="number" name="details[${rowIndex}].quantity" class="qty input" style="height:48px;text-align:center" value="1" min="1" onchange="calcTotal()"></td>
+            <td><input type="number" name="details[${rowIndex}].unitPrice" class="price input" style="height:48px;text-align:right" value="0" min="0" onchange="calcTotal()"></td>
             <td class="row-total right" style="font-weight:700;font-size:17px;vertical-align:middle">0</td>
             <td class="center"><button type="button" class="btn btn--ghost btn--sm" style="padding:0;width:40px;border:0" onclick="removeRow(this)"><svg class="ico"><use href="#i-trash"/></svg></button></td>
         `;
