@@ -25,7 +25,7 @@ public class FixerBookingController {
         BookingDetailDTO bookingDetail = bookingService.getBookingDetail(requestId);
         model.addAttribute("booking", bookingDetail);
 
-        return "partner/booking-detail"; // 예약 상세 JSP 경로
+        return "fixer/booking-detail"; // 예약 상세 JSP 경로
     }
 
     /**
@@ -34,7 +34,7 @@ public class FixerBookingController {
     @PostMapping("/{requestId}/confirm")
     public String confirmBooking(@PathVariable Long requestId) {
         log.info("예약 확정 처리 - 요청번호: {}", requestId);
-        bookingService.updateBookingStatus(requestId, "SCHEDULED");
+        bookingService.updateBookingStatus(requestId, "REQ_03");	// 예약 확정 = 매칭완료
 
         return "redirect:/fixer/bookings/" + requestId;
     }
@@ -46,7 +46,7 @@ public class FixerBookingController {
     public String cancelBooking(@PathVariable Long requestId) {
         log.info("예약 취소 처리 - 요청번호: {}", requestId);
         // 설계서 내용: "접수는 다시 매칭 상태로 돌아갑니다."
-        bookingService.updateBookingStatus(requestId, "MATCHING");
+        bookingService.updateBookingStatus(requestId, "REQ_02");	// 예약 취소 = 견적중으로 되돌림
 
         // 취소 후에는 기사의 '내 작업(진행 중)' 목록 등으로 리다이렉트
         return "redirect:/fixer/jobs";

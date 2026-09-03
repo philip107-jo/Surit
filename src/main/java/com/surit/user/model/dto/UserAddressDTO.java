@@ -15,7 +15,6 @@ import lombok.ToString;
 public class UserAddressDTO {
 	 private Long addressId;
 	 private Long userNo;
-	 private String zipCode;
 	 private String address;
 	 private String addressDetail;
 	 private String isDefault; 

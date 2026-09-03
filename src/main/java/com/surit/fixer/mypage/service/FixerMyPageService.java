@@ -9,7 +9,7 @@ public interface FixerMyPageService {
     List<Map<String, Object>> getAllCategories();
     List<Map<String, Object>> getAllRegions();
 
-    // 기사님이 기존에 선택한 데이터 가져오기
+    // 기사가 기존에 선택한 데이터 가져오기
     List<String> getMyCategories(Long fixerId);
     List<String> getMyRegions(Long fixerId);
 

@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <jsp:include page="/WEB-INF/views/common/header.jsp"/>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -333,106 +334,113 @@
 
 					    </div>
 
-						<!-- 실제 접수 시 넘어갈 주소 -->
-						<input type="hidden"
-						       id="service-address"
-						       name="serviceAddress"
-						       value="${request.serviceAddress}">
+					    <!-- 실제 접수 시 넘어갈 주소 -->
+					    <input type="hidden"
+					           id="service-address"
+					           name="serviceAddress"
+					           value="${request.serviceAddress}">
 
-						<!-- 새 주소 추가 버튼 -->
-						<button type="button"
-						        class="address-add"
-						        id="show-address-add-btn">
-						    + 새 주소 추가하기
-						</button>
+					<c:if test="${fn:length(addressList) < 3}">
+							   <button type="button"
+							           class="address-add"
+							           id="add-address-btn"
+							           onclick="toggleAddressAdd()">
+							       + 새 주소 추가하기
+							   </button>
+					</div>
 
-						<div id="address-add-box" class="request-address-form">
+					<!-- 새 주소 추가 (접수 폼과는 별개의 form. AJAX로 제출 후 목록만 갱신) -->
+					<div class="card card--sm" id="address-add-form" style="display:none;margin:14px 0">
+					  <div id="inline-address-form">
+					    <div class="field">
+					      <label class="field__label">별명</label>
+					      <input type="text" name="addressName" class="input" placeholder="예: 집, 사무실, 부모님댁">
+					    </div>
 
-						    <div class="request-address-form-header">
-						        <div>
-						            <strong>새 주소 추가</strong>
-						            <p>기사님이 방문할 주소를 입력해주세요.</p>
-						        </div>
+					    <div class="field">
+					      <label class="field__label">지역 선택<span class="req">*</span></label>
 
-						        <button type="button"
-						                class="request-address-close"
-						                id="address-add-close">
-						            ×
-						        </button>
-						    </div>
+					      <button type="button" class="btn btn--ghost btn--block" id="new-region-toggle-btn"
+					              onclick="toggleNewAddressRegionSelect()">
+					        <span id="new-region-selected-label">지역을 선택해주세요</span>
+					        <svg class="ico" style="margin-left:auto"><use href="#i-chevd"/></svg>
+					      </button>
 
-						    <div class="request-address-field">
-						        <label>주소 별칭 <span>*</span></label>
+					      <div id="new-region-select-panel" style="display:none;margin-top:10px;padding:16px;
+					           border:1.5px solid var(--g-300);border-radius:var(--r-md);
+					           max-height:220px;overflow-y:auto">
+					        <c:forEach var="region" items="${regionList}">
+					          <label class="check" style="display:block;margin-bottom:12px">
+					            <input type="radio" name="newRegionRadio" value="${region.codeId}"
+					                   data-region-name="${region.codeName}">
+					            <c:out value="${region.codeName}"/>
+					          </label>
+					        </c:forEach>
+					      </div>
+					    </div>
 
-						        <input type="text"
-						               id="new-address-name"
-						               placeholder="예) 집, 사무실, 부모님댁">
-						    </div>
+					    <div class="field">
+					      <label class="field__label">상세주소<span class="req">*</span></label>
+					      <input type="text" id="new-address-detail" name="addressDetail" class="input"
+					             placeholder="예: 테헤란로 123, 101동 1502호">
+					    </div>
 
+					    <input type="hidden" id="new-address" name="address">
 
-						    <div class="request-address-field">
-						        <label>우편번호 <span>*</span></label>
+					    <div class="field">
+					      <label class="field__label">기본 주소 설정</label>
+					      <select name="isDefault" class="select">
+					        <option value="N">일반 주소</option>
+					        <option value="Y" selected>기본 주소로 설정</option>
+					      </select>
+					    </div>
 
-						        <div class="request-address-search-row">
+					    <div class="btn-row">
+					      <button type="button" class="btn btn--ghost" onclick="toggleAddressAdd()">취소</button>
+					      <button type="button" class="btn btn--primary" id="inline-address-submit">추가하기</button>
+					    </div>
+					  </div>
+					</div>
+					<script>
+					document.addEventListener('DOMContentLoaded', function() {
+					  bindRegionSelect('new-region-select-panel', 'new-address-detail', 'new-address', 'new-region-selected-label', 'newRegionRadio');
 
-						            <input type="text"
-						                   id="new-zip-code"
-						                   placeholder="우편번호"
-						                   readonly>
+					  var submitBtn = document.getElementById('inline-address-submit');
+					  if (!submitBtn) return;
 
-						            <button type="button"
-						                    id="address-search-btn">
-						                주소 검색
-						            </button>
+					  submitBtn.addEventListener('click', function () {
 
-						        </div>
-						    </div>
+					    var addressValue = document.getElementById('new-address').value;
+					    if (!addressValue) {
+					      alert('지역과 상세주소를 모두 입력해주세요.');
+					      return;
+					    }
 
+					    var wrap = document.getElementById('inline-address-form');
+					    var formData = new URLSearchParams();
+					    formData.set('addressName', wrap.querySelector('[name="addressName"]').value);
+					    formData.set('address', document.getElementById('new-address').value);
+					    formData.set('addressDetail', document.getElementById('new-address-detail').value);
+					    formData.set('isDefault', wrap.querySelector('[name="isDefault"]').value);
 
-						    <div class="request-address-field">
-						        <label>기본주소 <span>*</span></label>
+					    fetch('${pageContext.request.contextPath}/user/mypage/address', {
+					      method: 'POST',
+					      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+					      body: formData
+					    })
+					    .then(function (res) {
+					      if (!res.ok) throw new Error('실패');
+					      location.reload();   // 새 주소 목록 반영을 위해 새로고침
+					                            // (작성 중인 접수 내용은 새로고침 전에 유지 안 됨 — 필요하면 임시저장 로직 추가 가능)
+					    })
+					    .catch(function () {
+					      alert('주소 추가 중 오류가 발생했습니다. 다시 시도해주세요.');
+					    });
+					  });
+					});
+					</script>
+					</c:if>
 
-						        <input type="text"
-						               id="new-address"
-						               placeholder="주소 검색으로 입력됩니다"
-						               readonly>
-						    </div>
-
-
-						    <div class="request-address-field">
-						        <label>상세주소</label>
-
-						        <input type="text"
-						               id="new-address-detail"
-						               placeholder="동 · 호수 등 나머지 주소를 입력하세요">
-						    </div>
-
-
-						    <label class="request-address-default">
-						        <input type="checkbox"
-						               id="new-address-default">
-
-						        <span>이 주소를 기본 주소로 설정합니다</span>
-						    </label>
-
-
-						    <div class="request-address-actions">
-
-						        <button type="button"
-						                class="request-address-cancel"
-						                id="address-add-cancel">
-						            취소
-						        </button>
-
-						        <button type="button"
-						                class="request-address-save"
-						                id="save-address-btn">
-						            저장하기
-						        </button>
-
-						    </div>
-
-						</div>
 			<!-- 4. 방문 날짜 / 시간 -->
 			<div class="form-sec">
 
@@ -580,4 +588,5 @@
     </div>
 </div>
 </main>
+
 <jsp:include page="/WEB-INF/views/common/footer.jsp"/>
