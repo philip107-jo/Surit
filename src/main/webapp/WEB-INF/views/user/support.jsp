@@ -137,6 +137,5 @@
 </main>
 
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />
-<script src="${pageContext.request.contextPath}/js/common.js"></script>
 </body>
 </html>

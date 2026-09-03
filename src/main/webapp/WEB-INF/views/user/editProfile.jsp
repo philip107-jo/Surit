@@ -59,44 +59,36 @@
               <label class="field__label" for="p-name">이름<span class="req">*</span></label>
               <input type="text" id="p-name" name="name" class="input" value="${user.name}" required>
             </div>
-            <div class="field">
-              <label class="field__label" for="p-email">이메일<span class="req">*</span></label>
-              <input type="email" id="p-email" name="email" class="input" value="${user.email}" readonly style="background:var(--g-50)">
-            </div>
-            <div class="field">
-              <label class="field__label" for="p-phone">전화번호<span class="req">*</span></label>
-              <input type="text" id="p-phone" name="phone" class="input" value="${user.phone}" placeholder="01012345678" required>
-            </div>
+			<div class="field">
+			  <label class="field__label" for="p-email">이메일<span class="req">*</span></label>
+			  <input type="email" id="p-email" name="email" class="input" value="${user.email}" required>
+			  <p id="check-email-result" class="field__help" aria-live="polite"></p>
+			</div>
+			<div class="field">
+			  <label class="field__label" for="p-phone">전화번호<span class="req">*</span></label>
+			  <input type="text" id="p-phone" name="phone" class="input" value="${user.phone}" placeholder="01012345678" required>
+			  <p id="check-phone-result" class="field__help" aria-live="polite"></p>  
+			</div>
 
             <hr style="border:0;border-top:1px solid var(--g-200);margin:28px 0">
 
-            <div class="field">
-              <label class="field__label" for="p-pwd">새 비밀번호</label>
-              <input type="password" id="p-pwd" name="password" class="input" placeholder="변경할 때만 입력하세요">
-              <div class="field__help">비밀번호를 바꾸지 않으려면 비워두세요.</div>
-            </div>
-            <div class="field">
-              <label class="field__label" for="p-pwd-confirm">새 비밀번호 확인</label>
-              <input type="password" id="p-pwd-confirm" class="input" placeholder="한 번 더 입력하세요">
-              <p id="check-pwd-result" class="field__help" aria-live="polite"></p>
-            </div>
+			<div class="field">
+			  <label class="field__label" for="p-pwd">새 비밀번호</label>
+			  <input type="password" id="p-pwd" name="password" class="input" placeholder="변경할 때만 입력하세요">
+			  <div class="field__help">비밀번호를 바꾸지 않으려면 비워두세요.</div>
+			  <p id="check-pwd-length-result" class="field__help" aria-live="polite"></p>
+			</div>
+			<div class="field">
+			  <label class="field__label" for="p-pwd-confirm">새 비밀번호 확인</label>
+			  <input type="password" id="p-pwd-confirm" class="input" placeholder="한 번 더 입력하세요">
+			  <p id="check-pwd-result" class="field__help" aria-live="polite"></p>
+			</div>
 
             <div class="btn-row" style="margin-top:8px">
               <button type="submit" class="btn btn--primary btn--lg">저장하기</button>
               <a class="btn btn--ghost btn--lg" href="${pageContext.request.contextPath}/user/mypage">취소</a>
             </div>
           </form>
-        </div>
-
-        <div class="card card--sm" style="margin-top:20px;max-width:560px">
-          <div style="display:flex;align-items:center;gap:16px">
-            <div><b style="font-size:17px">회원 탈퇴</b>
-              <p class="muted" style="font-size:15px;margin-top:4px">탈퇴하면 접수 내역과 리뷰가 모두 삭제됩니다.</p>
-            </div>
-            <form method="post" action="${pageContext.request.contextPath}/user/withdraw" style="margin-left:auto" onsubmit="return confirm('정말 탈퇴하시겠습니까?');">
-              <button type="submit" class="btn btn--danger btn--sm">회원 탈퇴</button>
-            </form>
-          </div>
         </div>
       </div>
     </div>
@@ -105,6 +97,5 @@
 </main>
 
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />
-<script src="${pageContext.request.contextPath}/js/common.js"></script>
 </body>
 </html>

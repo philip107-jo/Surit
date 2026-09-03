@@ -122,7 +122,7 @@ document.addEventListener('click', function (e) {
     },
     {
       inputId: 'phone',
-      resultId: null,
+      resultId: 'check-phone-result',
       validate: function (v) {
         if (!v) return '전화번호를 입력해주세요';
         if (!/^[0-9]+$/.test(v)) return '전화번호는 숫자만 입력해주세요';
@@ -206,7 +206,6 @@ document.addEventListener('click', function (e) {
         });
     });
   }
-
   form.addEventListener('submit', function (e) {
     var firstInvalid = null;
 
@@ -218,8 +217,7 @@ document.addEventListener('click', function (e) {
       if (message && !firstInvalid) firstInvalid = input;
     });
 
-    // 형식은 통과했어도 중복확인을 안 눌렀거나, 눌렀는데 이미 쓰는 아이디면 제출 차단
-    if (!firstInvalid && !idChecked) {
+    if (!firstInvalid && !idChecked && idInput && idResult) {   // ← idInput, idResult 존재 확인 추가
       idResult.textContent = '아이디 중복확인을 해주세요';
       idResult.style.color = 'var(--danger)';
       idInput.style.borderColor = 'var(--danger)';
@@ -295,9 +293,11 @@ function bindRegionSelect(panelId, detailId, hiddenId, labelId, radioName) {
   }
 
   function updateAddress() {
-    var regionName = currentRegionName();
-    var detail = addressDetail ? addressDetail.value : '';
-    addressHidden.value = (regionName + ' ' + detail).trim();
+    // ★ ADDRESS 컬럼에는 "지역"만 넣는다.
+    //   상세주소는 ADDRESS_DETAIL 이 따로 갖고 있다.
+    //   여기에 또 붙이면 화면에 두 번 나오고,
+    //   수정할 때마다 앞 값에 계속 덧붙어서 무한히 길어진다.
+    addressHidden.value = currentRegionName();
   }
 
   panel.addEventListener('change', function (e) {
@@ -607,36 +607,40 @@ function toggleAddressAdd() {
         // 클릭한 카드 선택
         button.classList.add("is-on");
 
+		// ================================
+		// 날짜 지정
+		// ================================
 
-        // ================================
-        // 날짜 지정
-        // ================================
+		if (button.dataset.useYn === "N") {
 
-        if (button.dataset.useYn === "N") {
+		    visitArea.style.display = "block";
 
-            visitArea.style.display = "block";
+		    visitDate.required = true;
+		    visitTimeCode.required = true;
 
-            visitDate.required = true;
-            visitTimeCode.required = true;
+		    var urgentYnN = document.getElementById("urgent-yn");
+		    if (urgentYnN) urgentYnN.value = "";
 
-        }
+		}
 
-        // ================================
-        // 지금 바로
-        // ================================
+		// ================================
+		// 지금 바로
+		// ================================
 
-        else {
+		else {
 
-            visitArea.style.display = "none";
+		    visitArea.style.display = "none";
 
-            visitDate.required = false;
-            visitTimeCode.required = false;
+		    visitDate.required = false;
+		    visitTimeCode.required = false;
 
-            visitDate.value = "";
-            visitTimeCode.value = "";
+		    visitDate.value = "";
+		    visitTimeCode.value = "";
 
-        }
+		    var urgentYnY = document.getElementById("urgent-yn");
+		    if (urgentYnY) urgentYnY.value = "Y";
 
+		}
     });
 
 })();
@@ -922,7 +926,7 @@ function toggleAddressAdd() {
     });
 
 })();
-/* 내 정보 수정 폼 : 전화번호 숫자만 입력 검증 */
+/* 내 정보 수정 폼 : 전화번호 숫자만 입력 검증 (editProfile.jsp, id="p-phone") */
 (function () {
   var phoneInput = document.getElementById('p-phone');
   if (!phoneInput) return;
@@ -959,3 +963,132 @@ function toggleAddressAdd() {
     }
   });
 })();
+// ========================================
+// 접수 페이지 : 새 주소 추가 박스 열기/닫기
+// ========================================
+(function () {
+
+    const showBtn =
+        document.getElementById("show-address-add-btn");
+
+    const addBox =
+        document.getElementById("address-add-box");
+
+    const closeBtn =
+        document.getElementById("address-add-close");
+
+    const cancelBtn =
+        document.getElementById("address-add-cancel");
+
+
+    if (!showBtn || !addBox) {
+        return;
+    }
+
+
+    showBtn.addEventListener("click", function () {
+
+        addBox.style.display = "block";
+
+        // 버튼은 그대로 두고 싶으면 이 줄은 안 써도 됨
+        // showBtn.style.display = "none";
+
+    });
+
+
+    function closeAddressForm() {
+
+        addBox.style.display = "none";
+
+    }
+
+
+    if (closeBtn) {
+        closeBtn.addEventListener(
+            "click",
+            closeAddressForm
+        );
+    }
+
+
+    if (cancelBtn) {
+        cancelBtn.addEventListener(
+            "click",
+            closeAddressForm
+        );
+}
+		})();
+	/* 내 정보 수정 폼 : 비밀번호 변경 검증 (editProfile.jsp) */
+	(function () {
+	  var pwdInput = document.getElementById('p-pwd');
+	  var pwdConfirmInput = document.getElementById('p-pwd-confirm');
+	  if (!pwdInput || !pwdConfirmInput) return;
+
+	  var form = pwdInput.closest('form');
+	  if (!form) return;
+
+	  function showConfirmError(message) {
+	    pwdConfirmInput.style.borderColor = message ? 'var(--danger)' : '';
+	    var out = document.getElementById('check-pwd-result');
+	    if (out) {
+	      out.textContent = message || '';
+	      out.style.color = message ? 'var(--danger)' : '';
+	    }
+	  }
+
+	  function validate() {
+	    var pwd = pwdInput.value;
+	    var confirm = pwdConfirmInput.value;
+	    var lengthOut = document.getElementById('check-pwd-length-result');
+
+	    function showLengthError(message) {
+	      pwdInput.style.borderColor = message ? 'var(--danger)' : '';
+	      if (lengthOut) {
+	        lengthOut.textContent = message || '';
+	        lengthOut.style.color = message ? 'var(--danger)' : '';
+	      }
+	    }
+
+	    if (!pwd && !confirm) {
+	      showLengthError(null);
+	      showConfirmError(null);
+	      return null;
+	    }
+
+	    if (pwd && pwd.length < 8) {
+	      showLengthError('비밀번호는 8자 이상 입력해주세요');
+	      return { input: pwdInput, message: '비밀번호는 8자 이상 입력해주세요' };
+	    }
+	    showLengthError(null);
+
+	    if (!pwd && confirm) {
+	      showConfirmError('새 비밀번호를 먼저 입력해주세요');
+	      return { input: pwdConfirmInput, message: '새 비밀번호를 먼저 입력해주세요' };
+	    }
+
+	    if (pwd && !confirm) {
+	      showConfirmError('비밀번호를 한 번 더 입력해주세요');
+	      return { input: pwdConfirmInput, message: '비밀번호를 한 번 더 입력해주세요' };
+	    }
+
+	    if (pwd !== confirm) {
+	      showConfirmError('비밀번호가 일치하지 않습니다');
+	      return { input: pwdConfirmInput, message: '비밀번호가 일치하지 않습니다' };
+	    }
+
+	    showConfirmError(null);
+	    return null;
+	  }
+
+	  // ↓↓↓ 이 3줄이 빠져있었어요 ↓↓↓
+	  pwdInput.addEventListener('input', validate);
+	  pwdConfirmInput.addEventListener('input', validate);
+
+	  form.addEventListener('submit', function (e) {
+	    var error = validate();
+	    if (error) {
+	      e.preventDefault();
+	      error.input.focus();
+	    }
+	  });
+	})();

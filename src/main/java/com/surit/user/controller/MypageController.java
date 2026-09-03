@@ -203,22 +203,36 @@ public class MypageController {
      * POST /user/mypage/address
      */
     @PostMapping("/address")
-    public String createAddress(UserAddressDTO form, HttpSession session, RedirectAttributes ra) {
+    public String createAddress(
+            UserAddressDTO form,
+            @RequestParam(value = "returnUrl", required = false) String returnUrl,
+            HttpSession session,
+            RedirectAttributes ra) {
 
-        UserDTO loginMember = (UserDTO) session.getAttribute("loginMember");
+        UserDTO loginMember =
+                (UserDTO) session.getAttribute("loginMember");
 
         if (loginMember == null) {
-            return "redirect:/user/login?redirectURL=/user/mypage/address";
+            return "redirect:/user/login";
         }
 
         form.setUserNo(loginMember.getUserNo());
+
         addressService.insertAddress(form);
 
-        ra.addFlashAttribute("message", "주소가 등록되었습니다.");
+        ra.addFlashAttribute(
+                "message",
+                "주소가 등록되었습니다."
+        );
 
+        // 접수 페이지에서 등록한 경우
+        if (returnUrl != null && !returnUrl.isBlank()) {
+            return "redirect:" + returnUrl;
+        }
+
+        // 기존 주소관리 페이지에서 등록한 경우
         return "redirect:/user/mypage/address";
     }
-
     /**
      * 주소 수정
      * POST /user/mypage/address/{addressId}

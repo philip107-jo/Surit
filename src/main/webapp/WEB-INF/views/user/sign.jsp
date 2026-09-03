@@ -96,7 +96,7 @@
                         <div class="field">
                             <label class="field__label" for="user-email">이메일<span class="req">*</span></label>
                             <input type="email" id="user-email" name="email" class="input" required autocomplete="off">
-                            <p id="check-email-result" class="field__help" aria-live="polite"></p>
+                            <p id="check-email-ressult" class="field__help" aria-live="polite"></p>
                         </div>
                     </div>
                 </div>

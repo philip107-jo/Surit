@@ -2,7 +2,6 @@ package com.surit.common.request.controller;
 
 import java.io.IOException;
 import java.util.List;
-import com.surit.fixer.verify.service.FixerService;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.surit.common.model.mapper.CommonCodeMapper;
 import com.surit.common.request.model.dto.RequestDTO;
 import com.surit.common.request.service.RequestService;
 import com.surit.fixer.estimate.model.dto.EstimateDTO;
+import com.surit.fixer.verify.service.FixerService;
 import com.surit.user.SessionConst;
 import com.surit.user.mapper.UserAddressMapper;
 import com.surit.user.model.dto.UserAddressDTO;
@@ -39,7 +40,7 @@ public class RequestController {
     private final RequestService service;
     private final UserAddressMapper userAddressMapper;
     private final UserReviewService reviewService;
-
+    private final CommonCodeMapper codeMapper;  
     /*
      * 기사 인증 정보(등록한 지역·분야)를 읽기 위해 주입한다.
      * 접수 관련 서비스가 아니라 F-14 의 서비스라서 별도로 받는다.
@@ -194,11 +195,14 @@ public class RequestController {
         // 메인에서 선택한 카테고리
         model.addAttribute("selectedCategoryCode", selectedCategoryCode);
 
-        // 저장된 주소 목록 (로그인 확인은 위에서 이미 끝났으니 loginMember 그대로 재사용)
+  
+     // 저장된 주소 목록 (로그인 확인은 위에서 이미 끝났으니 loginMember 그대로 재사용)
         List<UserAddressDTO> addressList =
                 userAddressMapper.selectAddressesByUserNo(loginMember.getUserNo());
         model.addAttribute("addressList", addressList);
 
+        // 새 주소 추가 폼의 지역 선택 토글에 쓸 목록
+        model.addAttribute("regionList", codeMapper.selectByGroup("REGION"));
         return "request/request";
     }
 

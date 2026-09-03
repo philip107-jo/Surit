@@ -84,7 +84,8 @@ public class UserServiceImpl implements UserService {
 	}
 	@Override
 	public UserDTO updateUserInfo(UserDTO form) {
- 
+	
+
 	    // 비밀번호를 입력한 경우에만 암호화해서 넣고, 비워뒀으면 null 로 둬서
 	    // UPDATE 쿼리의 <if> 조건이 스킵되게 한다 (기존 비밀번호 유지)
 	    if (form.getPassword() != null && !form.getPassword().isBlank()) {

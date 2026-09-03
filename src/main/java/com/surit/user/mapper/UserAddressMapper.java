@@ -33,4 +33,7 @@ public interface UserAddressMapper {
      * (한 회원당 기본 주소는 항상 1개만 있어야 하므로)
      */
     int clearDefaultByUserNo(@Param("userNo") Long userNo);
+    
+	/** 이 회원이 가진 주소 개수. 3개 제한 검사용 */
+	int countByUserNo(@Param("userNo") Long userNo);
 }

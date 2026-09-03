@@ -22,6 +22,7 @@ public class ChatServiceImpl implements ChatService {
 
 	private static final DateTimeFormatter FMT =
 			DateTimeFormatter.ofPattern("MM-dd HH:mm");
+	private static final int RECENT_LIMIT = 30;
 
 	/* ══════════ 고객 ↔ 기사 ══════════ */
 
@@ -130,7 +131,7 @@ public class ChatServiceImpl implements ChatService {
 
 	@Override
 	public List<ChatMessageDTO> getHistory(Long roomId) {
-		return chatMapper.selectMessages(roomId);
+		return chatMapper.selectRecentMessages(roomId, RECENT_LIMIT);
 	}
 
 	@Override
