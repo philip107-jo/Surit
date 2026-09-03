@@ -36,7 +36,6 @@
         <a href="${pageContext.request.contextPath}/user/mypage/address"><svg class="ico"><use href="#i-home"/></svg>주소 관리</a>
         <a href="${pageContext.request.contextPath}/user/mypage/profile" class="is-active"><svg class="ico"><use href="#i-user"/></svg>내 정보 수정</a>
         <a href="${pageContext.request.contextPath}/user/mypage/reviews"><svg class="ico"><use href="#i-star"/></svg>내가 쓴 리뷰</a>
-        <a href="${pageContext.request.contextPath}/user/mypage/support"><svg class="ico"><use href="#i-chat"/></svg>고객센터</a>
       </nav>
 
       <div>
