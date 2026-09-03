@@ -67,21 +67,22 @@
 			<div class="field">
 			  <label class="field__label" for="p-phone">전화번호<span class="req">*</span></label>
 			  <input type="text" id="p-phone" name="phone" class="input" value="${user.phone}" placeholder="01012345678" required>
-			  <p id="check-phone-result" class="field__help" aria-live="polite"></p>   <!-- 이 줄 있는지 확인 -->
+			  <p id="check-phone-result" class="field__help" aria-live="polite"></p>  
 			</div>
 
             <hr style="border:0;border-top:1px solid var(--g-200);margin:28px 0">
 
-            <div class="field">
-              <label class="field__label" for="p-pwd">새 비밀번호</label>
-              <input type="password" id="p-pwd" name="password" class="input" placeholder="변경할 때만 입력하세요">
-              <div class="field__help">비밀번호를 바꾸지 않으려면 비워두세요.</div>
-            </div>
-            <div class="field">
-              <label class="field__label" for="p-pwd-confirm">새 비밀번호 확인</label>
-              <input type="password" id="p-pwd-confirm" class="input" placeholder="한 번 더 입력하세요">
-              <p id="check-pwd-result" class="field__help" aria-live="polite"></p>
-            </div>
+			<div class="field">
+			  <label class="field__label" for="p-pwd">새 비밀번호</label>
+			  <input type="password" id="p-pwd" name="password" class="input" placeholder="변경할 때만 입력하세요">
+			  <div class="field__help">비밀번호를 바꾸지 않으려면 비워두세요.</div>
+			  <p id="check-pwd-length-result" class="field__help" aria-live="polite"></p>
+			</div>
+			<div class="field">
+			  <label class="field__label" for="p-pwd-confirm">새 비밀번호 확인</label>
+			  <input type="password" id="p-pwd-confirm" class="input" placeholder="한 번 더 입력하세요">
+			  <p id="check-pwd-result" class="field__help" aria-live="polite"></p>
+			</div>
 
             <div class="btn-row" style="margin-top:8px">
               <button type="submit" class="btn btn--primary btn--lg">저장하기</button>

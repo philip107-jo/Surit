@@ -41,7 +41,7 @@ public class FixerMyPageServiceImpl implements FixerMyPageService {
     @Override
     @Transactional
     public void updateCategories(Long fixerId, List<String> categories) {
-        // 기존 데이터 삭제 후 새로 추가 (체크 해제된 것들을 한 번에 처리하기 위함)
+        // 기존 데이터 삭제 후 새로 추가
         mapper.deleteMyCategories(fixerId);
         if (categories != null && !categories.isEmpty()) {
             for (String categoryCode : categories) {

@@ -9,7 +9,7 @@ import java.util.UUID;
 @Service
 public class FileUploadService {
 
-    // 로컬 저장소 경로 (Mac 환경이면 "/Users/사용자명/surit/uploads/" 등으로 변경 가능)
+    // 로컬 저장소 경로
     private final String uploadDir = "C:/surit/uploads/";
 
     public String saveFile(MultipartFile file) throws IOException {

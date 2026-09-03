@@ -206,7 +206,6 @@ document.addEventListener('click', function (e) {
         });
     });
   }
-
   form.addEventListener('submit', function (e) {
     var firstInvalid = null;
 
@@ -218,8 +217,7 @@ document.addEventListener('click', function (e) {
       if (message && !firstInvalid) firstInvalid = input;
     });
 
-    // 형식은 통과했어도 중복확인을 안 눌렀거나, 눌렀는데 이미 쓰는 아이디면 제출 차단
-    if (!firstInvalid && !idChecked) {
+    if (!firstInvalid && !idChecked && idInput && idResult) {   // ← idInput, idResult 존재 확인 추가
       idResult.textContent = '아이디 중복확인을 해주세요';
       idResult.style.color = 'var(--danger)';
       idInput.style.borderColor = 'var(--danger)';
@@ -960,6 +958,80 @@ function toggleAddressAdd() {
     if (message) {
       e.preventDefault();
       phoneInput.focus();
+    }
+  });
+})();
+/* 내 정보 수정 폼 : 비밀번호 변경 검증 (editProfile.jsp) */
+(function () {
+  var pwdInput = document.getElementById('p-pwd');
+  var pwdConfirmInput = document.getElementById('p-pwd-confirm');
+  if (!pwdInput || !pwdConfirmInput) return;
+
+  var form = pwdInput.closest('form');
+  if (!form) return;
+
+  function showConfirmError(message) {
+    pwdConfirmInput.style.borderColor = message ? 'var(--danger)' : '';
+    var out = document.getElementById('check-pwd-result');
+    if (out) {
+      out.textContent = message || '';
+      out.style.color = message ? 'var(--danger)' : '';
+    }
+  }
+
+  function validate() {
+    var pwd = pwdInput.value;
+    var confirm = pwdConfirmInput.value;
+    var lengthOut = document.getElementById('check-pwd-length-result');
+
+    function showLengthError(message) {
+      pwdInput.style.borderColor = message ? 'var(--danger)' : '';
+      if (lengthOut) {
+        lengthOut.textContent = message || '';
+        lengthOut.style.color = message ? 'var(--danger)' : '';
+      }
+    }
+
+    if (!pwd && !confirm) {
+      showLengthError(null);
+      showConfirmError(null);
+      return null;
+    }
+
+    if (pwd && pwd.length < 8) {
+      showLengthError('비밀번호는 8자 이상 입력해주세요');
+      return { input: pwdInput, message: '비밀번호는 8자 이상 입력해주세요' };
+    }
+    showLengthError(null);
+
+    if (!pwd && confirm) {
+      showConfirmError('새 비밀번호를 먼저 입력해주세요');
+      return { input: pwdConfirmInput, message: '새 비밀번호를 먼저 입력해주세요' };
+    }
+
+    if (pwd && !confirm) {
+      showConfirmError('비밀번호를 한 번 더 입력해주세요');
+      return { input: pwdConfirmInput, message: '비밀번호를 한 번 더 입력해주세요' };
+    }
+
+    if (pwd !== confirm) {
+      showConfirmError('비밀번호가 일치하지 않습니다');
+      return { input: pwdConfirmInput, message: '비밀번호가 일치하지 않습니다' };
+    }
+
+    showConfirmError(null);
+    return null;
+  }
+
+  // ↓↓↓ 이 3줄이 빠져있었어요 ↓↓↓
+  pwdInput.addEventListener('input', validate);
+  pwdConfirmInput.addEventListener('input', validate);
+
+  form.addEventListener('submit', function (e) {
+    var error = validate();
+    if (error) {
+      e.preventDefault();
+      error.input.focus();
     }
   });
 })();

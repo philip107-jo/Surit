@@ -19,7 +19,7 @@ public class FixerPaymentService {
         // 1. 마스터 테이블(PAYMENT)에 인서트 (이때 paymentId가 생성되어 세팅됨)
         paymentMapper.insertPayment(paymentInfo);
 
-        // 2. 받아온 상세 내역(PAYMENT_DETAIL)들을 반복문으로 인서트
+        // 2. 받아온 상세 내역(PAYMENT_DETAIL)들을 반복문으로 불러오기
         if (paymentInfo.getDetails() != null) {
             for (PaymentDetailDTO detail : paymentInfo.getDetails()) {
                 detail.setPaymentId(paymentInfo.getPaymentId()); // 마스터에서 딴 ID를 넣어줌

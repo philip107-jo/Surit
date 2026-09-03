@@ -13,6 +13,12 @@ import com.surit.fixer.payment.service.FixerPaymentService;
 import com.surit.fixer.payment.service.FileUploadService;
 import com.surit.fixer.payment.model.dto.PaymentDTO;
 import com.surit.fixer.payment.model.dto.RepairPhotoDTO;
+/*
+    @Slf4j 어노테이션
+    lombok에서 제공하는 어노테이션으로
+
+ */
+
 
 @Slf4j
 @Controller
@@ -26,19 +32,16 @@ public class FixerPaymentController {
     @GetMapping
     public String showPaymentForm(@RequestParam("requestId") Long requestId, Model model) {
 
-        // JSP에서 ${booking.requestId} 형태로 값을 꺼내 쓸 수 있도록 껍데기 객체를 하나 담아줍니다.
         PaymentDTO booking = new PaymentDTO();
         booking.setRequestId(requestId);
 
         model.addAttribute("booking", booking);
 
-        // views/fixer/payment-form.jsp (또는 실제 위치한 파일명)을 반환합니다.
+        // views/fixer/payment-form.jsp
         return "fixer/payment-form";
     }
 
-    /**
-     * 현장 결제 완료 및 사진 업로드 처리 (POST)
-     */
+    // 현장 결제 완료 및 사진 업로드 처리
     @PostMapping("/complete")
     public String completeJobAndPayment(
             HttpSession session,
@@ -46,7 +49,7 @@ public class FixerPaymentController {
             @RequestParam("beforePhoto") MultipartFile beforePhoto, // 수리 전 사진
             @RequestParam("afterPhoto") MultipartFile afterPhoto) { // 수리 후 사진
 
-        // 팀 규칙 세션 꺼내기
+
         UserDTO loginMember = (UserDTO) session.getAttribute("loginMember");
         if (loginMember == null) return "redirect:/user/login";
         Long fixerNo = loginMember.getUserNo();
