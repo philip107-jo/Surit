@@ -21,6 +21,9 @@
 		<p>접수번호 ${job.requestId} · <fmt:formatDate value="${job.createdAt}" pattern="yyyy-MM-dd HH:mm"/> 접수</p>
 	</div>
 
+	<%-- navActive 는 위에서 이미 정해두고 정작 메뉴를 include 하지 않고 있었다. 2026-09-03 --%>
+	<%@ include file="common/fixernav.jspf" %>
+
 	<c:if test="${not empty message}">
 		<div class="note note--blue" style="margin-bottom:24px">
 			<svg><use href="#i-bell"/></svg>
