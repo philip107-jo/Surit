@@ -1,4 +1,19 @@
 </main>
+<%-- ═══ 푸터를 화면 맨 아래에 고정 (관리자 화면 전용) ═══
+     내용이 짧으면 푸터가 위로 딸려 올라오는 걸 막는다.
+
+     style.css 의 body 는 팀 공용이라 건드리지 않고,
+     관리자 페이지만 include 하는 이 파일에서 덮어쓴다. --%>
+<style>
+	body {
+		min-height: 100vh;      /* 내용이 짧아도 화면 높이만큼은 차지 */
+		display: flex;
+		flex-direction: column; /* 헤더 → main → 푸터 세로로 쌓기 */
+	}
+	main         { flex: 1 0 auto; }  /* 남는 공간을 전부 차지 */
+	.site-footer { flex-shrink: 0; }  /* 푸터는 절대 눌리지 않음 */
+</style>
+
 <footer class="site-footer">
 	<p>&copy; 2026 Surit. All rights reserved.</p>
 </footer>
