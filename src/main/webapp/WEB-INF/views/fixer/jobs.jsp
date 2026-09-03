@@ -41,7 +41,6 @@
 				<a href="${pageContext.request.contextPath}/fixer/mypage"><svg class="ico"><use href="#i-wrench"/></svg>수리 정보 관리</a>
 				<a href="${pageContext.request.contextPath}/fixer/mypage/address"><svg class="ico"><use href="#i-home"/></svg>주소 관리</a>
 				<a href="${pageContext.request.contextPath}/fixer/mypage/profile"><svg class="ico"><use href="#i-user"/></svg>내 정보 수정</a>
-				<a href="${pageContext.request.contextPath}/support"><svg class="ico"><use href="#i-chat"/></svg>고객센터</a>
 			</nav>
 
 			<div>
@@ -61,8 +60,10 @@
 
 				<div class="chip-row" style="margin-bottom:26px">
 					<a class="chip ${empty statusCode ? 'chip--dark' : ''}" href="${pageContext.request.contextPath}/fixer/jobs">전체</a>
-					<a class="chip ${statusCode eq 'REQ_03' ? 'chip--dark' : ''}" href="${pageContext.request.contextPath}/fixer/jobs?statusCode=REQ_03">진행중</a>
+					<a class="chip ${statusCode eq 'REQ_02' ? 'chip--dark' : ''}" href="${pageContext.request.contextPath}/fixer/jobs?statusCode=REQ_02">견적 대기</a>
+					<a class="chip ${statusCode eq 'REQ_03' ? 'chip--dark' : ''}" href="${pageContext.request.contextPath}/fixer/jobs?statusCode=REQ_03">진행 중</a>
 					<a class="chip ${statusCode eq 'REQ_04' ? 'chip--dark' : ''}" href="${pageContext.request.contextPath}/fixer/jobs?statusCode=REQ_04">완료</a>
+					<a class="chip ${statusCode eq 'REQ_05' ? 'chip--dark' : ''}" href="${pageContext.request.contextPath}/fixer/jobs?statusCode=REQ_05">취소</a>
 				</div>
 
 				<c:choose>

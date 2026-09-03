@@ -83,7 +83,8 @@
         <nav class="gnb">
             <c:choose>
                 <c:when test="${isFixerMode}">
-                    <a href="${pageContext.request.contextPath}/fixer/requests" class="${fn:contains(uri, '/requests') ? 'is-active' : ''}">접수 찾기</a>
+                    <a href="${pageContext.request.contextPath}/fixer/requests" class="${fn:contains(uri, '/requests') ? 'is-active' : ''}">내 주변 새 접수</a>
+                    <a href="${pageContext.request.contextPath}/fixer/estimates" class="${fn:contains(uri, '/estimates') ? 'is-active' : ''}">내 견적</a>
                     <a href="${pageContext.request.contextPath}/chat" class="${fn:contains(uri, '/chat') ? 'is-active' : ''}">채팅하기</a>
                     <a href="${pageContext.request.contextPath}/support" class="${fn:contains(uri, '/support') ? 'is-active' : ''}">고객센터</a>
                 </c:when>
