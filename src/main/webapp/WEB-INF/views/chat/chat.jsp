@@ -116,19 +116,34 @@
 </head>
 <body>
 
-<%-- 관리자 화면(문의 응대)에서는 고객용 헤더를 붙이지 않는다 --%>
-<c:if test="${empty adminView}">
-	<jsp:include page="/WEB-INF/views/common/header.jsp" />
-</c:if>
+	<%-- 헤더는 화면 주인에 맞춰 고른다.
+	     관리자 문의응대(adminView)면 관리자 헤더, 아니면 고객·기사용 헤더.
+	     둘 다 마지막에 <main> 을 열어두므로 푸터에서 </main> 으로 닫아야 한다. --%>
+	<c:choose>
+		<c:when test="${adminView}">
+			<jsp:include page="/WEB-INF/views/common/admin-header.jsp" />
+		</c:when>
+		<c:otherwise>
+			<jsp:include page="/WEB-INF/views/common/header.jsp" />
+		</c:otherwise>
+	</c:choose>
 
 <div class="container">
 
-<c:if test="${empty adminView}">
-	<div class="page-head">
-		<h1>채팅</h1>
-		<p>수리 전후 궁금한 점을 여기서 물어보세요. 전화번호는 서로에게 공개되지 않습니다.</p>
-	</div>
-</c:if>
+	<c:choose>
+		<c:when test="${adminView}">
+			<div class="page-head">
+				<h1>문의 응대</h1>
+				<p>고객이 보낸 1:1 문의입니다. 답변을 남기면 고객 화면에 바로 표시됩니다.</p>
+			</div>
+		</c:when>
+		<c:otherwise>
+			<div class="page-head">
+				<h1>채팅</h1>
+				<p>수리 전후 궁금한 점을 여기서 물어보세요. 전화번호는 서로에게 공개되지 않습니다.</p>
+			</div>
+		</c:otherwise>
+	</c:choose>
 
 <c:set var="hasSide" value="${not empty sideRooms or not empty showSide}"/>
 
@@ -413,9 +428,17 @@
 </div>
 </div>
 
-<c:if test="${empty adminView}">
-	<jsp:include page="/WEB-INF/views/common/footer.jsp" />
-</c:if>
+<%-- 헤더와 짝을 맞춘다.
+     admin-header.jsp / header.jsp 둘 다 마지막에 <main> 을 열어두므로
+     반드시 짝이 되는 푸터가 </main> 으로 닫아줘야 한다. --%>
+<c:choose>
+	<c:when test="${adminView}">
+		<jsp:include page="/WEB-INF/views/common/admin-footer.jsp" />
+	</c:when>
+	<c:otherwise>
+		<jsp:include page="/WEB-INF/views/common/footer.jsp" />
+	</c:otherwise>
+</c:choose>
 
 </body>
 </html>
