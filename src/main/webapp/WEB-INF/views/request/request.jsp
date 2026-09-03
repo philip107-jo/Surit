@@ -273,7 +273,7 @@
 
 					    <!-- 선택한 사진들이 여기에 좌르륵 나옴 -->
 					    <div id="photo-preview" class="photo-preview"></div>
-
+					</div>
 					</div>
 
 					<!-- 3. 방문 주소 -->
