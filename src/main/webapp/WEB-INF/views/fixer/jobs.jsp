@@ -109,17 +109,24 @@
 											<div><span class="muted">예상 금액 |</span> <b style="color:var(--g-900)"><fmt:formatNumber value="${job.estimatedPrice}" pattern="#,##0"/> 원</b></div>
 										</div>
 									</div>
-										</td>
-										<td class="right">
-											<div class="btn-row">
-												<a class="btn btn--primary btn--sm" href="/fixer/chat/${job.requestId}">채팅</a>
-												<a class="btn btn--ghost btn--sm" href="${pageContext.request.contextPath}/fixer/jobs/${job.requestId}">상세</a>
-											</div>
-										</td>
-									</tr>
+
+									<%--
+										2026-09-03 수정.
+										예전에는 이 목록이 <table> 이었는데 카드(div)로 바꾸면서
+										</td> <td> </tr> </tbody> </table> 이 그대로 남아 있었다.
+										div 안에 테이블 태그가 섞이면 브라우저가 그 태그들을
+										카드 밖으로 밀어내면서 레이아웃을 다시 짠다.
+										작업이 1건일 때는 티가 안 났는데 2건이 되자
+										앞 카드가 폭 0 으로 찌그러지고 글자가 세로로 흘렀다.
+										남은 테이블 태그를 걷어내고 버튼도 카드 안 div 로 옮긴다.
+									--%>
+									<div class="btn-row" style="flex-shrink:0">
+										<a class="btn btn--primary btn--sm" href="${pageContext.request.contextPath}/fixer/chat/${job.requestId}">채팅</a>
+										<a class="btn btn--ghost btn--sm" href="${pageContext.request.contextPath}/fixer/jobs/${job.requestId}">상세</a>
+									</div>
+
+								</div>
 								</c:forEach>
-								</tbody>
-							</table>
 						</div>
 
 					</c:otherwise>

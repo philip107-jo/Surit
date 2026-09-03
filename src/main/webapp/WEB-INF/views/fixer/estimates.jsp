@@ -32,19 +32,25 @@
 		</c:when>
 
 		<c:otherwise>
-			<div class="card card--sm">
+			<%--
+				이전에는 칸마다 고정 너비를 줬는데, 그 합이 카드 폭보다 넓어서
+				너비를 안 준 '접수 제목'이 최소 폭까지 밀려 한 글자씩 세로로 접혔다.
+				고정 너비를 걷어내고 제목이 남는 폭을 갖게 한 뒤,
+				줄바꿈되면 곤란한 칸에만 nowrap 을 준다. 2026-09-03
+			--%>
+			<div class="card card--sm" style="overflow-x:auto">
 				<table class="tbl">
 					<thead>
 						<tr>
-							<th style="width:90px">견적번호</th>
+							<th style="white-space:nowrap">견적번호</th>
 							<th>접수 제목</th>
-							<th style="width:120px">분야</th>
-							<th style="width:110px">고객</th>
-							<th style="width:130px">예상 금액</th>
-							<th style="width:110px">소요 시간</th>
-							<th style="width:110px">내 견적</th>
-							<th style="width:120px">접수 상태</th>
-							<th style="width:150px">제출일</th>
+							<th style="white-space:nowrap">분야</th>
+							<th style="white-space:nowrap">고객</th>
+							<th style="white-space:nowrap">예상 금액</th>
+							<th style="white-space:nowrap">소요 시간</th>
+							<th style="white-space:nowrap">내 견적</th>
+							<th style="white-space:nowrap">접수 상태</th>
+							<th style="white-space:nowrap">제출일</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -56,15 +62,15 @@
 										<a href="/fixer/requests/${estimate.requestId}"><c:out value="${estimate.requestTitle}"/></a>
 									</div>
 								</td>
-								<td><c:out value="${estimate.categoryName}"/></td>
-								<td><c:out value="${estimate.customerName}"/></td>
+								<td style="white-space:nowrap"><c:out value="${estimate.categoryName}"/></td>
+								<td style="white-space:nowrap"><c:out value="${estimate.customerName}"/></td>
 								<%--
 									fmt:formatNumber 는 서버에서 돈다. 브라우저에는 이미
 									"75,000 원" 이라는 글자만 도착한다.
 									pattern="#,##0" : # 는 값이 있을 때만, 0 은 없어도 0 을 찍는다.
 								--%>
-								<td class="num"><fmt:formatNumber value="${estimate.estimatedPrice}" pattern="#,##0"/> 원</td>
-								<td class="num">${estimate.estimatedDuration} 분</td>
+								<td class="num" style="white-space:nowrap"><fmt:formatNumber value="${estimate.estimatedPrice}" pattern="#,##0"/> 원</td>
+								<td class="num" style="white-space:nowrap">${estimate.estimatedDuration} 분</td>
 								<td>
 									<c:choose>
 										<c:when test="${estimate.status eq 'SELECTED'}">
@@ -76,7 +82,7 @@
 									</c:choose>
 								</td>
 								<td><span class="badge badge--gray"><c:out value="${estimate.requestStatusName}"/></span></td>
-								<td class="num"><fmt:formatDate value="${estimate.createdAt}" pattern="yyyy-MM-dd HH:mm"/></td>
+								<td class="num" style="white-space:nowrap"><fmt:formatDate value="${estimate.createdAt}" pattern="yyyy-MM-dd HH:mm"/></td>
 							</tr>
 						</c:forEach>
 					</tbody>
