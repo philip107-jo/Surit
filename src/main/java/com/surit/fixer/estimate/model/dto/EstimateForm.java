@@ -1,22 +1,25 @@
 package com.surit.fixer.estimate.model.dto;
 
-import java.util.List;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
-/** 견적 작성 화면 → 서버 */
-@Getter @Setter @NoArgsConstructor @ToString
+/**
+ * 견적 작성 폼에서 받는 값만 담는 DTO.
+ *
+ * EstimateDTO 를 그대로 @ModelAttribute 로 받으면
+ * 사용자가 요청에 status=SELECTED, fixerNo=3 을 끼워 넣었을 때
+ * 그 값이 그대로 들어가 버린다(대량 할당 취약점).
+ * 그래서 "사용자가 정해도 되는 값" 만 있는 폼 DTO 를 따로 둔다.
+ */
+@Getter
+@Setter
+@NoArgsConstructor
 public class EstimateForm {
 
-	private Long   estimatesId;      // 신규일 땐 selectKey 가 채워줌
-	private Long   repairNo;
-	private String fixerId;
-	private Long   estimatesPrice;
-	private String estDuration;      // "약 30분"
-	private String estMessage;
-
-	private List<String> optionCodes; // 체크박스
+	private Long requestId;
+	private Long estimatedPrice;      // 원 단위 정수 (소수점 없음)
+	private Long estimatedDuration;   // 예상 소요 시간(분)
+	private String     content;
 }
