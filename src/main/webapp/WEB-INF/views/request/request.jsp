@@ -289,65 +289,138 @@
 					        </div>
 					    </div>
 
-					    <div class="address-list">
+						<div class="address-list">
 
-							<c:forEach var="addr"
-							                   items="${addressList}"
-							                   varStatus="status"
-							                   end="2">
+							<c:forEach var="addr" items="${addressList}" varStatus="status">
 
-							            <button type="button"
-							                    class="address-card ${addr.isDefault eq 'Y' ? 'is-on' : ''}"
-							                    data-address="${addr.address} ${addr.addressDetail}">
+							<%-- ── 평소 화면 : 주소 카드 (수정/삭제는 카드 안 오른쪽) ──
+							     카드를 <button> 이 아니라 <div> 로 만들었다.
+							     HTML 은 버튼 안에 버튼을 넣을 수 없기 때문이다.
+							     클릭으로 주소를 고르는 동작은 common.js 가 .address-card 클래스로
+							     잡고 있어서 div 여도 그대로 동작한다. --%>
+							<div id="addr-view-${addr.addressId}">
 
-							                <span class="address-radio"></span>
+								<div class="address-card ${addr.isDefault eq 'Y' ? 'is-on' : ''}"
+								     role="button" tabindex="0" style="cursor:pointer"
+								     data-address="${fn:escapeXml(addr.address)} ${fn:escapeXml(addr.addressDetail)}">
 
-							                <span class="address-card__body">
+									<span class="address-radio"></span>
 
-							                    <strong>
-							                        <c:choose>
-							                            <c:when test="${not empty addr.addressName}">
-							                                <c:out value="${addr.addressName}"/>
-							                            </c:when>
-							                            <c:when test="${addr.isDefault eq 'Y'}">
-							                                기본 주소
-							                            </c:when>
-							                            <c:otherwise>
-							                                주소 ${status.index + 1}
-							                            </c:otherwise>
-							                        </c:choose>
-							                        <c:if test="${not empty addr.addressName and addr.isDefault eq 'Y'}">
-							                            <span class="badge badge--primary" style="margin-left:6px;font-size:12px">기본</span>
-							                        </c:if>
-							                    </strong>
+									<span class="address-card__body" style="flex:1;min-width:0">
+										<strong>
+											<c:choose>
+												<c:when test="${not empty addr.addressName}">
+													<c:out value="${addr.addressName}"/>
+												</c:when>
+												<c:when test="${addr.isDefault eq 'Y'}">
+													기본 주소
+												</c:when>
+												<c:otherwise>
+													주소 ${status.index + 1}
+												</c:otherwise>
+											</c:choose>
+											<c:if test="${not empty addr.addressName and addr.isDefault eq 'Y'}">
+												<span class="badge badge--primary"
+												      style="margin-left:6px;font-size:12px">기본</span>
+											</c:if>
+										</strong>
 
-							                    <span class="address-card__text">
-							                        ${addr.address}
-							                        ${addr.addressDetail}
-							                    </span>
+										<span class="address-card__text">
+											<c:out value="${addr.address}"/> <c:out value="${addr.addressDetail}"/>
+										</span>
+									</span>
 
-							                </span>
+									<%-- ★ event.stopPropagation() 필수.
+									     없으면 수정/삭제를 눌렀을 때 카드 클릭까지 같이 실행돼서
+									     엉뚱한 주소가 선택된다. --%>
+									<span style="margin-left:auto;display:flex;gap:8px;flex-shrink:0">
+										<button type="button" class="btn btn--ghost btn--sm"
+										        onclick="event.stopPropagation(); toggleReqAddressEdit(${addr.addressId})">수정</button>
+										<button type="button" class="btn btn--danger btn--sm"
+										        onclick="event.stopPropagation(); deleteReqAddress(${addr.addressId})">삭제</button>
+									</span>
 
-							            </button>
+								</div>
+							</div>
 
-							        </c:forEach>
+								<%-- ── "수정" 누르면 나오는 폼 ──
+								     name 속성 없음. 있으면 접수 폼이 같이 제출해버린다. --%>
+								<div class="card card--sm" id="addr-edit-${addr.addressId}"
+								     style="display:none;margin-bottom:14px">
 
-					    </div>
+									<div class="field">
+										<label class="field__label">별명</label>
+										<input type="text" class="input" id="ed-name-${addr.addressId}"
+										       value="${fn:escapeXml(addr.addressName)}" placeholder="예: 집, 사무실">
+									</div>
 
-					    <!-- 실제 접수 시 넘어갈 주소 -->
-					    <input type="hidden"
-					           id="service-address"
-					           name="serviceAddress"
-					           value="${request.serviceAddress}">
+									<div class="field">
+										<label class="field__label">지역 선택<span class="req">*</span></label>
+										<button type="button" class="btn btn--ghost btn--block"
+										        onclick="toggleRegionPanel('ed-panel-${addr.addressId}')">
+											<span id="ed-label-${addr.addressId}"><c:out value="${addr.address}"/></span>
+											<svg class="ico" style="margin-left:auto"><use href="#i-chevd"/></svg>
+										</button>
 
-					<c:if test="${fn:length(addressList) < 3}">
-							   <button type="button"
-							           class="address-add"
-							           id="add-address-btn"
-							           onclick="toggleAddressAdd()">
-							       + 새 주소 추가하기
-							   </button>
-					</div>
+										<div id="ed-panel-${addr.addressId}" style="display:none;margin-top:10px;padding:16px;
+										     border:1.5px solid var(--g-300);border-radius:var(--r-md);
+										     max-height:220px;overflow-y:auto">
+											<c:forEach var="region" items="${regionList}">
+												<label class="check" style="display:block;margin-bottom:12px">
+													<input type="radio" name="edRadio${addr.addressId}" value="${region.codeId}"
+													       data-region-name="${region.codeName}">
+													<c:out value="${region.codeName}"/>
+												</label>
+											</c:forEach>
+										</div>
+									</div>
+
+									<div class="field">
+										<label class="field__label">상세주소<span class="req">*</span></label>
+										<input type="text" class="input" id="ed-detail-${addr.addressId}"
+										       value="${fn:escapeXml(addr.addressDetail)}">
+									</div>
+
+									<input type="hidden" id="ed-address-${addr.addressId}"
+									       value="${fn:escapeXml(addr.address)}">
+
+									<div class="field">
+										<label class="field__label">기본 주소 설정</label>
+										<select class="select" id="ed-default-${addr.addressId}">
+											<option value="N" ${addr.isDefault eq 'N' ? 'selected' : ''}>일반 주소</option>
+											<option value="Y" ${addr.isDefault eq 'Y' ? 'selected' : ''}>기본 주소로 설정</option>
+										</select>
+									</div>
+
+									<div class="btn-row">
+										<button type="button" class="btn btn--ghost"
+										        onclick="toggleReqAddressEdit(${addr.addressId})">취소</button>
+										<button type="button" class="btn btn--primary"
+										        onclick="saveReqAddress(${addr.addressId})">저장</button>
+									</div>
+
+									<script>
+									document.addEventListener('DOMContentLoaded', function () {
+									  bindRegionSelect('ed-panel-${addr.addressId}',   'ed-detail-${addr.addressId}',
+									                   'ed-address-${addr.addressId}', 'ed-label-${addr.addressId}',
+									                   'edRadio${addr.addressId}');
+									});
+									</script>
+								</div>
+
+							</c:forEach>
+
+						</div>
+
+								    <input type="hidden" id="service-address" name="serviceAddress"
+								           value="${request.serviceAddress}">
+								</div>                                              
+
+								<c:if test="${fn:length(addressList) < 3}">
+								       <button type="button" class="address-add" id="add-address-btn"
+								               onclick="toggleAddressAdd()">
+								           + 새 주소 추가하기
+								       </button>
 
 					<!-- 새 주소 추가 (접수 폼과는 별개의 form. AJAX로 제출 후 목록만 갱신) -->
 					<div class="card card--sm" id="address-add-form" style="display:none;margin:14px 0">
@@ -440,6 +513,67 @@
 					});
 					</script>
 					</c:if>
+					
+					<%-- ══════════ 접수 페이지 주소 수정·삭제 ══════════
+					     ★ 반드시 위 <c:if> 바깥에 둔다.
+					       안에 넣으면 주소가 3개일 때 이 스크립트가 아예 안 실려서
+					       수정·삭제 버튼이 먹통이 된다.
+
+					     ★ 이 영역은 접수 <form> 안이라 form 을 또 만들 수 없다(HTML 규칙).
+					       그래서 폼 전송 대신 fetch 로 마이페이지 주소 API 를 직접 부른다. --%>
+					<script>
+					(function () {
+					  var CTX = '${pageContext.request.contextPath}';
+
+					  window.toggleReqAddressEdit = function (id) {
+					    var view = document.getElementById('addr-view-' + id);
+					    var edit = document.getElementById('addr-edit-' + id);
+					    if (!view || !edit) return;
+
+					    var opening = (edit.style.display === 'none');
+					    edit.style.display = opening ? 'block' : 'none';
+					    view.style.display = opening ? 'none' : 'block';
+					  };
+
+					  window.saveReqAddress = function (id) {
+					    var address = document.getElementById('ed-address-' + id).value;
+					    var detail  = document.getElementById('ed-detail-'  + id).value;
+
+					    if (!address || !detail.trim()) {
+					      alert('지역과 상세주소를 모두 입력해주세요.');
+					      return;
+					    }
+
+					    var body = new URLSearchParams();
+					    body.set('addressName',   document.getElementById('ed-name-'    + id).value);
+					    body.set('address',       address);
+					    body.set('addressDetail', detail);
+					    body.set('isDefault',     document.getElementById('ed-default-' + id).value);
+
+					    fetch(CTX + '/user/mypage/address/' + id, {
+					      method:  'POST',
+					      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+					      body:    body
+					    })
+					    .then(function (res) {
+					      if (!res.ok) throw new Error('실패');
+					      location.reload();
+					    })
+					    .catch(function () { alert('주소 수정 중 오류가 발생했습니다.'); });
+					  };
+
+					  window.deleteReqAddress = function (id) {
+					    if (!confirm('이 주소를 삭제할까요?')) return;
+
+					    fetch(CTX + '/user/mypage/address/' + id + '/delete', { method: 'POST' })
+					    .then(function (res) {
+					      if (!res.ok) throw new Error('실패');
+					      location.reload();
+					    })
+					    .catch(function () { alert('주소 삭제 중 오류가 발생했습니다.'); });
+					  };
+					})();
+					</script>
 
 			<!-- 4. 방문 날짜 / 시간 -->
 			<div class="form-sec">

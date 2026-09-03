@@ -30,17 +30,21 @@ public class UserAddressServiceImpl implements UserAddressService {
         return mapper.selectAddressById(addressId, userNo);
     }
  
-    @Override
-    @Transactional
-    public void insertAddress(UserAddressDTO address) {
- 
-        // 기본 주소로 등록하려는 거면, 기존 기본 주소를 먼저 해제
-        if ("Y".equals(address.getIsDefault())) {
-            mapper.clearDefaultByUserNo(address.getUserNo());
-        }
- 
-        mapper.insertAddress(address);
-    }
+	@Override
+	@Transactional
+	public void insertAddress(UserAddressDTO address) {
+
+		// ★ 주소는 3개까지. 화면의 <c:if> 는 버튼만 숨길 뿐이라
+		//   새로고침 안 한 페이지나 연속 클릭으로 뚫린다. 여기서 막아야 한다.
+		if (mapper.countByUserNo(address.getUserNo()) >= 3) {
+			throw new IllegalStateException("주소는 최대 3개까지 등록할 수 있습니다.");
+		}
+
+		if ("Y".equals(address.getIsDefault())) {
+			mapper.clearDefaultByUserNo(address.getUserNo());
+		}
+		mapper.insertAddress(address);
+	}
  
     @Override
     @Transactional

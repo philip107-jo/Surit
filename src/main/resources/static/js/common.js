@@ -293,9 +293,11 @@ function bindRegionSelect(panelId, detailId, hiddenId, labelId, radioName) {
   }
 
   function updateAddress() {
-    var regionName = currentRegionName();
-    var detail = addressDetail ? addressDetail.value : '';
-    addressHidden.value = (regionName + ' ' + detail).trim();
+    // ★ ADDRESS 컬럼에는 "지역"만 넣는다.
+    //   상세주소는 ADDRESS_DETAIL 이 따로 갖고 있다.
+    //   여기에 또 붙이면 화면에 두 번 나오고,
+    //   수정할 때마다 앞 값에 계속 덧붙어서 무한히 길어진다.
+    addressHidden.value = currentRegionName();
   }
 
   panel.addEventListener('change', function (e) {

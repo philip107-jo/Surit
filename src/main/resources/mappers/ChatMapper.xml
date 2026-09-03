@@ -221,6 +221,26 @@
 		 WHERE M.ROOM_ID = #{roomId}
 		 ORDER BY M.MESSAGE_ID
 	</select>
+	
+	<select id="selectRecentMessages" resultMap="messageMap">
+		SELECT * FROM (
+			SELECT M.MESSAGE_ID,
+			       M.ROOM_ID,
+			       M.SENDER_NO,
+			       M.MESSAGE_TYPE,
+			       M.CONTENT,
+			       M.FILE_PATH,
+			       TO_CHAR(M.SENT_AT, 'MM-DD HH24:MI')      AS SENT_AT,
+			       TO_CHAR(M.READ_AT, 'YYYY-MM-DD HH24:MI') AS READ_AT,
+			       U.NAME AS SENDER_NAME
+			  FROM CHAT_MESSAGE M
+			  JOIN USERS U ON U.USER_NO = M.SENDER_NO
+			 WHERE M.ROOM_ID = #{roomId}
+			 ORDER BY M.MESSAGE_ID DESC
+		)
+		 WHERE ROWNUM &lt;= #{limit}
+		 ORDER BY MESSAGE_ID
+	</select>
 
 	<!-- MESSAGE_ID 는 IDENTITY 라 넣지 않는다 -->
 	<insert id="insertMessage" parameterType="com.surit.chat.dto.ChatMessageDTO">

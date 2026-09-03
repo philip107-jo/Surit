@@ -30,6 +30,8 @@ public interface ChatMapper {
 
 	/* ── 메시지 ─────────────────────────── */
 	List<ChatMessageDTO> selectMessages(Long roomId);
+	/*최근 메세지 N개만 방에*/
+	List<ChatMessageDTO> selectRecentMessages(@Param("roomId") Long roomId, @Param("limit")  int limit);
 	int insertMessage(ChatMessageDTO message);
 	int markAsRead(@Param("roomId") Long roomId, @Param("readerNo") Long readerNo);
 	int countUnread(@Param("roomId") Long roomId, @Param("readerNo") Long readerNo);
